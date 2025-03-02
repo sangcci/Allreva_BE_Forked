@@ -29,8 +29,13 @@ public class FileService {
             final GetPresignedUrlRequest request,
             final Member member
     ) {
-        String objectKey =
-                member.getMemberInfo().getNickname() + "/"
+        String objectKey ;
+        if (member != null) {
+            objectKey = member.getMemberInfo().getNickname() + "/";
+        }else{
+            objectKey = "";
+        }
+        objectKey = objectKey
                         + request.fileType().toString() + "/"
                         + UUID.randomUUID().toString() + "_" + request.fileName();
         objectKey = objectKey.replaceAll("-", "");
