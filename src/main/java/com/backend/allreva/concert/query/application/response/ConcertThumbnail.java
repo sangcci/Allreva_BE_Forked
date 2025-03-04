@@ -12,7 +12,8 @@ public record ConcertThumbnail(
         LocalDate stdate,
         LocalDate eddate,
         Long id,
-        List<String> episodes
+        List<String> episodes,
+        String hallId
 ) {
         public static ConcertThumbnail from(final ConcertDocument concertDocument) {
             return new ConcertThumbnail(
@@ -22,7 +23,8 @@ public record ConcertThumbnail(
                     concertDocument.getStDate(),
                     concertDocument.getEdDate(),
                     Long.parseLong(concertDocument.getId()),
-                    concertDocument.getEpisodes()
+                    concertDocument.getEpisodes(),
+                    concertDocument.getHallCode()
             );
         }
 }
