@@ -11,18 +11,23 @@ public class CookieService {
     @Value("${jwt.refresh.expiration}")
     private int refreshTime;
     @Value("${url.front.domain-name}")
-    private String domainName;
+    private String prodDomainName;
 
     public void addRefreshTokenCookie(
             final HttpServletResponse response,
-            final String refreshToken
+            final String refreshToken,
+            final String domainName
     ) {
         CookieUtils.addCookie(
                 response,
-                domainName,
+                isLocalhost(domainName) ? null : prodDomainName,
                 "refreshToken",
                 refreshToken,
                 refreshTime
         );
+    }
+
+    private static boolean isLocalhost(String domain) {
+        return domain.equals("localhost");
     }
 }
