@@ -51,10 +51,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
+        log.info("registration.interceptors 이전");
         registration.interceptors(new org.springframework.messaging.support.ChannelInterceptor() {
             @Override
             public Message<?> preSend(Message<?> message, MessageChannel channel) {
                 StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
+                log.info("STOMP CONNECT 요청 수신");
+
                 if (StompCommand.CONNECT.equals(accessor.getCommand())) {
                     // CONNECT 시 Authorization 헤더를 통해 토큰 추출
                     List<String> authHeaders = accessor.getNativeHeader("Authorization");
@@ -67,6 +70,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         Authentication authentication = new UsernamePasswordAuthenticationToken(
                                 userDetails, null, userDetails.getAuthorities());
                         accessor.setUser(authentication);
+                        log.info("Authentication 객체 설정 완료");
                     }
                 }
                 return message;
