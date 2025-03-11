@@ -67,7 +67,7 @@ public class KakaoOAuth2LoginService implements OAuth2LoginService {
         if (Objects.equals("localhost", domainName)) {
             return kakaoLocalRedirectUri;
         }
-        if (Objects.equals(prodDomainName, domainName)) {
+        if (domainName.contains(prodDomainName)) { // sub domain의 경우에도 통과할 수 있도록
             return kakaoRedirectUri;
         }
         throw new InvalidRedirectUrlException();
