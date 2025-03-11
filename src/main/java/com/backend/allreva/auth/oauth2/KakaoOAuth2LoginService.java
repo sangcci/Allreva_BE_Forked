@@ -4,7 +4,6 @@ import com.backend.allreva.auth.application.OAuth2LoginService;
 import com.backend.allreva.auth.application.dto.UserInfo;
 import com.backend.allreva.auth.exception.code.InvalidRedirectUrlException;
 import com.backend.allreva.member.command.domain.value.LoginProvider;
-import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,7 +39,6 @@ public class KakaoOAuth2LoginService implements OAuth2LoginService {
             final String domainName
     ) {
         log.info("domainName: {}", domainName);
-        log.info("prodDomainName: {}", prodDomainName);
         String redirectUri = getRedirectUri(domainName); // localhost or prod
         KakaoToken token = kakaoAuthClient.getToken(
                 kakaoClientId,
@@ -64,7 +62,7 @@ public class KakaoOAuth2LoginService implements OAuth2LoginService {
     }
 
     private String getRedirectUri(final String domainName) {
-        if (Objects.equals("localhost", domainName)) {
+        if (domainName.contains("localhost")) {
             return kakaoLocalRedirectUri;
         }
         if (domainName.contains(prodDomainName)) { // sub domain의 경우에도 통과할 수 있도록

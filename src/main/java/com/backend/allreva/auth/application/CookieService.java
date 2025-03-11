@@ -28,6 +28,6 @@ public class CookieService {
     }
 
     private static boolean isLocalhost(String domain) {
-        return domain.equals("localhost");
+        return domain.contains("localhost");
     }
 }
