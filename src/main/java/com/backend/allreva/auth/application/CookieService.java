@@ -2,6 +2,8 @@ package com.backend.allreva.auth.application;
 
 import com.backend.allreva.common.util.CookieUtils;
 import jakarta.servlet.http.HttpServletResponse;
+import java.net.MalformedURLException;
+import java.net.URL;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +29,24 @@ public class CookieService {
         );
     }
 
+    public void deleteRefreshTokenCookie(
+            final HttpServletResponse response,
+            final String domainName
+    ) {
+        CookieUtils.deleteCookie(
+                response,
+                isLocalhost(domainName) ? null : prodDomainName,
+                "refreshToken"
+        );
+    }
+
     private static boolean isLocalhost(String domain) {
-        return domain.contains("localhost");
+        try {
+            URL url = new URL(domain);
+            String host = url.getHost();
+            return host.contains("localhost") || host.contains("127.0.0.1");
+        } catch (MalformedURLException e) {
+            return false;
+        }
     }
 }
