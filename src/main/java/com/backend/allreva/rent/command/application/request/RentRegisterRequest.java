@@ -2,7 +2,7 @@ package com.backend.allreva.rent.command.application.request;
 
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.rent.command.domain.Rent;
-import com.backend.allreva.rent.command.domain.RentBoardingDate;
+import com.backend.allreva.rent.command.domain.RentBoardingInfo;
 import com.backend.allreva.rent.command.domain.value.AdditionalInfo;
 import com.backend.allreva.rent.command.domain.value.Bus;
 import com.backend.allreva.rent.command.domain.value.BusSize;
@@ -68,14 +68,17 @@ public record RentRegisterRequest(
     public Rent toEntity(
             final Long memberId
     ) {
+        List<RentBoardingInfo> rentBoardingInfos = rentBoardingDateRequests.stream()
+                .map(date -> RentBoardingInfo.builder()
+                        .date(date)
+                        .recruitmentCount(recruitmentCount)
+                        .build())
+                .toList();
+
         Rent rent = Rent.builder()
                 .memberId(memberId)
                 .concertId(concertId)
-                .boardingDates(rentBoardingDateRequests.stream()
-                        .map(request -> RentBoardingDate.builder()
-                                .date(request)
-                                .build())
-                        .toList())
+                .boardingInfos(rentBoardingInfos)
                 .detailInfo(DetailInfo.builder()
                         .image(image)
                         .title(title)
@@ -99,7 +102,6 @@ public record RentRegisterRequest(
                                 .build())
                         .build())
                 .additionalInfo(AdditionalInfo.builder()
-                        .recruitmentCount(recruitmentCount)
                         .chatUrl(chatUrl)
                         .refundType(refundType)
                         .information(information)
@@ -107,12 +109,7 @@ public record RentRegisterRequest(
                         .build())
                 .build();
 
-        List<RentBoardingDate> rentBoardingDates = rentBoardingDateRequests.stream()
-                .map(date -> RentBoardingDate.builder()
-                        .date(date)
-                        .build())
-                .toList();
-        rent.assignBoardingDates(rentBoardingDates);
+        rent.assignBoardingInfos(rentBoardingInfos);
         return rent;
     }
 }

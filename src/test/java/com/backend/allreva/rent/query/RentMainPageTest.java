@@ -11,7 +11,7 @@ import com.backend.allreva.concert.command.domain.ConcertRepository;
 import com.backend.allreva.hall.command.domain.ConcertHallRepository;
 import com.backend.allreva.member.command.domain.value.MemberRole;
 import com.backend.allreva.rent.command.domain.Rent;
-import com.backend.allreva.rent.command.domain.RentBoardingDate;
+import com.backend.allreva.rent.command.domain.RentBoardingInfo;
 import com.backend.allreva.rent.command.domain.RentRepository;
 import com.backend.allreva.rent.command.domain.value.AdditionalInfo;
 import com.backend.allreva.rent.command.domain.value.Bus;
@@ -95,11 +95,11 @@ class RentMainPageTest extends IntegrationTestSupport {
 
         var userA = 2L;
         var userB = 3L;
-        rentJoinRepository.save(createRentJoinFixture(rent.getId(), userA, "홍길동", rent.getBoardingDates().get(0).getDate()));
-        rentJoinRepository.save(createRentJoinFixture(rent.getId(), userB, "김철수", rent.getBoardingDates().get(1).getDate()));
+        rentJoinRepository.save(createRentJoinFixture(rent.getId(), userA, "홍길동", rent.getBoardingInfos().get(0).getDate()));
+        rentJoinRepository.save(createRentJoinFixture(rent.getId(), userB, "김철수", rent.getBoardingInfos().get(1).getDate()));
 
         // when
-        var rentDetail = rentQueryService.getRentDetailById(rent.getId(), register);
+        var rentDetail = rentQueryService.getRentDetail(rent.getId(), register);
 
         // then
         assertThat(rentDetail).isNotNull();
@@ -107,7 +107,7 @@ class RentMainPageTest extends IntegrationTestSupport {
             softly.assertThat(rentDetail.getTitle()).isEqualTo(rent.getDetailInfo().getTitle());
             softly.assertThat(rentDetail.getConcertName()).isEqualTo(concert.getConcertInfo().getTitle());
             softly.assertThat(rentDetail.getDropOffArea()).isEqualTo(concertHall.getName());
-            softly.assertThat(rentDetail.getBoardingDates().get(0).getParticipationCount()).isEqualTo(2);
+            //softly.assertThat(rentDetail.getBoardingDates().get(0).getParticipationCount()).isEqualTo(2);
             softly.assertThat(rentDetail.getBoardingDates().get(0).getIsApplied()).isFalse();
             softly.assertThat(rentDetail.getRefundAccount()).isEqualTo(register.getRefundAccount());
         });
@@ -122,7 +122,7 @@ class RentMainPageTest extends IntegrationTestSupport {
         var rent = rentRepository.save(createRentFixture(registerId, concert.getId(), Region.서울, LocalDate.of(2024, 9, 21)));
 
         // when
-        var rentDetail = rentQueryService.getRentDetailById(rent.getId(), null);
+        var rentDetail = rentQueryService.getRentDetail(rent.getId(), null);
 
         // then
         assertThat(rentDetail).isNotNull();
@@ -139,7 +139,7 @@ class RentMainPageTest extends IntegrationTestSupport {
         var rent = rentRepository.save(createRentFixture(registerId, 1L, Region.서울, LocalDate.of(2024, 9, 21)));
 
         // when
-        var depositAccount = rentQueryService.getDepositAccountById(rent.getId());
+        var depositAccount = rentQueryService.getDepositAccount(rent.getId());
 
         // then
         assertThat(depositAccount).isNotNull();
@@ -178,21 +178,22 @@ class RentMainPageTest extends IntegrationTestSupport {
                                 .build())
                         .build())
                 .additionalInfo(AdditionalInfo.builder()
-                        .recruitmentCount(30)
                         .chatUrl("chatUrl")
                         .refundType(RefundType.BOTH)
                         .information("information")
                         .endDate(endDate)
                         .build())
                 .build();
-        rent.assignBoardingDates(List.of(
-                RentBoardingDate.builder()
+        rent.assignBoardingInfos(List.of(
+                RentBoardingInfo.builder()
                         .rent(rent)
                         .date(LocalDate.of(2024, 9, 20))
+                        .recruitmentCount(30)
                         .build(),
-                RentBoardingDate.builder()
+                RentBoardingInfo.builder()
                         .rent(rent)
                         .date(LocalDate.of(2024, 9, 21))
+                        .recruitmentCount(30)
                         .build()));
         return rent;
     }

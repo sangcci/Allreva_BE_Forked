@@ -12,7 +12,13 @@ public class RentJoinQueryService {
 
     private final RentJoinRepository rentJoinRepository;
 
+    /**
+     * [Participate] 자신이 참여한 차 대절 조회
+     * TODO: no offset and limit
+     * @param memberId
+     * @return 자신이 참여한 차 대절 목록
+     */
     public List<RentJoinResponse> getRentJoin(final Long memberId) {
-        return rentJoinRepository.findRentJoin(memberId);
+        return rentJoinRepository.findByMemberId(memberId);
     }
 }

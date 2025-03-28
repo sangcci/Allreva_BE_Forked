@@ -1,21 +1,21 @@
 package com.backend.allreva.rent.fake;
 
 import com.backend.allreva.rent.command.domain.Rent;
-import com.backend.allreva.rent.command.domain.RentBoardingDate;
+import com.backend.allreva.rent.command.domain.RentBoardingInfo;
 import com.backend.allreva.rent.command.domain.RentRepository;
 import com.backend.allreva.rent.command.domain.value.Region;
-import com.backend.allreva.rent.query.application.response.DepositAccountResponse;
 import com.backend.allreva.rent.query.application.response.RentAdminSummaryResponse;
 import com.backend.allreva.rent.query.application.response.RentDetailResponse;
-import com.backend.allreva.rent.query.application.response.RentJoinCountResponse;
-import com.backend.allreva.rent.query.application.response.RentJoinDetailResponse;
 import com.backend.allreva.rent.query.application.response.RentSummaryResponse;
+import com.backend.allreva.rent_join.query.response.RentJoinCountResponse;
 import com.backend.allreva.survey.query.application.response.SortType;
-
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
-
 import org.springframework.test.util.ReflectionTestUtils;
 
 public class RentFakeRepository implements RentRepository {
@@ -31,9 +31,25 @@ public class RentFakeRepository implements RentRepository {
     }
 
     @Override
-    public boolean existsById(Long id) {
+    public Optional<Rent> findByIdAndMemberId(final Long rentId, final Long memberId) {
         return rentTable.stream()
-                .anyMatch(rent -> Objects.equals(rent.getId() - 1, id));
+                .filter(rent -> Objects.equals(rent.getId(), rentId))
+                .filter(rent -> Objects.equals(rent.getMemberId(), memberId))
+                .findFirst();
+    }
+
+    @Override
+    public Optional<RentBoardingInfo> findByIdAndBoardingDate(final Long rentId, final LocalDate date) {
+        Optional<Rent> rentOptional = rentTable.stream()
+                .filter(rent -> Objects.equals(rent.getId(), rentId))
+                .findFirst();
+        if (rentOptional.isEmpty()) {
+            return Optional.empty();
+        }
+        List<RentBoardingInfo> boardingInfos = rentOptional.get().getBoardingInfos();
+        return boardingInfos.stream()
+                .filter(bi -> Objects.equals(bi.getDate(), date))
+                .findFirst();
     }
 
     @Override
@@ -51,20 +67,11 @@ public class RentFakeRepository implements RentRepository {
     }
 
     @Override
-    public List<RentBoardingDate> updateRentBoardingDates(Long rentId, List<RentBoardingDate> rentBoardingDates) {
-        rentTable.stream()
-                .filter(o -> Objects.equals(o.getId(), rentId))
-                .findFirst()
-                .ifPresent(rent -> ReflectionTestUtils.setField(rent, "rentBoardingDates", rentBoardingDates));
-        return rentBoardingDates;
-    }
-
-    @Override
-    public void deleteBoardingDateAllByRentId(Long rentId) {
+    public void deleteBoardingInfoAllByRentId(Long rentId) {
         rentTable.stream()
                .filter(o -> Objects.equals(o.getId(), rentId))
                .findFirst()
-               .ifPresent(rent -> ReflectionTestUtils.setField(rent, "boardingDates", new ArrayList<>()));
+               .ifPresent(rent -> ReflectionTestUtils.setField(rent, "boardingInfos", new ArrayList<>()));
     }
 
     @Override
@@ -79,37 +86,18 @@ public class RentFakeRepository implements RentRepository {
     }
 
     @Override
-    public Optional<RentDetailResponse> findRentDetailById(Long rentId) {
+    public Optional<RentDetailResponse> findRentDetail(Long rentId) {
         return null;
     }
 
     @Override
-    public Optional<DepositAccountResponse> findDepositAccountById(Long rentId) {
-        return null;
-    }
-
-    @Override
-    public List<RentAdminSummaryResponse> findRentAdminSummaries(Long memberId) {
-        return null;
-    }
-
-    @Override
-    public Optional<RentAdminSummaryResponse> findRentAdminSummary(Long memberId, LocalDate boardingDate, Long rentId) {
+    public List<RentAdminSummaryResponse> findRentAdminSummaries(final Long memberId, final Long lastId,
+            final int pageSize) {
         return null;
     }
 
     @Override
     public Optional<RentJoinCountResponse> findRentJoinCount(Long memberId, LocalDate boardingDate, Long rentId) {
-        return null;
-    }
-
-    @Override
-    public List<RentJoinDetailResponse> findRentJoinDetails(Long memberId, Long rentId, LocalDate boardingDate) {
-        return null;
-    }
-
-    @Override
-    public List<RentSummaryResponse> findRentMainSummaries() {
         return null;
     }
 }

@@ -22,20 +22,17 @@ public class RentJoinRepositoryImpl implements RentJoinRepository {
     }
 
     @Override
-    public Integer countRentJoin(
-            final Long rentId,
-            final LocalDate boardingDate
-    ) {
-        return rentJoinDslRepository.countRentJoin(rentId, boardingDate);
+    public List<RentJoin> findByRentIdAndBoardingDate(final Long rentId, final LocalDate boardingDate) {
+        return rentJoinJpaRepository.findByRentIdAndBoardingDate(rentId, boardingDate);
     }
 
     @Override
-    public boolean existsByBoardingDateAndRentIdAndMemberId(
-            final LocalDate boardingDate,
+    public boolean exists(
+            final Long memberId,
             final Long rentId,
-            final Long memberId
+            final LocalDate boardingDate
     ) {
-        return rentJoinJpaRepository.existsByBoardingDateAndRentIdAndMemberId(boardingDate, rentId, memberId);
+        return rentJoinJpaRepository.existsByMemberIdAndRentIdAndBoardingDate(memberId, rentId, boardingDate);
     }
 
     @Override
@@ -49,7 +46,7 @@ public class RentJoinRepositoryImpl implements RentJoinRepository {
     }
 
     @Override
-    public List<RentJoinResponse> findRentJoin(final Long memberId) {
-        return rentJoinDslRepository.findRentJoin(memberId);
+    public List<RentJoinResponse> findByMemberId(final Long memberId) {
+        return rentJoinDslRepository.findByMemberId(memberId);
     }
 }

@@ -4,7 +4,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.rent.command.domain.Rent;
-import com.backend.allreva.rent.command.domain.RentBoardingDate;
+import com.backend.allreva.rent.command.domain.RentBoardingInfo;
 import com.backend.allreva.rent.command.domain.RentRepository;
 import com.backend.allreva.rent.command.domain.value.AdditionalInfo;
 import com.backend.allreva.rent.command.domain.value.Bus;
@@ -46,8 +46,8 @@ class RentJoinPageTest extends IntegrationTestSupport {
 
         var userA = 2L;
         var userB = 3L;
-        var rentJoinByUserA = rentJoinRepository.save(createRentJoinFixture(rent.getId(), userA, "userA", rent.getBoardingDates().get(0).getDate()));
-        rentJoinRepository.save(createRentJoinFixture(rent.getId(), userB, "userB", rent.getBoardingDates().get(1).getDate()));
+        var rentJoinByUserA = rentJoinRepository.save(createRentJoinFixture(rent.getId(), userA, "userA", rent.getBoardingInfos().get(0).getDate()));
+        rentJoinRepository.save(createRentJoinFixture(rent.getId(), userB, "userB", rent.getBoardingInfos().get(1).getDate()));
 
         // when
         var rentJoinSummaries = rentJoinQueryService.getRentJoin(userA);
@@ -84,21 +84,22 @@ class RentJoinPageTest extends IntegrationTestSupport {
                                 .build())
                         .build())
                 .additionalInfo(AdditionalInfo.builder()
-                        .recruitmentCount(30)
                         .chatUrl("chatUrl")
                         .refundType(RefundType.BOTH)
                         .information("information")
                         .endDate(LocalDate.of(2024, 9, 13))
                         .build())
                 .build();
-        rent.assignBoardingDates(List.of(
-                RentBoardingDate.builder()
+        rent.assignBoardingInfos(List.of(
+                RentBoardingInfo.builder()
                         .rent(rent)
                         .date(LocalDate.of(2024, 9, 20))
+                        .recruitmentCount(30)
                         .build(),
-                RentBoardingDate.builder()
+                RentBoardingInfo.builder()
                         .rent(rent)
                         .date(LocalDate.of(2024, 9, 21))
+                        .recruitmentCount(30)
                         .build()));
         return rent;
     }
