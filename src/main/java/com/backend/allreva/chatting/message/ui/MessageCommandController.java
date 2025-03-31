@@ -20,7 +20,7 @@ import org.springframework.stereotype.Controller;
 @Controller
 public class MessageCommandController {
 
-    public static final String SUB_PERSONAL_DESTINATION = "/personal/room";
+    public static final String SUB_PERSONAL_DESTINATION = "/personal/room/";
     public static final String SUB_GROUP_DESTINATION = "/group/room/";
 
     private final MessageCommandService messageCommandService;
