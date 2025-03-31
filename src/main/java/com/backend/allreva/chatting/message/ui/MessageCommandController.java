@@ -13,6 +13,7 @@ import com.backend.allreva.member.command.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -35,7 +36,7 @@ public class MessageCommandController {
     public void sendSingleMessage(
             @DestinationVariable final Long singleChatId,
             @AuthMember final Member member,
-            final Content content
+            @Payload final Content content
     ) {
         String destination = SUB_PERSONAL_DESTINATION + singleChatId;
         SingleMessage singleMessage = messageCommandService
@@ -67,7 +68,7 @@ public class MessageCommandController {
     public void sendGroupMessage(
             @DestinationVariable final Long groupChatId,
             @AuthMember final Member member,
-            final Content content
+            @Payload final Content content
     ) {
         String destination = SUB_GROUP_DESTINATION + groupChatId;
         GroupMessage groupMessage = messageCommandService
