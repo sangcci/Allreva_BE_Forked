@@ -104,7 +104,8 @@ public class MessageCommandController {
 
 
     private Member getMemberFromAccessor(SimpMessageHeaderAccessor accessor) {
-        Long memberId = (Long) accessor.getSessionAttributes().get("memberId");
+        String attribute = (String) accessor.getSessionAttributes().get("memberId");
+        Long memberId = Long.parseLong(attribute);
         return memberRepository.findById(memberId)
                 .orElseThrow(NotFoundException::new);
     }
