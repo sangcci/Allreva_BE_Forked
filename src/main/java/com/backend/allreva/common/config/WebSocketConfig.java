@@ -65,12 +65,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         String token = authHeaders.get(0);
                         jwtService.validateToken(token);
                         String memberId = jwtService.extractMemberId(token);
-
-                        UserDetails userDetails = customUserDetailsService.loadUserByUsername(memberId);
-                        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                                userDetails, null, userDetails.getAuthorities());
-                        accessor.setUser(authentication);
-                        log.info("Authentication 객체 설정 완료");
+                        accessor.getSessionAttributes().put("memberId", memberId);
+                        log.info("세션 설정 완료");
                     }
                 }
                 return message;
