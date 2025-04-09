@@ -60,12 +60,6 @@ public class MessageCommandController {
                 previewMessage,
                 member
         );
-        chatParticipantService.updatePreviewMessage(
-                member.getId(),
-                singleChatId,
-                ChatType.SINGLE,
-                previewMessage
-        );
     }
 
 
@@ -93,12 +87,6 @@ public class MessageCommandController {
                 ChatType.GROUP,
                 previewMessage,
                 member
-        );
-        chatParticipantService.updatePreviewMessage(
-                member.getId(),
-                groupChatId,
-                ChatType.GROUP,
-                previewMessage
         );
     }
 
