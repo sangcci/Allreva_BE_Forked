@@ -1,16 +1,20 @@
 package com.backend.allreva.auth.security;
 
-import com.backend.allreva.auth.exception.code.UnauthorizedException;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
+
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.common.exception.GlobalErrorCode;
+
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -19,8 +23,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     private final HandlerExceptionResolver resolver;
 
     public CustomAuthenticationEntryPoint(
-            @Qualifier("handlerExceptionResolver") final HandlerExceptionResolver resolver
-    ) {
+            @Qualifier("handlerExceptionResolver") final HandlerExceptionResolver resolver) {
         this.resolver = resolver;
     }
 
@@ -31,9 +34,9 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(
             final HttpServletRequest request,
             final HttpServletResponse response,
-            final AuthenticationException authException
-    ) throws IOException, ServletException {
-        UnauthorizedException unauthorizedException = new UnauthorizedException(authException.getLocalizedMessage());
-        resolver.resolveException(request, response, null, unauthorizedException);
+            final AuthenticationException authException) throws IOException, ServletException {
+        CustomException customException = new CustomException(GlobalErrorCode.UNAUTHORIZED_ERROR,
+                authException.getLocalizedMessage());
+        resolver.resolveException(request, response, null, customException);
     }
 }

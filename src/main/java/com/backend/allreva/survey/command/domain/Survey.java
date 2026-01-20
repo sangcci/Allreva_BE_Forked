@@ -1,21 +1,29 @@
 package com.backend.allreva.survey.command.domain;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
 import com.backend.allreva.common.event.Events;
+import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.BaseEntity;
 import com.backend.allreva.survey.command.domain.value.Region;
-import com.backend.allreva.survey.exception.SurveyInvalidBoardingDateException;
-import com.backend.allreva.survey.exception.SurveyNotWriterException;
-import jakarta.persistence.*;
+import com.backend.allreva.survey.exception.SurveyErrorCode;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -59,13 +67,13 @@ public class Survey extends BaseEntity {
 
     @Builder
     private Survey(final Long memberId,
-                   final Long concertId,
-                   final String title,
-                   final String artistName,
-                   final Region region,
-                   final LocalDate endDate,
-                   final int maxPassenger,
-                   final String information) {
+            final Long concertId,
+            final String title,
+            final String artistName,
+            final Region region,
+            final LocalDate endDate,
+            final int maxPassenger,
+            final String information) {
         this.memberId = memberId;
         this.concertId = concertId;
         this.title = title;
@@ -78,10 +86,10 @@ public class Survey extends BaseEntity {
     }
 
     public void update(final String title,
-                       final Region region,
-                       final LocalDate endDate,
-                       final int maxPassenger,
-                       final String information) {
+            final Region region,
+            final LocalDate endDate,
+            final int maxPassenger,
+            final String information) {
         this.title = title;
         this.region = region;
         this.endDate = endDate;
@@ -93,15 +101,17 @@ public class Survey extends BaseEntity {
 
     public void isWriter(final Long loginMemberId) {
 
-        if (!this.memberId.equals(loginMemberId))
-            throw new SurveyNotWriterException();
+        if (!this.memberId.equals(loginMemberId)) {
+            throw new CustomException(SurveyErrorCode.SURVEY_NOT_WRITER);
+        }
     }
 
     public void containsBoardingDate(final LocalDate boardingDate) {
         boolean contain = this.boardingDates.stream()
                 .noneMatch(bd -> bd.getDate().equals(boardingDate));
 
-        if (contain)
-            throw new SurveyInvalidBoardingDateException();
+        if (contain) {
+            throw new CustomException(SurveyErrorCode.SURVEY_INVALID_BOARDING_DATE);
+        }
     }
 }

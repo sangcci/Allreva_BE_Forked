@@ -1,13 +1,18 @@
 package com.backend.allreva.common.storage.presigned;
 
-import com.backend.allreva.common.storage.exception.InvalidUrlException;
-import com.backend.allreva.common.storage.exception.UploadFailedException;
-import com.backend.allreva.common.storage.presigned.dto.PresignedUrlRequest;
-import com.backend.allreva.member.command.domain.Member;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import java.time.Duration;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.common.storage.exception.StorageErrorCode;
+import com.backend.allreva.common.storage.presigned.dto.PresignedUrlRequest;
+import com.backend.allreva.member.command.domain.Member;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -15,9 +20,6 @@ import software.amazon.awssdk.services.s3.presigner.model.DeleteObjectPresignReq
 import software.amazon.awssdk.services.s3.presigner.model.PresignedDeleteObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
-
-import java.time.Duration;
-import java.util.UUID;
 
 @Slf4j
 @Service
@@ -54,11 +56,10 @@ public class PresignedUrlService {
         try {
             PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(presignRequest);
             String url = presignedRequest.url().toString();
-            log.debug("Generated presigned upload URL for key: {}", objectKey);
             return url;
         } catch (Exception e) {
-            log.error("Failed to generate presigned upload URL for key: {}", objectKey, e);
-            throw new UploadFailedException();
+            log.error("Failed to generate S3 presigned upload URL - key: {}", objectKey, e);
+            throw new CustomException(StorageErrorCode.PRESIGNED_URL_GENERATION_FAILED, e);
         }
     }
 
@@ -85,8 +86,8 @@ public class PresignedUrlService {
             PresignedDeleteObjectRequest presignedDeleteRequest = s3Presigner.presignDeleteObject(presignDeleteRequest);
             return presignedDeleteRequest.url().toString();
         } catch (Exception e) {
-            log.error("Failed to generate presigned delete URL for key: {}", objectKey, e);
-            throw new InvalidUrlException();
+            log.error("Failed to generate S3 presigned delete URL - key: {}", objectKey, e);
+            throw new CustomException(StorageErrorCode.PRESIGNED_URL_GENERATION_FAILED, e);
         }
     }
 
@@ -130,7 +131,8 @@ public class PresignedUrlService {
         if (fileUrl.startsWith(bucketUrl)) {
             return fileUrl.substring(bucketUrl.length());
         } else {
-            throw new IllegalArgumentException("Invalid S3 file URL: " + fileUrl);
+            log.warn("Invalid S3 URL format - expected: {}, actual: {}", bucketUrl, fileUrl);
+            throw new CustomException(StorageErrorCode.INVALID_S3_URL);
         }
     }
 }

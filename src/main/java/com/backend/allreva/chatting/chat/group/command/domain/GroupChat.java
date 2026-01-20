@@ -1,22 +1,29 @@
 package com.backend.allreva.chatting.chat.group.command.domain;
 
+import java.util.UUID;
+
 import com.backend.allreva.chatting.chat.group.command.domain.event.DeletedGroupChatEvent;
 import com.backend.allreva.chatting.chat.group.command.domain.event.JoinedGroupChatEvent;
 import com.backend.allreva.chatting.chat.group.command.domain.event.LeavedGroupChatEvent;
 import com.backend.allreva.chatting.chat.group.command.domain.event.UpdatedGroupChatEvent;
 import com.backend.allreva.chatting.chat.group.command.domain.value.Description;
 import com.backend.allreva.chatting.chat.group.command.domain.value.Title;
-import com.backend.allreva.chatting.exception.CannotDeleteGroupChatException;
-import com.backend.allreva.chatting.exception.InvalidWriterException;
+import com.backend.allreva.chatting.exception.ChattingErrorCode;
 import com.backend.allreva.common.event.Events;
+import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.Image;
-import jakarta.persistence.*;
+
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.UUID;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -41,14 +48,12 @@ public class GroupChat {
     private int headcount;
     private int capacity;
 
-
     @Builder
     public GroupChat(
             final Long managerId,
             final String title,
             final Image thumbnail,
-            final int capacity
-    ) {
+            final int capacity) {
         this.uuid = UUID.randomUUID();
         this.managerId = managerId;
         this.title = new Title(title);
@@ -62,8 +67,7 @@ public class GroupChat {
             final Long managerId,
             final String title,
             final String description,
-            final Image thumbnail
-    ) {
+            final Image thumbnail) {
         validateManager(managerId);
         this.managerId = managerId;
         this.title = new Title(title);
@@ -74,19 +78,17 @@ public class GroupChat {
                 managerId,
                 this.id,
                 title,
-                thumbnail
-        );
+                thumbnail);
         Events.raise(updatedEvent);
     }
 
     public void validateForDelete(final Long memberId) {
         validateManager(memberId);
         if (this.headcount != 1) {
-            throw new CannotDeleteGroupChatException();
+            throw new CustomException(ChattingErrorCode.DO_NOT_MEET_CONDITIONS_TO_DELETE);
         }
 
-        DeletedGroupChatEvent deletedEvent
-                = new DeletedGroupChatEvent(this.id, memberId);
+        DeletedGroupChatEvent deletedEvent = new DeletedGroupChatEvent(this.id, memberId);
         Events.raise(deletedEvent);
     }
 
@@ -94,24 +96,21 @@ public class GroupChat {
         if (this.managerId.equals(memberId)) {
             return;
         }
-            throw new InvalidWriterException();
+        throw new CustomException(ChattingErrorCode.INVALID_MANAGER);
     }
 
     public void addHeadcount(final Long memberId) {
         this.headcount++;
 
-        JoinedGroupChatEvent joinedEvent
-                = new JoinedGroupChatEvent(memberId, this.id);
+        JoinedGroupChatEvent joinedEvent = new JoinedGroupChatEvent(memberId, this.id);
         Events.raise(joinedEvent);
     }
 
     public void subtractHeadcount(final Long memberId) {
         this.headcount--;
 
-        LeavedGroupChatEvent leavedEvent
-                = new LeavedGroupChatEvent(memberId, this.id);
+        LeavedGroupChatEvent leavedEvent = new LeavedGroupChatEvent(memberId, this.id);
         Events.raise(leavedEvent);
     }
-
 
 }

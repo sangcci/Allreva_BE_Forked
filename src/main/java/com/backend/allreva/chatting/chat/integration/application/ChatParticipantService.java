@@ -9,7 +9,8 @@ import com.backend.allreva.chatting.chat.single.command.domain.SingleChatReposit
 import com.backend.allreva.chatting.chat.single.command.domain.value.OtherMember;
 import com.backend.allreva.chatting.message.domain.GroupMessageRepository;
 import com.backend.allreva.chatting.message.domain.SingleMessageRepository;
-import com.backend.allreva.member.exception.MemberNotFoundException;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.member.exception.MemberErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,6 @@ public class ChatParticipantService {
     private final SingleMessageRepository singleMessageRepository;
     private final GroupMessageRepository groupMessageRepository;
 
-
     @Transactional
     public void updatePreviewMessage(
             final Long memberId,
@@ -35,10 +35,9 @@ public class ChatParticipantService {
             final ChatType chatType,
             final long previewMessageNumber,
             final String previewText,
-            final LocalDateTime sentAt
-    ) {
+            final LocalDateTime sentAt) {
         ChatParticipantDoc document = chatParticipantRepository.findById(memberId)
-                .orElseThrow(MemberNotFoundException::new);
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         if (document.existsInSummaries(chatId, chatType)) { // 채팅방 목록에 존재하면 previewMessage 만 업데이트
             document.updatePreviewMessage(
@@ -46,8 +45,7 @@ public class ChatParticipantService {
                     chatType,
                     previewMessageNumber,
                     previewText,
-                    sentAt
-            );
+                    sentAt);
             chatParticipantRepository.save(document);
             return;
         }
@@ -62,17 +60,15 @@ public class ChatParticipantService {
             final Long memberId,
             final Long chatId,
             final ChatType chatType,
-            final PreviewMessage previewMessage
-    ) {
+            final PreviewMessage previewMessage) {
         ChatParticipantDoc document = chatParticipantRepository.findById(memberId)
-                .orElseThrow(MemberNotFoundException::new);
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         if (document.existsInSummaries(chatId, chatType)) { // 채팅방 목록에 존재하면 previewMessage 만 업데이트
             document.updatePreviewMessage(
                     chatId,
                     chatType,
-                    previewMessage
-            );
+                    previewMessage);
             chatParticipantRepository.save(document);
             return;
         }
@@ -85,16 +81,14 @@ public class ChatParticipantService {
     private void addSingleChatSummary(
             final Long chatId,
             final Long memberId,
-            final ChatParticipantDoc document
-    ) {
+            final ChatParticipantDoc document) {
         OtherMember otherMember = singleChatRepository
                 .findOtherMemberInfo(memberId, chatId);
 
         ChatInfoSummary chatInfoSummary = new ChatInfoSummary(
                 otherMember.getNickname(),
                 otherMember.getThumbnail(),
-                2
-        );
+                2);
         document.addChatSummary(chatId, ChatType.SINGLE, chatInfoSummary);
         chatParticipantRepository.save(document);
     }

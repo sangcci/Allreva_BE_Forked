@@ -1,5 +1,12 @@
 package com.backend.allreva.chatting.message.ui;
 
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Controller;
+
 import com.backend.allreva.chatting.chat.integration.application.ChatParticipantService;
 import com.backend.allreva.chatting.chat.integration.model.value.ChatType;
 import com.backend.allreva.chatting.chat.integration.model.value.PreviewMessage;
@@ -8,16 +15,12 @@ import com.backend.allreva.chatting.message.domain.GroupMessage;
 import com.backend.allreva.chatting.message.domain.SingleMessage;
 import com.backend.allreva.chatting.message.domain.value.Content;
 import com.backend.allreva.chatting.notification.MessageSseService;
-import com.backend.allreva.common.exception.NotFoundException;
+import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.member.command.domain.Member;
 import com.backend.allreva.member.command.domain.MemberRepository;
+import com.backend.allreva.member.exception.MemberErrorCode;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.stereotype.Controller;
 
 @RequiredArgsConstructor
 @Controller
@@ -34,13 +37,11 @@ public class MessageCommandController {
 
     private final SimpMessagingTemplate messagingTemplate;
 
-
     @MessageMapping("/single/connection/{singleChatId}")
     public void sendSingleMessage(
             @DestinationVariable final Long singleChatId,
             @Payload final Content content,
-            final SimpMessageHeaderAccessor accessor
-    ) {
+            final SimpMessageHeaderAccessor accessor) {
         Member member = getMemberFromAccessor(accessor);
 
         String destination = SUB_PERSONAL_DESTINATION + singleChatId;
@@ -52,23 +53,19 @@ public class MessageCommandController {
         PreviewMessage previewMessage = new PreviewMessage(
                 singleMessage.getMessageNumber(),
                 content.getPayload(),
-                singleMessage.getSentAt()
-        );
+                singleMessage.getSentAt());
         messageSseService.sendSummaryNotification(
                 singleChatId,
                 ChatType.SINGLE,
                 previewMessage,
-                member
-        );
+                member);
     }
-
 
     @MessageMapping("/group/connection/{groupChatId}")
     public void sendGroupMessage(
             @DestinationVariable final Long groupChatId,
             @Payload final Content content,
-            final SimpMessageHeaderAccessor accessor
-    ) {
+            final SimpMessageHeaderAccessor accessor) {
         Member member = getMemberFromAccessor(accessor);
 
         String destination = SUB_GROUP_DESTINATION + groupChatId;
@@ -80,21 +77,18 @@ public class MessageCommandController {
         PreviewMessage previewMessage = new PreviewMessage(
                 groupMessage.getMessageNumber(),
                 content.getPayload(),
-                groupMessage.getSentAt()
-        );
+                groupMessage.getSentAt());
         messageSseService.sendSummaryNotification(
                 groupChatId,
                 ChatType.GROUP,
                 previewMessage,
-                member
-        );
+                member);
     }
-
 
     private Member getMemberFromAccessor(SimpMessageHeaderAccessor accessor) {
         String attribute = (String) accessor.getSessionAttributes().get("memberId");
         Long memberId = Long.parseLong(attribute);
         return memberRepository.findById(memberId)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
     }
 }

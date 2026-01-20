@@ -1,23 +1,30 @@
 package com.backend.allreva.survey.command.application;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.backend.allreva.common.event.Events;
 import com.backend.allreva.common.event.NotificationMessage;
-import com.backend.allreva.concert.exception.ConcertNotFoundException;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.concert.exception.ConcertErrorCode;
 import com.backend.allreva.concert.infra.dto.ConcertDateInfoResponse;
 import com.backend.allreva.concert.infra.rdb.ConcertJpaRepository;
 import com.backend.allreva.survey.command.application.request.OpenSurveyRequest;
 import com.backend.allreva.survey.command.application.request.SurveyIdRequest;
 import com.backend.allreva.survey.command.application.request.UpdateSurveyRequest;
-import com.backend.allreva.survey.command.domain.*;
-import com.backend.allreva.survey.exception.SurveyInvalidBoardingDateException;
-import com.backend.allreva.survey.exception.SurveyNotFoundException;
+import com.backend.allreva.survey.command.domain.Survey;
+import com.backend.allreva.survey.command.domain.SurveyBoardingDate;
+import com.backend.allreva.survey.command.domain.SurveyBoardingDateCommandRepository;
+import com.backend.allreva.survey.command.domain.SurveyDeletedEvent;
+import com.backend.allreva.survey.command.domain.SurveyRepository;
+import com.backend.allreva.survey.command.domain.SurveySavedEvent;
+import com.backend.allreva.survey.exception.SurveyErrorCode;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @Transactional
@@ -33,8 +40,8 @@ public class SurveyCommandService {
      * 수요조사 개설
      */
     public Long openSurvey(final Long memberId,
-                           final OpenSurveyRequest request) {
-        //가용 날짜가 콘서트 진행 날짜인지 확인
+            final OpenSurveyRequest request) {
+        // 가용 날짜가 콘서트 진행 날짜인지 확인
         validateBoardingDates(request.concertId(), request.boardingDates());
 
         Survey survey = surveyRepository.save(surveyConverter.toSurvey(memberId, request));
@@ -46,8 +53,7 @@ public class SurveyCommandService {
         List<Long> recipientIds = List.of(memberId);
         Events.raise(
                 NotificationMessage.NEW_SURVEY_REGISTERED
-                        .toEvent(recipientIds, request.title())
-        );
+                        .toEvent(recipientIds, request.title()));
 
         return survey.getId();
     }
@@ -56,10 +62,10 @@ public class SurveyCommandService {
      * 수요조사 수정
      */
     public void updateSurvey(final Long memberId,
-                             final UpdateSurveyRequest request) {
+            final UpdateSurveyRequest request) {
         Survey survey = findSurvey(request.surveyId());
 
-        //가용 날짜가 콘서트 진행 날짜인지 확인
+        // 가용 날짜가 콘서트 진행 날짜인지 확인
         validateBoardingDates(survey.getConcertId(), request.boardingDates());
 
         survey.isWriter(memberId);
@@ -67,8 +73,7 @@ public class SurveyCommandService {
                 request.region(),
                 request.endDate(),
                 request.maxPassenger(),
-                request.information()
-        );
+                request.information());
         updateBoardingDates(survey, request.boardingDates());
     }
 
@@ -77,11 +82,10 @@ public class SurveyCommandService {
      */
     public void removeSurvey(
             final Long memberId,
-            final SurveyIdRequest surveyIdRequest
-    ) {
+            final SurveyIdRequest surveyIdRequest) {
         Survey survey = findSurvey(surveyIdRequest.surveyId());
 
-        //작성자 확인
+        // 작성자 확인
         survey.isWriter(memberId);
 
         surveyRepository.delete(survey);
@@ -92,20 +96,17 @@ public class SurveyCommandService {
     /**
      * 수요조사 응답(신청)
      */
-
     private void saveBoardingDates(final Survey survey,
-                                   final List<LocalDate> boardingDates) {
-        boardingDates.forEach(date ->
-                surveyBoardingDateCommandRepository.save(
-                        SurveyBoardingDate.builder()
-                                .survey(survey)
-                                .date(date)
-                                .build())
-        );
+            final List<LocalDate> boardingDates) {
+        boardingDates.forEach(date -> surveyBoardingDateCommandRepository.save(
+                SurveyBoardingDate.builder()
+                        .survey(survey)
+                        .date(date)
+                        .build()));
     }
 
     private void updateBoardingDates(final Survey survey,
-                                     final List<LocalDate> boardingDates) {
+            final List<LocalDate> boardingDates) {
         surveyBoardingDateCommandRepository.deleteAllBySurveyForUpdate(survey);
         saveBoardingDates(survey, boardingDates);
     }
@@ -118,20 +119,18 @@ public class SurveyCommandService {
 
         for (LocalDate boardingDate : boardingDates) {
             if (boardingDate.isBefore(concertStartDate) || boardingDate.isAfter(concertEndDate)) {
-                throw new SurveyInvalidBoardingDateException();
+                throw new CustomException(SurveyErrorCode.SURVEY_INVALID_BOARDING_DATE);
             }
         }
     }
 
     private ConcertDateInfoResponse findStartDateAndEndDateById(final Long concertId) {
         return concertRepository.findStartDateAndEndDateById(concertId)
-                .orElseThrow(ConcertNotFoundException::new);
+                .orElseThrow(() -> new CustomException(ConcertErrorCode.CONCERT_NOT_FOUND));
     }
-
 
     private Survey findSurvey(final Long surveyId) {
         return surveyRepository.findById(surveyId)
-                .orElseThrow(SurveyNotFoundException::new);
+                .orElseThrow(() -> new CustomException(SurveyErrorCode.SURVEY_NOT_FOUND));
     }
-
 }

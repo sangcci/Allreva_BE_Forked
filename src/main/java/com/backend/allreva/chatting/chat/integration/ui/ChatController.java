@@ -12,7 +12,8 @@ import com.backend.allreva.chatting.chat.integration.model.ChatParticipantReposi
 import com.backend.allreva.chatting.chat.integration.model.value.ChatSummary;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.member.command.domain.Member;
-import com.backend.allreva.member.exception.MemberNotFoundException;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.member.exception.MemberErrorCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +28,7 @@ public class ChatController {
     public Response<SortedSet<ChatSummary>> findParticipatingChats(
             @AuthMember final Member member) {
         ChatParticipantDoc document = chatParticipantRepository.findById(member.getId())
-                .orElseThrow(MemberNotFoundException::new);
+                .orElseThrow(() -> new CustomException(MemberErrorCode.MEMBER_NOT_FOUND));
 
         SortedSet<ChatSummary> responses = document.getChatSummaries();
         return Response.onSuccess(responses);

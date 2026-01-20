@@ -1,10 +1,9 @@
 package com.backend.allreva.concert.query.application;
 
-
 import com.backend.allreva.concert.infra.elasticsearch.ConcertSearchRepository;
 import com.backend.allreva.concert.query.application.response.ConcertThumbnail;
-import com.backend.allreva.concert.exception.search.ElasticSearchException;
-import com.backend.allreva.concert.exception.search.SearchResultNotFoundException;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.concert.exception.search.SearchErrorCode;
 import com.backend.allreva.concert.query.application.response.ConcertSearchListResponse;
 import com.backend.allreva.concert.infra.elasticsearch.ConcertDocument;
 import com.backend.allreva.keyword.command.PopularKeywordCommandService;
@@ -31,57 +30,55 @@ public class ConcertSearchService {
             List<ConcertDocument> content = concertSearchRepository.findByTitleMixed(
                     title, PageRequest.of(0, 2)).getContent();
             if (content.isEmpty()) {
-                throw new SearchResultNotFoundException();
+                throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
             }
 
             return content.stream()
                     .map(ConcertThumbnail::from)
                     .toList();
-        }catch (ElasticSearchException e){
-            throw new ElasticSearchException();
+        } catch (CustomException e) {
+            throw new CustomException(SearchErrorCode.ELASTICSEARCH_ERROR);
         }
     }
 
     public ConcertSearchListResponse searchConcertList(
             final String title,
             final List<Object> searchAfter,
-            final int size
-    ){
-        SearchHits<ConcertDocument> searchHits = concertSearchRepository.searchByTitleList(title, searchAfter, size + 1);
+            final int size) {
+        SearchHits<ConcertDocument> searchHits = concertSearchRepository.searchByTitleList(title, searchAfter,
+                size + 1);
         List<ConcertThumbnail> concertThumbnails = searchHits.getSearchHits().stream()
                 .map(SearchHit::getContent)
                 .map(ConcertThumbnail::from)
                 .limit(size)
                 .toList();
 
-        if(concertThumbnails.isEmpty()) {
-            throw new SearchResultNotFoundException();
+        if (concertThumbnails.isEmpty()) {
+            throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
         }
 
         boolean hasNext = searchHits.getSearchHits().size() > size;
-        List<Object> nextSearchAfter = hasNext ?
-                searchHits.getSearchHits().get(size -1).getSortValues() : null;
+        List<Object> nextSearchAfter = hasNext ? searchHits.getSearchHits().get(size - 1).getSortValues() : null;
         return ConcertSearchListResponse.from(concertThumbnails, nextSearchAfter);
     }
 
     public ConcertSearchListResponse searchAllConcertList(
             final String title,
             final List<Object> searchAfter,
-            final int size
-    ) {
-        SearchHits<ConcertDocument> searchHits = concertSearchRepository.searchByTitleListAll(title, searchAfter, size + 1);
+            final int size) {
+        SearchHits<ConcertDocument> searchHits = concertSearchRepository.searchByTitleListAll(title, searchAfter,
+                size + 1);
         List<ConcertThumbnail> concertThumbnails = searchHits.getSearchHits().stream()
                 .map(SearchHit::getContent)
                 .map(ConcertThumbnail::from)
                 .limit(size)
                 .toList();
 
-        if(concertThumbnails.isEmpty()) {
-            throw new SearchResultNotFoundException();
+        if (concertThumbnails.isEmpty()) {
+            throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
         }
         boolean hasNext = searchHits.getSearchHits().size() > size;
-        List<Object> nextSearchAfter = hasNext ?
-                searchHits.getSearchHits().get(size -1).getSortValues() : null;
+        List<Object> nextSearchAfter = hasNext ? searchHits.getSearchHits().get(size - 1).getSortValues() : null;
         return ConcertSearchListResponse.from(concertThumbnails, nextSearchAfter);
     }
 }

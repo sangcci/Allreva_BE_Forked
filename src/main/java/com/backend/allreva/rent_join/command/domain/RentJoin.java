@@ -5,7 +5,8 @@ import com.backend.allreva.rent_join.command.application.request.RentJoinUpdateR
 import com.backend.allreva.rent_join.command.domain.value.BoardingType;
 import com.backend.allreva.rent_join.command.domain.value.Depositor;
 import com.backend.allreva.rent_join.command.domain.value.RefundType;
-import com.backend.allreva.rent_join.exception.RentJoinAccessDeniedException;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.rent.exception.RentErrorCode;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLDelete;
@@ -53,7 +54,7 @@ public class RentJoin extends BaseEntity {
     private String refundAccount;
 
     @Column(nullable = false)
-    private LocalDate boardingDate; //이용날짜
+    private LocalDate boardingDate; // 이용날짜
 
     public void updateRentJoin(final RentJoinUpdateRequest request) {
         this.depositor = Depositor.builder()
@@ -70,7 +71,7 @@ public class RentJoin extends BaseEntity {
 
     public void validateMine(Long memberId) {
         if (!this.memberId.equals(memberId)) {
-            throw new RentJoinAccessDeniedException();
+            throw new CustomException(RentErrorCode.RENT_JOIN_ACCESS_DENIED);
         }
     }
 }

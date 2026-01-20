@@ -4,6 +4,13 @@ import static com.backend.allreva.rent.fixture.RentRegisterRequestFixture.create
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.backend.allreva.chatting.chat.group.command.application.GroupChatCommandService;
 import com.backend.allreva.chatting.chat.group.command.application.request.AddGroupChatRequest;
 import com.backend.allreva.chatting.chat.group.command.domain.GroupChat;
@@ -15,7 +22,7 @@ import com.backend.allreva.chatting.chat.integration.model.ChatParticipantReposi
 import com.backend.allreva.chatting.chat.integration.model.value.ChatSummary;
 import com.backend.allreva.chatting.chat.integration.model.value.ChatType;
 import com.backend.allreva.common.event.Events;
-import com.backend.allreva.common.exception.NotFoundException;
+import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.member.command.domain.AddedMemberEvent;
 import com.backend.allreva.member.command.domain.Member;
@@ -25,12 +32,6 @@ import com.backend.allreva.member.fixture.MemberFixture;
 import com.backend.allreva.rent.command.application.RentCommandFacade;
 import com.backend.allreva.rent.infra.rdb.RentJpaRepository;
 import com.backend.allreva.support.IntegrationTestSupport;
-import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 class GroupChatServiceTest extends IntegrationTestSupport {
 
@@ -53,7 +54,6 @@ class GroupChatServiceTest extends IntegrationTestSupport {
     @Autowired
     private RentJpaRepository rentRepository;
 
-
     private Member savedMember;
 
     @BeforeEach
@@ -75,7 +75,6 @@ class GroupChatServiceTest extends IntegrationTestSupport {
         groupChatRepository.deleteAll();
         rentRepository.deleteAll();
     }
-
 
     @DisplayName("회원은 자신이 속한 단체 채팅의 정보를 조회할 수 있다")
     @Test
@@ -107,11 +106,11 @@ class GroupChatServiceTest extends IntegrationTestSupport {
                 .add(request, new Image("dummy"), savedMember.getId());
         asyncAspect.await();
 
-        // When  // Then
+        // When // Then
         long savedMemberId = savedMember.getId() + 1;
         assertThatThrownBy(() -> groupChatQueryService
                 .findGroupChatInfo(savedMemberId, groupChatId))
-                .isInstanceOf(NotFoundException.class);
+                .isInstanceOf(CustomException.class);
     }
 
     @DisplayName("차대절 글을 생성하면 글 작성자가 방장인 단체 채팅방이 개설된다.")
@@ -127,8 +126,7 @@ class GroupChatServiceTest extends IntegrationTestSupport {
         asyncAspect.await();
 
         // Then
-        var participantDoc = participantRepository.findById(savedMember.getId())
-                .orElseThrow(NotFoundException::new);
+        var participantDoc = participantRepository.findById(savedMember.getId()).get();
         Assertions.assertThat(participantDoc.getChatSummaries())
                 .hasSize(1);
     }
@@ -147,7 +145,6 @@ class GroupChatServiceTest extends IntegrationTestSupport {
 
         groupChatRepository.save(groupChat);
 
-
         // When
         asyncAspect.init(2);
         groupChat.addHeadcount(savedMember.getId());
@@ -155,8 +152,7 @@ class GroupChatServiceTest extends IntegrationTestSupport {
 
         var participantDoc = participantRepository
                 .findChatParticipantDocByMemberId(savedMember.getId())
-                .orElseThrow(NotFoundException::new);
-
+                .get();
 
         // Then
         var chatSummary = ChatSummary.of(groupChat.getId(), ChatType.GROUP);
@@ -184,8 +180,5 @@ class GroupChatServiceTest extends IntegrationTestSupport {
         // Then
         Assertions.assertThat(result.getTitle())
                 .isEqualTo(groupChat.getTitle().getValue());
-
     }
-
-
 }

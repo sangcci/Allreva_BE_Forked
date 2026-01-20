@@ -10,16 +10,16 @@ import com.backend.allreva.chatting.chat.group.command.application.request.Updat
 import com.backend.allreva.chatting.chat.group.command.domain.GroupChat;
 import com.backend.allreva.chatting.chat.group.command.domain.GroupChatRepository;
 import com.backend.allreva.chatting.chat.group.command.domain.event.AddedGroupChatEvent;
-import com.backend.allreva.chatting.exception.GroupChatNotFoundException;
+import com.backend.allreva.chatting.exception.ChattingErrorCode;
 import com.backend.allreva.common.event.Events;
-import com.backend.allreva.common.exception.NotFoundException;
+import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.common.storage.upload.StorageUploadService;
 
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 public class GroupChatCommandService {
 
     private final GroupChatRepository groupChatRepository;
@@ -50,7 +50,7 @@ public class GroupChatCommandService {
             final UpdateGroupChatRequest request,
             final Long memberId) {
         GroupChat groupChat = groupChatRepository.findById(request.groupChatId())
-                .orElseThrow(GroupChatNotFoundException::new);
+                .orElseThrow(() -> new CustomException(ChattingErrorCode.CHAT_ROOM_NOT_FOUND));
 
         groupChat.validateManager(memberId);
         groupChat.updateInfo(
@@ -65,7 +65,8 @@ public class GroupChatCommandService {
             final String uuid,
             final Long memberId) {
         GroupChat groupChat = groupChatRepository.findByUuid(UUID.fromString(uuid))
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new CustomException(ChattingErrorCode.CHAT_ROOM_NOT_FOUND));
+
         groupChat.addHeadcount(memberId);
 
         return groupChat.getId();
@@ -76,14 +77,14 @@ public class GroupChatCommandService {
             final Long groupChatId,
             final Long memberId) {
         GroupChat groupChat = groupChatRepository.findById(groupChatId)
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new CustomException(ChattingErrorCode.CHAT_ROOM_NOT_FOUND));
         groupChat.subtractHeadcount(memberId);
     }
 
     @Transactional
     public void delete(final Long groupChatId, final Long memberId) {
         GroupChat groupChat = groupChatRepository.findById(groupChatId)
-                .orElseThrow(GroupChatNotFoundException::new);
+                .orElseThrow(() -> new CustomException(ChattingErrorCode.CHAT_ROOM_NOT_FOUND));
 
         storageUploadService.deleteImage(groupChat.getThumbnail().getUrl());
 

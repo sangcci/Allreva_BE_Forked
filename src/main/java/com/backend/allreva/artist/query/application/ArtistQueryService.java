@@ -1,19 +1,21 @@
 package com.backend.allreva.artist.query.application;
 
-import com.backend.allreva.artist.command.domain.ArtistRepository;
-import com.backend.allreva.artist.command.domain.Artist;
-import com.backend.allreva.artist.exception.ArtistNotFoundException;
-import com.backend.allreva.artist.exception.ArtistSearchNoContentException;
-import com.backend.allreva.artist.query.application.response.SpotifyArtistWrapper;
-import com.backend.allreva.artist.query.application.response.SpotifySearchResponse;
-import com.backend.allreva.common.feign.SpotifyAccountClient;
-import com.backend.allreva.common.feign.SpotifyClient;
-import lombok.RequiredArgsConstructor;
+import java.util.Base64;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
-import java.util.List;
+import com.backend.allreva.artist.command.domain.Artist;
+import com.backend.allreva.artist.command.domain.ArtistRepository;
+import com.backend.allreva.artist.exception.ArtistErrorCode;
+import com.backend.allreva.artist.query.application.response.SpotifyArtistWrapper;
+import com.backend.allreva.artist.query.application.response.SpotifySearchResponse;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.common.feign.SpotifyAccountClient;
+import com.backend.allreva.common.feign.SpotifyClient;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -36,13 +38,16 @@ public class ArtistQueryService {
 
         List<SpotifySearchResponse> artists = response.artists().items();
 
-        if(artists.isEmpty()) throw new ArtistSearchNoContentException();
+        if (artists.isEmpty()) {
+            throw new CustomException(ArtistErrorCode.ARTIST_SEARCH_NO_CONTENT);
+        }
 
         return artists;
     }
 
     public Artist getArtistById(String id) {
-        return artistRepository.findById(id).orElseThrow(ArtistNotFoundException::new);
+        return artistRepository.findById(id)
+                .orElseThrow(() -> new CustomException(ArtistErrorCode.ARTIST_NOT_FOUND));
     }
 
     private String getAccessToken() {
@@ -51,8 +56,7 @@ public class ArtistQueryService {
                 .encodeToString(credentials.getBytes());
 
         return spotifyAccountClient.getAccessToken(
-                "Basic " + encodedCredentials,
-                "client_credentials"
-        ).access_token();
+                "Basic " + encodedCredentials, "client_credentials")
+                .access_token();
     }
 }

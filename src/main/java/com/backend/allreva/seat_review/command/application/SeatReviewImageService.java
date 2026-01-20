@@ -8,8 +8,9 @@ import org.springframework.stereotype.Service;
 
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.common.storage.upload.StorageUploadService;
+import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.seat_review.command.domain.SeatReviewImage;
-import com.backend.allreva.seat_review.exception.SeatReviewImageDeleteException;
+import com.backend.allreva.seat_review.exception.SeatReviewErrorCode;
 import com.backend.allreva.seat_review.infra.SeatReviewImageRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -53,7 +54,7 @@ public class SeatReviewImageService {
         try {
             storageUploadService.deleteImages(imageUrls);
         } catch (Exception e) {
-            throw new SeatReviewImageDeleteException();
+            throw new CustomException(SeatReviewErrorCode.SEAT_REVIEW_IMAGE_DELETE_FAILED);
         }
 
         seatReviewImageRepository.deleteAll(images);

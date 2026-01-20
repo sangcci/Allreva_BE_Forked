@@ -1,18 +1,21 @@
 package com.backend.allreva.survey.query.application;
 
-import com.backend.allreva.concert.exception.search.ElasticSearchException;
-import com.backend.allreva.survey.exception.SearchResultNotFoundException;
-import com.backend.allreva.survey.infra.elasticsearch.SurveyDocument;
-import com.backend.allreva.survey.infra.elasticsearch.SurveyDocumentRepository;
-import com.backend.allreva.survey.query.application.response.SurveySearchListResponse;
-import com.backend.allreva.survey.query.application.response.SurveyThumbnail;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.backend.allreva.common.exception.CustomException;
+
+import com.backend.allreva.concert.exception.search.SearchErrorCode;
+import com.backend.allreva.survey.infra.elasticsearch.SurveyDocument;
+import com.backend.allreva.survey.infra.elasticsearch.SurveyDocumentRepository;
+import com.backend.allreva.survey.query.application.response.SurveySearchListResponse;
+import com.backend.allreva.survey.query.application.response.SurveyThumbnail;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -22,25 +25,23 @@ public class SurveySearchService {
     public List<SurveyThumbnail> searchSurveyThumbnails(final String title) {
         try {
             List<SurveyDocument> content = surveyDocumentRepository.findByTitleMixed(
-                    title, PageRequest.of(0, 2)
-            ).getContent();
+                    title, PageRequest.of(0, 2)).getContent();
 
             if (content.isEmpty()) {
-                throw new SearchResultNotFoundException();
+                throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
             }
             return content.stream()
                     .map(SurveyThumbnail::from)
                     .toList();
-        } catch (ElasticSearchException e) {
-            throw new ElasticSearchException();
+        } catch (Exception e) {
+            throw new CustomException(SearchErrorCode.ELASTICSEARCH_ERROR);
         }
     }
 
     public SurveySearchListResponse searchSurveyList(
             final String title,
             final List<Object> searchAfter,
-            final int size
-    ){
+            final int size) {
         SearchHits<SurveyDocument> searchHits = surveyDocumentRepository
                 .searchByTitleList(title, searchAfter, size + 1);
 
@@ -51,12 +52,11 @@ public class SurveySearchService {
                 .toList();
 
         if (surveyThumbnails.isEmpty()) {
-            throw new SearchResultNotFoundException();
+            throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
         }
 
         boolean hasNext = searchHits.getSearchHits().size() > size;
-        List<Object> nextSearchAfter = hasNext ?
-                searchHits.getSearchHits().get(size - 1).getSortValues() : null;
+        List<Object> nextSearchAfter = hasNext ? searchHits.getSearchHits().get(size - 1).getSortValues() : null;
 
         return SurveySearchListResponse.from(surveyThumbnails, nextSearchAfter);
     }

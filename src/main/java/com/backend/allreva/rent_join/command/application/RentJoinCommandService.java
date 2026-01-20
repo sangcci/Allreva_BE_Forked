@@ -2,14 +2,14 @@ package com.backend.allreva.rent_join.command.application;
 
 import com.backend.allreva.rent.command.domain.RentBoardingInfo;
 import com.backend.allreva.rent.command.domain.RentRepository;
-import com.backend.allreva.rent.exception.RentNotFoundException;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.rent.exception.RentErrorCode;
 import com.backend.allreva.rent_join.command.application.request.RentJoinApplyRequest;
 import com.backend.allreva.rent_join.command.application.request.RentJoinIdRequest;
 import com.backend.allreva.rent_join.command.application.request.RentJoinUpdateRequest;
 import com.backend.allreva.rent_join.command.domain.RentJoin;
 import com.backend.allreva.rent_join.command.domain.RentJoinRepository;
-import com.backend.allreva.rent_join.exception.RentJoinAlreadyExistsException;
-import com.backend.allreva.rent_join.exception.RentJoinNotFoundException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,14 +26,14 @@ public class RentJoinCommandService {
 
     public Long applyRent(
             final RentJoinApplyRequest request,
-            final Long memberId
-    ) {
+            final Long memberId) {
         if (rentJoinRepository.exists(memberId, request.rentId(), request.boardingDate())) {
-            throw new RentJoinAlreadyExistsException();
+            throw new CustomException(RentErrorCode.RENT_JOIN_ALREADY_EXISTS);
         }
 
-        RentBoardingInfo rentBoardingInfo = rentRepository.findByIdAndBoardingDate(request.rentId(), request.boardingDate())
-                .orElseThrow(RentNotFoundException::new);
+        RentBoardingInfo rentBoardingInfo = rentRepository
+                .findByIdAndBoardingDate(request.rentId(), request.boardingDate())
+                .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
         rentBoardingInfo.addPassengerCount(request.passengerNum());
 
         RentJoin rentJoin = request.toEntity(memberId);
@@ -43,10 +43,9 @@ public class RentJoinCommandService {
 
     public void updateRentJoin(
             final RentJoinUpdateRequest request,
-            final Long memberId
-    ) {
+            final Long memberId) {
         RentJoin rentJoin = rentJoinRepository.findById(request.rentJoinId())
-                .orElseThrow(RentJoinNotFoundException::new);
+                .orElseThrow(() -> new CustomException(RentErrorCode.RENT_JOIN_NOT_FOUND));
 
         rentJoin.validateMine(memberId);
 
@@ -55,10 +54,9 @@ public class RentJoinCommandService {
 
     public void deleteRentJoin(
             final RentJoinIdRequest request,
-            final Long memberId
-    ) {
+            final Long memberId) {
         RentJoin rentJoin = rentJoinRepository.findById(request.rentJoinId())
-                .orElseThrow(RentJoinNotFoundException::new);
+                .orElseThrow(() -> new CustomException(RentErrorCode.RENT_JOIN_NOT_FOUND));
 
         rentJoin.validateMine(memberId);
 

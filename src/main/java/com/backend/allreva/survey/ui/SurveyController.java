@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.allreva.auth.security.AuthMember;
+import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.member.command.domain.Member;
 import com.backend.allreva.survey.command.application.SurveyCommandService;
@@ -22,7 +23,7 @@ import com.backend.allreva.survey.command.application.request.OpenSurveyRequest;
 import com.backend.allreva.survey.command.application.request.SurveyIdRequest;
 import com.backend.allreva.survey.command.application.request.UpdateSurveyRequest;
 import com.backend.allreva.survey.command.domain.value.Region;
-import com.backend.allreva.survey.exception.SurveyIllegalParameterException;
+import com.backend.allreva.survey.exception.SurveyErrorCode;
 import com.backend.allreva.survey.query.application.SurveyQueryService;
 import com.backend.allreva.survey.query.application.response.SortType;
 import com.backend.allreva.survey.query.application.response.SurveyDetailResponse;
@@ -90,7 +91,7 @@ public class SurveyController {
             @RequestParam(name = "lastEndDate", required = false) final LocalDate lastEndDate,
             @Min(10) @RequestParam(name = "pageSize", defaultValue = "10") final int pageSize) {
         if (lastEndDate != null && lastId == null) {
-            throw new SurveyIllegalParameterException();
+            throw new CustomException(SurveyErrorCode.SURVEY_ILLEGAL_PARAMETER);
         }
 
         List<SurveySummaryResponse> responses = surveyQueryService

@@ -11,7 +11,8 @@ import com.backend.allreva.diary.command.application.request.AddDiaryRequest;
 import com.backend.allreva.diary.command.application.request.UpdateDiaryRequest;
 import com.backend.allreva.diary.command.domain.ConcertDiary;
 import com.backend.allreva.diary.command.domain.DiaryRepository;
-import com.backend.allreva.diary.exception.DiaryNotFoundException;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.diary.exception.DiaryErrorCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,7 +38,7 @@ public class DiaryCommandService {
             final UpdateDiaryRequest request,
             final Long memberId) {
         ConcertDiary diary = diaryRepository.findById(request.diaryId())
-                .orElseThrow(DiaryNotFoundException::new);
+                .orElseThrow(() -> new CustomException(DiaryErrorCode.DIARY_NOT_FOUND));
 
         diary.validateWriter(memberId);
         diary.update(
@@ -51,7 +52,7 @@ public class DiaryCommandService {
 
     public void delete(final Long diaryId, final Long memberId) {
         ConcertDiary diary = diaryRepository.findById(diaryId)
-                .orElseThrow(DiaryNotFoundException::new);
+                .orElseThrow(() -> new CustomException(DiaryErrorCode.DIARY_NOT_FOUND));
         diary.validateWriter(memberId);
 
         List<String> diaryImages = diary.getDiaryImages().stream().map(Image::getUrl).toList();

@@ -1,13 +1,16 @@
 package com.backend.allreva.concert.infra;
 
-import com.backend.allreva.common.exception.NotFoundException;
-import com.backend.allreva.concert.command.domain.ViewAddedEvent;
-import com.backend.allreva.concert.infra.elasticsearch.ConcertDocument;
-import com.backend.allreva.concert.infra.elasticsearch.ConcertSearchRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.concert.command.domain.ViewAddedEvent;
+import com.backend.allreva.concert.exception.ConcertErrorCode;
+import com.backend.allreva.concert.infra.elasticsearch.ConcertDocument;
+import com.backend.allreva.concert.infra.elasticsearch.ConcertSearchRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Service
@@ -19,7 +22,7 @@ public class ConcertEventHandler {
     @EventListener
     public void onMessage(final ViewAddedEvent event) {
         ConcertDocument concertDocument = concertSearchRepository.findByConcertCode(event.getConcertCode())
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new CustomException(ConcertErrorCode.CONCERT_NOT_FOUND));
 
         concertDocument.updateViewCount(event.getViewCount());
     }

@@ -1,6 +1,8 @@
-package com.backend.allreva.common.exception;
+package com.backend.allreva.common.web.exception;
 
-import com.backend.allreva.common.exception.code.GlobalErrorCode;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.common.exception.ErrorCode;
+import com.backend.allreva.common.exception.GlobalErrorCode;
 import com.backend.allreva.common.web.response.Response;
 
 import lombok.extern.slf4j.Slf4j;
@@ -16,17 +18,15 @@ public class CustomControllerAdvice {
 
     @ExceptionHandler(value = CustomException.class)
     public ResponseEntity<?> handleCustomException(CustomException e) {
-        log.error("{}", e.getErrorMsg());
-        return ResponseEntity.status(e.getErrorCode().status())
-                .body(
-                        Response.onFailure(
-                                e.getErrorCode().code(),
-                                e.getErrorCode().message()));
+        ErrorCode errorCode = e.getErrorCode();
+
+        return ResponseEntity.status(errorCode.getStatus())
+                .body(Response.onFailure(errorCode.getCode(), errorCode.getMessage()));
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.error("error: {}", e.getMessage(), e);
+        log.info("user validation error: {}", e.getMessage(), e);
         StringBuilder errorMessage = new StringBuilder();
 
         for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
@@ -36,20 +36,15 @@ public class CustomControllerAdvice {
                     .append("\n");
         }
 
-        return ResponseEntity.status(GlobalErrorCode.BAD_REQUEST_ERROR.getErrorCode().status())
-                .body(
-                        Response.onFailure(
-                                GlobalErrorCode.BAD_REQUEST_ERROR.getErrorCode().code(),
-                                errorMessage.toString()));
+        return ResponseEntity.status(GlobalErrorCode.BAD_REQUEST_ERROR.getStatus())
+                .body(Response.onFailure(GlobalErrorCode.BAD_REQUEST_ERROR.getCode(), errorMessage.toString()));
     }
 
     @ExceptionHandler(value = Exception.class)
     public ResponseEntity<?> handleException(Exception e) {
-        log.error("error: {}", e.getMessage(), e);
-        return ResponseEntity.status(GlobalErrorCode.SERVER_ERROR.getErrorCode().status())
-                .body(
-                        Response.onFailure(
-                                GlobalErrorCode.SERVER_ERROR.getErrorCode().code(),
-                                GlobalErrorCode.SERVER_ERROR.getErrorCode().message()));
+        log.error("unexpected error: {}", e.getMessage(), e);
+        return ResponseEntity.status(GlobalErrorCode.SERVER_ERROR.getStatus())
+                .body(Response.onFailure(GlobalErrorCode.SERVER_ERROR.getCode(),
+                        GlobalErrorCode.SERVER_ERROR.getMessage()));
     }
 }

@@ -1,12 +1,12 @@
 package com.backend.allreva.rent.infra.elasticsearch;
 
-import co.elastic.clients.elasticsearch._types.ElasticsearchException;
 import co.elastic.clients.elasticsearch._types.SortOptions;
 import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.json.JsonData;
-import com.backend.allreva.concert.exception.search.ElasticSearchException;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.concert.exception.search.SearchErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -25,28 +25,26 @@ public class CustomRentDocumentRepoImpl implements CustomRentDocumentRepo {
     public SearchHits<RentDocument> searchByTitleList(
             final String query,
             final List<Object> searchAfter,
-            final int size
-    ){
+            final int size) {
         try {
             NativeQuery nativeQuery = getNativeQuery(query, searchAfter, size);
             return elasticsearchOperations.search(nativeQuery, RentDocument.class);
-        }catch (ElasticsearchException e){
-            throw new ElasticSearchException();
+        } catch (Exception e) {
+            throw new CustomException(SearchErrorCode.ELASTICSEARCH_ERROR);
         }
     }
 
     private NativeQuery getNativeQuery(
             final String searchTerm,
             final List<Object> searchAfter,
-            final int size
-    ) {
+            final int size) {
         NativeQueryBuilder nativeQueryBuilder = NativeQuery.builder()
                 .withQuery(buildSearchQuery(searchTerm))
                 .withSort(buildPrimarySort())
                 .withSort(buildSecondarySort())
                 .withPageable(PageRequest.of(0, size));
 
-        if(searchAfter != null && !searchAfter.isEmpty()){
+        if (searchAfter != null && !searchAfter.isEmpty()) {
             nativeQueryBuilder.withSearchAfter(searchAfter);
         }
         return nativeQueryBuilder.build();
@@ -60,9 +58,7 @@ public class CustomRentDocumentRepoImpl implements CustomRentDocumentRepo {
                 .range(r -> r
                         .field("eddate")
                         .gte(JsonData.of("now/d"))
-                        .format("strict_date_optional_time")
-                )
-        );
+                        .format("strict_date_optional_time")));
 
         // 검색어 처리
         if (StringUtils.hasText(searchTerm)) {
@@ -70,13 +66,10 @@ public class CustomRentDocumentRepoImpl implements CustomRentDocumentRepo {
                     .match(mt -> mt
                             .field("title.mixed")
                             .query(searchTerm)
-                            .fuzziness("AUTO")
-                    )
-            );
+                            .fuzziness("AUTO")));
         } else {
             boolQuery.must(m -> m
-                    .matchAll(ma -> ma)
-            );
+                    .matchAll(ma -> ma));
         }
 
         return Query.of(q -> q.bool(boolQuery.build()));
@@ -85,17 +78,13 @@ public class CustomRentDocumentRepoImpl implements CustomRentDocumentRepo {
     private SortOptions buildPrimarySort() {
         return SortOptions.of(s -> s
                 .score(f -> f
-                        .order(SortOrder.Desc)
-                )
-        );
+                        .order(SortOrder.Desc)));
     }
 
     private SortOptions buildSecondarySort() {
         return SortOptions.of(s -> s
                 .field(f -> f
                         .field("id")
-                        .order(SortOrder.Asc)
-                )
-        );
+                        .order(SortOrder.Asc)));
     }
 }

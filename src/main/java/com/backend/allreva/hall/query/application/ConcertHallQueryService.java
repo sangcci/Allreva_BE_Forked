@@ -2,8 +2,8 @@ package com.backend.allreva.hall.query.application;
 
 import com.backend.allreva.concert.infra.rdb.ConcertJpaRepository;
 import com.backend.allreva.hall.command.domain.ConcertHallRepository;
-import com.backend.allreva.hall.exception.ConcertHallNotFoundException;
-import com.backend.allreva.hall.exception.RelatedConcertException;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.hall.exception.ConcertHallErrorCode;
 import com.backend.allreva.hall.infra.elasticcsearch.ConcertHallSearchRepository;
 import com.backend.allreva.hall.query.application.response.ConcertHallDetailResponse;
 import com.backend.allreva.hall.query.application.response.ConcertHallMainResponse;
@@ -32,24 +32,17 @@ public class ConcertHallQueryService {
         return concertHallRepository.findDetailByHallCode(hallCode);
     }
 
-    @Cacheable(
-            cacheNames = "concertHallMain",
-            key = "#address + '_' + #seatScale + '_' + #size + '_' + (#searchAfter != null ? #searchAfter.toString() : 'null')",
-            unless = "#result == null",
-            cacheManager = "concertHallMainCacheManager"
-    )
+    @Cacheable(cacheNames = "concertHallMain", key = "#address + '_' + #seatScale + '_' + #size + '_' + (#searchAfter != null ? #searchAfter.toString() : 'null')", unless = "#result == null", cacheManager = "concertHallMainCacheManager")
     public ConcertHallMainResponse getConcertHallMain(
             final String address,
             final int seatScale,
             final List<Object> searchAfter,
-            final int size
-    ) {
+            final int size) {
         SearchHits<ConcertHallDocument> searchHits = concertHallSearchRepository.searchMainConcertHall(
                 address,
                 seatScale,
                 searchAfter,
-                size + 1
-        );
+                size + 1);
         log.info("searchHits count : {}", searchHits.getTotalHits());
         List<ConcertHallThumbnail> concertHall = searchHits.getSearchHits().stream()
                 .map(SearchHit::getContent)
@@ -57,29 +50,22 @@ public class ConcertHallQueryService {
                 .limit(size)
                 .toList();
 
-        if(concertHall.isEmpty()) {
-            throw new ConcertHallNotFoundException();
+        if (concertHall.isEmpty()) {
+            throw new CustomException(ConcertHallErrorCode.CONCERT_HALL_SEARCH_NOTFOUND);
         }
 
         boolean hasNext = searchHits.getSearchHits().size() > size;
-        List<Object> nextSearchAfter = hasNext ?
-                searchHits.getSearchHits().get(size -1).getSortValues() : null;
+        List<Object> nextSearchAfter = hasNext ? searchHits.getSearchHits().get(size - 1).getSortValues() : null;
         return ConcertHallMainResponse.from(concertHall, nextSearchAfter);
     }
 
-    @Cacheable(
-            cacheNames = "relatedConcert",
-            key = "#hallCode + '_' + #lastId + '_' + #pageSize",
-            unless = "#result == null",
-            cacheManager = "relatedConcertCacheManager"
-    )
+    @Cacheable(cacheNames = "relatedConcert", key = "#hallCode + '_' + #lastId + '_' + #pageSize", unless = "#result == null", cacheManager = "relatedConcertCacheManager")
     public List<RelatedConcertResponse> getRelatedConcert(
-            final String hallCode, final Long lastId, final Long lastViewCount, final int pageSize
-    ) {
-        try{
-            return concertJpaRepository.findRelatedConcertsByHall(hallCode, lastId,lastViewCount, pageSize);
-        }catch (Exception e){
-            throw new RelatedConcertException();
+            final String hallCode, final Long lastId, final Long lastViewCount, final int pageSize) {
+        try {
+            return concertJpaRepository.findRelatedConcertsByHall(hallCode, lastId, lastViewCount, pageSize);
+        } catch (Exception e) {
+            throw new CustomException(ConcertHallErrorCode.RELATED_CONCERT_EXCEPTION);
         }
 
     }

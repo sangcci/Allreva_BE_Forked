@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class SurveyConverter {
     public Survey toSurvey(final Long memberId,
-                           final OpenSurveyRequest request) {
+            final OpenSurveyRequest request) {
         return Survey.builder()
                 .memberId(memberId)
                 .concertId(request.concertId())
@@ -19,5 +19,4 @@ public class SurveyConverter {
                 .maxPassenger(request.maxPassenger())
                 .build();
     }
-
 }

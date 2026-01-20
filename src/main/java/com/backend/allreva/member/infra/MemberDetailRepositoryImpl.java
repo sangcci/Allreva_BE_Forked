@@ -1,7 +1,8 @@
 package com.backend.allreva.member.infra;
 
 import com.backend.allreva.chatting.chat.single.command.domain.value.OtherMember;
-import com.backend.allreva.member.exception.MemberNotFoundException;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.member.exception.MemberErrorCode;
 import com.backend.allreva.member.query.application.MemberDetailRepository;
 import com.backend.allreva.member.query.application.response.MemberDetailResponse;
 import com.querydsl.core.types.ConstructorExpression;
@@ -39,10 +40,8 @@ public class MemberDetailRepositoryImpl implements MemberDetailRepository {
                 member.memberInfo.profileImageUrl,
                 Projections.list(Projections.constructor(MemberArtistDetail.class,
                         memberArtist.artistId,
-                        artist.name
-                )),
-                member.refundAccount
-        );
+                        artist.name)),
+                member.refundAccount);
     }
 
     @Override
@@ -51,14 +50,13 @@ public class MemberDetailRepositoryImpl implements MemberDetailRepository {
                 .select(Projections.constructor(OtherMember.class,
                         member.id,
                         member.memberInfo.nickname,
-                        member.memberInfo.profileImageUrl
-                ))
+                        member.memberInfo.profileImageUrl))
                 .from(member)
                 .where(member.id.eq(memberId))
                 .fetchFirst();
 
         if (otherMember == null) {
-            throw new MemberNotFoundException();
+            throw new CustomException(MemberErrorCode.MEMBER_NOT_FOUND);
         }
         return otherMember;
     }

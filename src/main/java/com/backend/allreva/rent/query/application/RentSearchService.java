@@ -1,19 +1,21 @@
 package com.backend.allreva.rent.query.application;
 
+import java.util.List;
 
-import com.backend.allreva.concert.exception.search.ElasticSearchException;
-import com.backend.allreva.rent.infra.elasticsearch.RentDocument;
-import com.backend.allreva.rent.infra.elasticsearch.RentDocumentRepository;
-import com.backend.allreva.rent.query.application.response.RentSearchListResponse;
-import com.backend.allreva.rent.query.application.response.RentThumbnail;
-import com.backend.allreva.survey.exception.SearchResultNotFoundException;
-import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.backend.allreva.common.exception.CustomException;
+
+import com.backend.allreva.concert.exception.search.SearchErrorCode;
+import com.backend.allreva.rent.infra.elasticsearch.RentDocument;
+import com.backend.allreva.rent.infra.elasticsearch.RentDocumentRepository;
+import com.backend.allreva.rent.query.application.response.RentSearchListResponse;
+import com.backend.allreva.rent.query.application.response.RentThumbnail;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -23,25 +25,23 @@ public class RentSearchService {
     public List<RentThumbnail> searchRentThumbnails(String title) {
         try {
             List<RentDocument> content = rentDocumentRepository.findByTitleMixed(
-                    title, PageRequest.of(0, 2)
-            ).getContent();
+                    title, PageRequest.of(0, 2)).getContent();
 
             if (content.isEmpty()) {
-                throw new SearchResultNotFoundException();
+                throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
             }
             return content.stream()
                     .map(RentThumbnail::from)
                     .toList();
-        } catch (ElasticSearchException e) {
-            throw new ElasticSearchException();
+        } catch (Exception e) {
+            throw new CustomException(SearchErrorCode.ELASTICSEARCH_ERROR);
         }
     }
 
     public RentSearchListResponse searchRentSearchList(
             final String title,
             final List<Object> searchAfter,
-            final int size
-    ){
+            final int size) {
         SearchHits<RentDocument> searchHits = rentDocumentRepository
                 .searchByTitleList(title, searchAfter, size + 1);
 
@@ -52,12 +52,11 @@ public class RentSearchService {
                 .toList();
 
         if (rentThumbnails.isEmpty()) {
-            throw new SearchResultNotFoundException();
+            throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
         }
 
         boolean hasNext = searchHits.getSearchHits().size() > size;
-        List<Object> nextSearchAfter = hasNext ?
-                searchHits.getSearchHits().get(size - 1).getSortValues() : null;
+        List<Object> nextSearchAfter = hasNext ? searchHits.getSearchHits().get(size - 1).getSortValues() : null;
 
         return RentSearchListResponse.from(rentThumbnails, nextSearchAfter);
     }

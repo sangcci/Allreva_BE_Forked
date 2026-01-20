@@ -1,13 +1,16 @@
 package com.backend.allreva.auth.oauth2;
 
-import com.backend.allreva.auth.application.OAuth2LoginService;
-import com.backend.allreva.auth.application.dto.UserInfo;
-import com.backend.allreva.auth.exception.code.InvalidRedirectUrlException;
-import com.backend.allreva.member.command.domain.value.LoginProvider;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import com.backend.allreva.auth.application.OAuth2LoginService;
+import com.backend.allreva.auth.application.dto.UserInfo;
+import com.backend.allreva.auth.exception.code.OAuth2ErrorCode;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.member.command.domain.value.LoginProvider;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -30,14 +33,14 @@ public class KakaoOAuth2LoginService implements OAuth2LoginService {
 
     /**
      * 카카오 로그인 시 사용자 정보를 가져옵니다.
+     *
      * @param authorizationCode 인가 코드
      * @return 사용자 정보
      */
     @Override
     public UserInfo getUserInfo(
             final String authorizationCode,
-            final String domainName
-    ) {
+            final String domainName) {
         log.info("domainName: {}", domainName);
         String redirectUri = getRedirectUri(domainName); // localhost or prod
         KakaoToken token = kakaoAuthClient.getToken(
@@ -45,12 +48,10 @@ public class KakaoOAuth2LoginService implements OAuth2LoginService {
                 redirectUri,
                 authorizationCode,
                 "authorization_code",
-                kakaoClientSecret
-        );
+                kakaoClientSecret);
 
         KakaoUserInfo kakaoUserInfo = kakaoUserInfoClient.getUserInfo(
-                "Bearer " + token.accessToken()
-        );
+                "Bearer " + token.accessToken());
 
         return UserInfo.builder()
                 .loginProvider(LoginProvider.KAKAO)
@@ -68,6 +69,6 @@ public class KakaoOAuth2LoginService implements OAuth2LoginService {
         if (domainName.contains(prodDomainName)) { // sub domain의 경우에도 통과할 수 있도록
             return kakaoRedirectUri;
         }
-        throw new InvalidRedirectUrlException();
+        throw new CustomException(OAuth2ErrorCode.INVALID_REDIRECT_URI);
     }
 }

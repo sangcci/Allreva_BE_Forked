@@ -2,7 +2,8 @@ package com.backend.allreva.diary.command.domain;
 
 import com.backend.allreva.common.model.BaseEntity;
 import com.backend.allreva.common.model.Image;
-import com.backend.allreva.diary.exception.DiaryNotWriterException;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.diary.exception.DiaryErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -36,21 +37,17 @@ public class ConcertDiary extends BaseEntity {
     private Long concertId;
 
     @Column(nullable = false)
-    private String episode; //회차
+    private String episode; // 회차
 
     @Column(nullable = false)
-    private LocalDate diaryDate; //날짜
+    private LocalDate diaryDate; // 날짜
 
     private String content;
     private String seatName;
 
     @ElementCollection
-    @CollectionTable(
-            name = "diary_image",
-            joinColumns = @JoinColumn(name = "id")
-    )
+    @CollectionTable(name = "diary_image", joinColumns = @JoinColumn(name = "id"))
     private List<Image> diaryImages = new ArrayList<>();
-
 
     @Builder
     private ConcertDiary(
@@ -59,8 +56,7 @@ public class ConcertDiary extends BaseEntity {
             final LocalDate diaryDate,
             final String episode,
             final String content,
-            final String seatName
-    ) {
+            final String seatName) {
         this.memberId = memberId;
         this.concertId = concertId;
         this.diaryDate = diaryDate;
@@ -79,7 +75,7 @@ public class ConcertDiary extends BaseEntity {
 
     public void validateWriter(final Long memberId) {
         if (!this.memberId.equals(memberId)) {
-            throw new DiaryNotWriterException();
+            throw new CustomException(DiaryErrorCode.DIARY_NOT_WRITER);
         }
     }
 
@@ -89,8 +85,7 @@ public class ConcertDiary extends BaseEntity {
             final String episode,
             final String content,
             final String seatName,
-            final List<Image> diaryImages
-    ) {
+            final List<Image> diaryImages) {
         this.concertId = concertId;
         this.diaryDate = diaryDate;
         this.episode = episode;

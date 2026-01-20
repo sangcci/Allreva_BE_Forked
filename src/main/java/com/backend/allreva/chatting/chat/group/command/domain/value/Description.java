@@ -1,6 +1,5 @@
 package com.backend.allreva.chatting.chat.group.command.domain.value;
 
-import com.backend.allreva.chatting.exception.TooLongDescriptionException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -18,9 +17,6 @@ public class Description {
     private String value;
 
     public Description(String value) {
-        if (value.length() > 50) {
-            throw new TooLongDescriptionException();
-        }
         this.value = value;
     }
 }

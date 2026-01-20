@@ -5,7 +5,8 @@ import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.json.JsonData;
-import com.backend.allreva.concert.exception.search.ElasticSearchException;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.concert.exception.search.SearchErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -27,11 +28,12 @@ public class CustomConcertSearchRepoImpl implements CustomConcertSearchRepo {
             final int size,
             final SortDirection sortDirection) {
         try {
-            NativeQuery searchQuery = getNativeQuery(SearchField.ADDRESS, address, searchAfter, size, sortDirection, false);
-            //System.out.println("searchQuery.getQuery() = " + searchQuery.getQuery());
+            NativeQuery searchQuery = getNativeQuery(SearchField.ADDRESS, address, searchAfter, size, sortDirection,
+                    false);
+            // System.out.println("searchQuery.getQuery() = " + searchQuery.getQuery());
             return elasticsearchOperations.search(searchQuery, ConcertDocument.class);
-        }catch (ElasticSearchException e){
-            throw new ElasticSearchException();
+        } catch (Exception e) {
+            throw new CustomException(SearchErrorCode.ELASTICSEARCH_ERROR);
         }
     }
 
@@ -56,12 +58,13 @@ public class CustomConcertSearchRepoImpl implements CustomConcertSearchRepo {
             final List<Object> searchAfter,
             final int size,
             final boolean filterByDate) {
-        try{
-            NativeQuery searchQuery = getNativeQuery(SearchField.TITLE, query, searchAfter, size, SortDirection.SCORE, filterByDate);
-            //System.out.println("searchQuery.getQuery() = " + searchQuery.getQuery());
+        try {
+            NativeQuery searchQuery = getNativeQuery(SearchField.TITLE, query, searchAfter, size, SortDirection.SCORE,
+                    filterByDate);
+            // System.out.println("searchQuery.getQuery() = " + searchQuery.getQuery());
             return elasticsearchOperations.search(searchQuery, ConcertDocument.class);
-        }catch (ElasticSearchException e){
-            throw new ElasticSearchException();
+        } catch (Exception e) {
+            throw new CustomException(SearchErrorCode.ELASTICSEARCH_ERROR);
         }
     }
 
@@ -79,7 +82,7 @@ public class CustomConcertSearchRepoImpl implements CustomConcertSearchRepo {
                 .withSort(buildSecondarySort())
                 .withPageable(PageRequest.of(0, size));
 
-        if(searchAfter != null && !searchAfter.isEmpty()){
+        if (searchAfter != null && !searchAfter.isEmpty()) {
             nativeQueryBuilder.withSearchAfter(searchAfter);
         }
         return nativeQueryBuilder.build();
@@ -97,20 +100,15 @@ public class CustomConcertSearchRepoImpl implements CustomConcertSearchRepo {
                                     .match(mt -> mt
                                             .field(searchField.getFieldName())
                                             .query(searchTerm)
-                                            .fuzziness("AUTO")
-                                    )
-                            );
+                                            .fuzziness("AUTO")));
                     if (filterByDate) {
                         builder.filter(f -> f
                                 .range(r -> r
                                         .field("eddate")
-                                        .gte(JsonData.of("now"))
-                                )
-                        );
+                                        .gte(JsonData.of("now"))));
                     }
                     return builder;
-                })
-        );
+                }));
     }
 
     private Query buildDateFilterQuery() {
@@ -120,32 +118,21 @@ public class CustomConcertSearchRepoImpl implements CustomConcertSearchRepo {
                                 .range(r -> r
                                         .field("eddate")
                                         .gte(JsonData.of("now/d"))
-                                        .format("strict_date_optional_time")
-                                )
-                        )
-                )
-        );
+                                        .format("strict_date_optional_time")))));
     }
-
-
-
 
     private SortOptions buildPrimarySort(final SortDirection sortDirection) {
         return SortOptions.of(s -> s
                 .field(f -> f
                         .field(getSortField(sortDirection))
-                        .order(SortOrder.Desc)
-                )
-        );
+                        .order(SortOrder.Desc)));
     }
 
     private SortOptions buildSecondarySort() {
         return SortOptions.of(s -> s
                 .field(f -> f
                         .field("id")
-                        .order(SortOrder.Asc)
-                )
-        );
+                        .order(SortOrder.Asc)));
     }
 
     private String getSortField(final SortDirection sortDirection) {

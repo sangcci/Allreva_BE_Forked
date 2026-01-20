@@ -3,8 +3,8 @@ package com.backend.allreva.seat_review.command.application;
 import com.backend.allreva.member.command.domain.Member;
 import com.backend.allreva.seat_review.command.application.dto.SeatReviewLikeRequest;
 import com.backend.allreva.seat_review.command.domain.SeatReviewLike;
-import com.backend.allreva.seat_review.exception.DuplicateLikeException;
-import com.backend.allreva.seat_review.exception.NotLikeMemberException;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.seat_review.exception.SeatReviewErrorCode;
 import com.backend.allreva.seat_review.infra.SeatReviewLikeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,7 +20,7 @@ public class SeatReviewLikeService {
             final SeatReviewLikeRequest request,
             final Member member) {
         if (checkMemberLike(request.seatReviewId(), member.getId())) {
-            throw new DuplicateLikeException();
+            throw new CustomException(SeatReviewErrorCode.DUPLICATE_LIKE);
         }
 
         SeatReviewLike seatReviewLike = seatReviewLikeRepository.save(
@@ -38,7 +38,7 @@ public class SeatReviewLikeService {
             final Member member) {
         System.out.println(member.getId());
         if (checkMemberLike(seatReviewId, member.getId())) {
-            throw new NotLikeMemberException();
+            throw new CustomException(SeatReviewErrorCode.NOT_LIKE_MEMBER);
         }
 
         seatReviewLikeRepository.deleteById(seatReviewId);

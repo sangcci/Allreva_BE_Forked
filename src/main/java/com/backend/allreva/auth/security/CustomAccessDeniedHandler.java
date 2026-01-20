@@ -1,6 +1,5 @@
 package com.backend.allreva.auth.security;
 
-import com.backend.allreva.auth.exception.code.CustomAccessDeniedException;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -8,6 +7,9 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerExceptionResolver;
+
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.common.exception.GlobalErrorCode;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,8 +23,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     private final HandlerExceptionResolver resolver;
 
     public CustomAccessDeniedHandler(
-            @Qualifier("handlerExceptionResolver") final HandlerExceptionResolver resolver
-    ) {
+            @Qualifier("handlerExceptionResolver") final HandlerExceptionResolver resolver) {
         this.resolver = resolver;
     }
 
@@ -33,9 +34,9 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(
             final HttpServletRequest request,
             final HttpServletResponse response,
-            final AccessDeniedException accessDeniedException
-    ) throws IOException, ServletException {
-        CustomAccessDeniedException customAccessDeniedException = new CustomAccessDeniedException(accessDeniedException.getLocalizedMessage());
-        resolver.resolveException(request, response, null, customAccessDeniedException);
+            final AccessDeniedException accessDeniedException) throws IOException, ServletException {
+        CustomException customException = new CustomException(GlobalErrorCode.ACCESS_DENIED,
+                accessDeniedException.getLocalizedMessage());
+        resolver.resolveException(request, response, null, customException);
     }
 }

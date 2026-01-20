@@ -13,8 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.common.exception.code.GlobalErrorCode;
 import com.backend.allreva.common.model.Image;
+import com.backend.allreva.common.storage.exception.StorageErrorCode;
 import com.backend.allreva.seat_review.command.application.dto.FileData;
 
 import io.awspring.cloud.s3.ObjectMetadata;
@@ -96,8 +96,8 @@ public class StorageUploadService {
             S3Resource resource = s3Operations.upload(bucketName, storeKey, inputStream, objectMetadata);
             return new Image(resource.getURL().toString());
         } catch (Exception e) {
-            log.error("Failed to upload file from bytes: {}", storeKey, e);
-            throw new CustomException(GlobalErrorCode.SERVER_ERROR);
+            log.error("Failed to upload file from bytes - key: {}", storeKey, e);
+            throw new CustomException(StorageErrorCode.FILE_UPLOAD_FAILED, e);
         }
     }
 
@@ -116,8 +116,8 @@ public class StorageUploadService {
             String key = extractKeyFromUrl(imageUrl);
             s3Operations.deleteObject(bucketName, key);
         } catch (Exception e) {
-            log.error("Failed to delete image from S3: {}", imageUrl, e);
-            throw new CustomException(GlobalErrorCode.SERVER_ERROR);
+            log.error("Failed to delete image from S3 - url: {}", imageUrl, e);
+            throw new CustomException(StorageErrorCode.FILE_DELETE_FAILED, e);
         }
     }
 
@@ -147,8 +147,8 @@ public class StorageUploadService {
             String url = resource.getURL().toString();
             return new Image(url);
         } catch (IOException e) {
-            log.error("Failed to upload file to S3: {}", storeKey, e);
-            throw new CustomException(GlobalErrorCode.SERVER_ERROR);
+            log.error("Failed to upload file to S3 - key: {}", storeKey, e);
+            throw new CustomException(StorageErrorCode.FILE_UPLOAD_FAILED, e);
         }
     }
 

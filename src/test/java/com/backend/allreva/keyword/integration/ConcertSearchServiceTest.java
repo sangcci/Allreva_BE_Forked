@@ -1,6 +1,6 @@
 package com.backend.allreva.keyword.integration;
 
-import com.backend.allreva.concert.exception.search.SearchResultNotFoundException;
+import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.concert.infra.elasticsearch.SortDirection;
 import com.backend.allreva.concert.query.application.ConcertQueryService;
 import com.backend.allreva.concert.query.application.ConcertSearchService;
@@ -18,6 +18,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 @Slf4j
 class ConcertSearchServiceTest extends IntegrationTestSupport {
     @Autowired
@@ -28,30 +29,30 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
     @Test
     @DisplayName("정상적인 검색")
     void successTest() {
-        //given
+        // given
         ConcertMainResponse concertMain = concertQueryService.getConcertMain("", null, 1, SortDirection.DATE);
         String query = concertMain.concertThumbnails().get(0).title();
 
-        //when
+        // when
         log.info("query: {}", query);
         List<ConcertThumbnail> result = concertSearchService.searchConcertThumbnails(query);
 
-        //then
+        // then
         assertThat(result).isNotEmpty();
     }
 
     @Test
     @DisplayName("검색 결과가 없는 경우 예외 발생")
     void NotFoundExceptionTest() {
-        //then
-        assertThrows(SearchResultNotFoundException.class, () -> {
+        // then
+        assertThrows(CustomException.class, () -> {
             concertSearchService.searchConcertThumbnails("");
         });
     }
 
     @Test
     @DisplayName("콘서트 검색어에 맞춰서 관련도순 정렬 이후 마지막 searchAfter 보내면 다음 페이지에서 첫 페이지로")
-    void ConcertSearchListTest(){
+    void ConcertSearchListTest() {
         // given
         List<Object> searchAfter = new ArrayList<>();
         ConcertMainResponse concertMain = concertQueryService.getConcertMain("", null, 2, SortDirection.DATE);
@@ -73,14 +74,14 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
 
     @Test
     @DisplayName("검색 결과가 없는 경우 예외 발생")
-    void ConcertSearchListExceptionTest(){
-        ///given
+    void ConcertSearchListExceptionTest() {
+        /// given
         List<Object> searchAfter = new ArrayList<>();
-        String query ="|||";
+        String query = "|||";
 
-        //when
-        //then
-        assertThrows(SearchResultNotFoundException.class, () -> {
+        // when
+        // then
+        assertThrows(CustomException.class, () -> {
             concertSearchService.searchConcertList(query, searchAfter, 2);
         });
     }

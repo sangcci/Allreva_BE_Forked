@@ -2,7 +2,8 @@ package com.backend.allreva.rent.command.domain;
 
 import com.backend.allreva.common.event.Events;
 import com.backend.allreva.common.model.BaseEntity;
-import com.backend.allreva.rent_join.exception.PassengersMaximumReachedException;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.rent.exception.RentErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -43,8 +44,7 @@ public class RentBoardingInfo extends BaseEntity {
     private RentBoardingInfo(
             Rent rent,
             LocalDate date,
-            int recruitmentCount
-    ) {
+            int recruitmentCount) {
         this.rent = rent;
         this.date = date;
         this.recruitmentCount = recruitmentCount;
@@ -64,7 +64,7 @@ public class RentBoardingInfo extends BaseEntity {
 
     private void checkPassengersMaximumReached(int passengerCount) {
         if (this.passengerCount + passengerCount > recruitmentCount) {
-            throw new PassengersMaximumReachedException();
+            throw new CustomException(RentErrorCode.PASSENGERS_MAXIMUM_REACHED);
         }
     }
 
@@ -75,4 +75,3 @@ public class RentBoardingInfo extends BaseEntity {
         }
     }
 }
-

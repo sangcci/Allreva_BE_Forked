@@ -8,7 +8,8 @@ import com.backend.allreva.rent.command.domain.value.Bus;
 import com.backend.allreva.rent.command.domain.value.DetailInfo;
 import com.backend.allreva.rent.command.domain.value.OperationInfo;
 import com.backend.allreva.rent.command.domain.value.Price;
-import com.backend.allreva.rent.exception.RentAccessDeniedException;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.rent.exception.RentErrorCode;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -63,7 +64,7 @@ public class Rent extends BaseEntity {
 
     @Builder.Default
     @Column(nullable = false)
-    private boolean isClosed = false; //마감 여부
+    private boolean isClosed = false; // 마감 여부
 
     public void assignBoardingInfos(List<RentBoardingInfo> boardingInfos) {
         boardingInfos.forEach(boardingInfo -> boardingInfo.assignRent(this));
@@ -71,8 +72,7 @@ public class Rent extends BaseEntity {
     }
 
     public void updateRent(
-            final RentUpdateRequest request
-    ) {
+            final RentUpdateRequest request) {
         this.detailInfo = DetailInfo.builder()
                 .title(detailInfo.getTitle())
                 .artistName(detailInfo.getArtistName())
@@ -116,7 +116,7 @@ public class Rent extends BaseEntity {
 
     public void validateMine(Long memberId) {
         if (!this.memberId.equals(memberId)) {
-            throw new RentAccessDeniedException();
+            throw new CustomException(RentErrorCode.RENT_ACCESS_DENIED);
         }
     }
 

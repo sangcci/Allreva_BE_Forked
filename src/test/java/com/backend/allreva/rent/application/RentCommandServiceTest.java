@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.storage.upload.StorageUploadService;
 import com.backend.allreva.rent.command.application.RentCommandService;
 import com.backend.allreva.rent.command.application.request.RentIdRequest;
@@ -18,8 +19,6 @@ import com.backend.allreva.rent.command.application.request.RentRegisterRequest;
 import com.backend.allreva.rent.command.application.request.RentUpdateRequest;
 import com.backend.allreva.rent.command.domain.Rent;
 import com.backend.allreva.rent.command.domain.RentRepository;
-import com.backend.allreva.rent.exception.RentAccessDeniedException;
-import com.backend.allreva.rent.exception.RentNotFoundException;
 import com.backend.allreva.rent.fake.RentFakeRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -93,7 +92,7 @@ class RentCommandServiceTest {
                 .sample();
 
         // when & then
-        assertThrows(RentNotFoundException.class,
+        assertThrows(CustomException.class,
                 () -> rentCommandService.updateRent(rentUpdateRequest, memberId));
     }
 
@@ -113,7 +112,7 @@ class RentCommandServiceTest {
                 .sample();
 
         // when & then
-        assertThrows(RentAccessDeniedException.class,
+        assertThrows(CustomException.class,
                 () -> rentCommandService.updateRent(rentUpdateRequest, anotherMemberId));
     }
 
@@ -152,7 +151,7 @@ class RentCommandServiceTest {
                 .sample();
 
         // when & then
-        assertThrows(RentNotFoundException.class,
+        assertThrows(CustomException.class,
                 () -> rentCommandService.closeRent(rentIdRequest, memberId));
     }
 
@@ -172,7 +171,7 @@ class RentCommandServiceTest {
                 .sample();
 
         // when & then
-        assertThrows(RentAccessDeniedException.class,
+        assertThrows(CustomException.class,
                 () -> rentCommandService.closeRent(rentIdRequest, anotherMemberId));
     }
 
@@ -208,7 +207,7 @@ class RentCommandServiceTest {
                 .sample();
 
         // when & then
-        assertThrows(RentNotFoundException.class,
+        assertThrows(CustomException.class,
                 () -> rentCommandService.deleteRent(rentIdRequest, memberId));
     }
 
@@ -228,7 +227,7 @@ class RentCommandServiceTest {
                 .sample();
 
         // when & then
-        assertThrows(RentAccessDeniedException.class,
+        assertThrows(CustomException.class,
                 () -> rentCommandService.deleteRent(rentIdRequest, anotherMemberId));
     }
 }

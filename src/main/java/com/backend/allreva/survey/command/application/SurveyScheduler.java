@@ -13,7 +13,7 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class SurveyScheduler {
     private final SurveyRepository surveyRepository;
-    private static final String MIDNIGHT_CRON = "0 0 0 * * *"; //초 분 시 일 월 요일.
+    private static final String MIDNIGHT_CRON = "0 0 0 * * *"; // 초 분 시 일 월 요일.
 
     @Scheduled(cron = MIDNIGHT_CRON) // 매일 0시에 업데이트
     public void closeSurvey() {

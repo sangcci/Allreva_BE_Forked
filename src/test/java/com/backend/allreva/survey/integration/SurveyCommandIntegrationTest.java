@@ -1,8 +1,23 @@
 package com.backend.allreva.survey.integration;
 
+import static java.util.List.of;
+import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.concert.command.domain.Concert;
 import com.backend.allreva.concert.command.domain.ConcertRepository;
-import com.backend.allreva.concert.exception.ConcertNotFoundException;
 import com.backend.allreva.member.command.domain.Member;
 import com.backend.allreva.member.command.domain.MemberRepository;
 import com.backend.allreva.support.IntegrationTestSupport;
@@ -15,26 +30,11 @@ import com.backend.allreva.survey.command.domain.SurveyBoardingDate;
 import com.backend.allreva.survey.command.domain.SurveyBoardingDateCommandRepository;
 import com.backend.allreva.survey.command.domain.SurveyRepository;
 import com.backend.allreva.survey.command.domain.value.Region;
-import com.backend.allreva.survey.exception.SurveyInvalidBoardingDateException;
-import com.backend.allreva.survey.exception.SurveyNotFoundException;
-import com.backend.allreva.survey.exception.SurveyNotWriterException;
 import com.backend.allreva.survey_join.command.application.SurveyJoinCommandService;
 import com.backend.allreva.survey_join.command.application.request.JoinSurveyRequest;
 import com.backend.allreva.survey_join.command.domain.SurveyJoin;
 import com.backend.allreva.survey_join.command.domain.SurveyJoinRepository;
 import com.backend.allreva.survey_join.command.domain.value.BoardingType;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import java.time.LocalDate;
-import java.util.List;
-
-import static java.util.List.of;
-import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
-import static org.junit.jupiter.api.Assertions.*;
 
 class SurveyCommandIntegrationTest extends IntegrationTestSupport {
 
@@ -101,11 +101,10 @@ class SurveyCommandIntegrationTest extends IntegrationTestSupport {
                 Region.서울,
                 LocalDate.now(),
                 25,
-                "이틀 모두 운영합니다."
-        );
+                "이틀 모두 운영합니다.");
 
         // When
-        assertThrows(ConcertNotFoundException.class, () -> {
+        assertThrows(CustomException.class, () -> {
             surveyCommandService.openSurvey(testMember.getId(), openSurveyRequest);
         });
     }
@@ -145,8 +144,7 @@ class SurveyCommandIntegrationTest extends IntegrationTestSupport {
                 Region.서울,
                 LocalDate.now().plusDays(3),
                 25,
-                "일요일만 운영합니다."
-        );
+                "일요일만 운영합니다.");
 
         // When
         surveyCommandService.updateSurvey(testMember.getId(), updateSurveyRequest);
@@ -158,14 +156,13 @@ class SurveyCommandIntegrationTest extends IntegrationTestSupport {
         assertEquals(1, boardingDates.size());
         assertEquals(LocalDate.of(2030, 12, 2), boardingDates.get(0).getDate());
 
-
     }
 
     @Test
     @DisplayName("수요조사를 찾을 수 없어 폼 삭제에 실패한다.")
     public void failRemoveSurveyWithNotFoundException() {
 
-        assertThrows(SurveyNotFoundException.class, () -> {
+        assertThrows(CustomException.class, () -> {
             surveyCommandService.removeSurvey(testMember.getId(), new SurveyIdRequest(99999999L));
         });
     }
@@ -180,11 +177,10 @@ class SurveyCommandIntegrationTest extends IntegrationTestSupport {
         surveyRepository.flush();
 
         // When & Then
-        assertThrows(SurveyNotWriterException.class, () -> {
+        assertThrows(CustomException.class, () -> {
             surveyCommandService.removeSurvey(999999999L, new SurveyIdRequest(surveyId));
         });
     }
-
 
     /**
      * SurveyJoin
@@ -198,8 +194,7 @@ class SurveyCommandIntegrationTest extends IntegrationTestSupport {
         Long surveyId = surveyCommandService.openSurvey(testMember.getId(), openSurveyRequest);
 
         JoinSurveyRequest joinSurveyRequest = new JoinSurveyRequest(surveyId,
-                LocalDate.of(2030, 12, 1), BoardingType.DOWN, 2, true
-        );
+                LocalDate.of(2030, 12, 1), BoardingType.DOWN, 2, true);
         // When
         Long surveyJoinId = surveyJoinCommandService.createSurveyResponse(testMember.getId(), joinSurveyRequest);
         SurveyJoin savedSurveyJoin = surveyJoinRepository.findById(surveyJoinId).orElse(null);
@@ -218,10 +213,9 @@ class SurveyCommandIntegrationTest extends IntegrationTestSupport {
         Long surveyId = surveyCommandService.openSurvey(testMember.getId(), openSurveyRequest);
 
         JoinSurveyRequest joinSurveyRequest = new JoinSurveyRequest(surveyId,
-                LocalDate.of(2030, 12, 3), BoardingType.DOWN, 2, true
-        );
+                LocalDate.of(2030, 12, 3), BoardingType.DOWN, 2, true);
         // When
-        assertThrows(SurveyInvalidBoardingDateException.class, () -> {
+        assertThrows(CustomException.class, () -> {
             surveyJoinCommandService.createSurveyResponse(testMember.getId(), joinSurveyRequest);
         });
     }

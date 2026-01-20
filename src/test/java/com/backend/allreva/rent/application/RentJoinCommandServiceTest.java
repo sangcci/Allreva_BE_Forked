@@ -5,6 +5,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.Test;
+
+import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.rent.command.domain.Rent;
 import com.backend.allreva.rent.command.domain.RentRepository;
 import com.backend.allreva.rent.fake.RentFakeRepository;
@@ -14,10 +17,8 @@ import com.backend.allreva.rent_join.command.application.request.RentJoinIdReque
 import com.backend.allreva.rent_join.command.application.request.RentJoinUpdateRequest;
 import com.backend.allreva.rent_join.command.domain.RentJoin;
 import com.backend.allreva.rent_join.command.domain.RentJoinRepository;
-import com.backend.allreva.rent_join.exception.RentJoinAccessDeniedException;
-import com.backend.allreva.rent_join.exception.RentJoinNotFoundException;
+
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 
 @Slf4j
 @SuppressWarnings("NonAsciiCharacters")
@@ -33,38 +34,42 @@ class RentJoinCommandServiceTest {
         this.rentJoinCommandService = new RentJoinCommandService(rentRepository, rentJoinRepository);
     }
 
-    /* domain model 변경으로 인한 Repository 복잡도 증가.
-       query를 위한 presentation layer 테스트로 변경 예정
-    @Test
-    void 차량_대절_신청_폼_지원에_성공한다() {
-        // given
-        var memberId = 1L;
-        var rentBoardingInfo = fixtureMonkey.giveMeBuilder(RentBoardingInfo.class)
-                .setNull("id")
-
-        var rent = fixtureMonkey.giveMeBuilder(Rent.class)
-                .setNull("id")
-                .set("memberId", memberId)
-                .set("additionalInfo.recruitmentCount", 20)
-                .sample();
-        rentRepository.save(rent);
-
-        var rentJoinApplyRequest = fixtureMonkey.giveMeBuilder(RentJoinApplyRequest.class)
-                .set("rentId", rent.getId())
-                .set("passengerNum", 5)
-                .sample();
-
-        // when
-        var appliedRentId = rentJoinCommandService.applyRent(rentJoinApplyRequest, memberId);
-
-        // then
-        rentJoinRepository.findById(appliedRentId).ifPresent(rentJoin -> {
-            assertSoftly(softly -> {
-                softly.assertThat(rentJoin.getMemberId()).isEqualTo(memberId);
-                softly.assertThat(rentJoin.getRentId()).isEqualTo(rent.getId());
-            });
-        });
-    }
+    /*
+     * domain model 변경으로 인한 Repository 복잡도 증가.
+     * query를 위한 presentation layer 테스트로 변경 예정
+     *
+     * @Test
+     * void 차량_대절_신청_폼_지원에_성공한다() {
+     * // given
+     * var memberId = 1L;
+     * var rentBoardingInfo = fixtureMonkey.giveMeBuilder(RentBoardingInfo.class)
+     * .setNull("id")
+     *
+     * var rent = fixtureMonkey.giveMeBuilder(Rent.class)
+     * .setNull("id")
+     * .set("memberId", memberId)
+     * .set("additionalInfo.recruitmentCount", 20)
+     * .sample();
+     * rentRepository.save(rent);
+     *
+     * var rentJoinApplyRequest =
+     * fixtureMonkey.giveMeBuilder(RentJoinApplyRequest.class)
+     * .set("rentId", rent.getId())
+     * .set("passengerNum", 5)
+     * .sample();
+     *
+     * // when
+     * var appliedRentId = rentJoinCommandService.applyRent(rentJoinApplyRequest,
+     * memberId);
+     *
+     * // then
+     * rentJoinRepository.findById(appliedRentId).ifPresent(rentJoin -> {
+     * assertSoftly(softly -> {
+     * softly.assertThat(rentJoin.getMemberId()).isEqualTo(memberId);
+     * softly.assertThat(rentJoin.getRentId()).isEqualTo(rent.getId());
+     * });
+     * });
+     * }
      */
 
     @Test
@@ -108,7 +113,7 @@ class RentJoinCommandServiceTest {
         var rentJoinRequest = fixtureMonkey.giveMeOne(RentJoinUpdateRequest.class);
 
         // when & then
-        assertThrows(RentJoinNotFoundException.class,
+        assertThrows(CustomException.class,
                 () -> rentJoinCommandService.updateRentJoin(rentJoinRequest, memberId));
     }
 
@@ -128,7 +133,7 @@ class RentJoinCommandServiceTest {
                 .sample();
 
         // when & then
-        assertThrows(RentJoinAccessDeniedException.class,
+        assertThrows(CustomException.class,
                 () -> rentJoinCommandService.updateRentJoin(rentJoinRequest, anotherMemberId));
     }
 

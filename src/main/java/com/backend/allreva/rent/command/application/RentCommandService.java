@@ -14,7 +14,8 @@ import com.backend.allreva.rent.command.domain.Rent;
 import com.backend.allreva.rent.command.domain.RentClosedEvent;
 import com.backend.allreva.rent.command.domain.RentRepository;
 import com.backend.allreva.rent.command.domain.RentSaveEvent;
-import com.backend.allreva.rent.exception.RentNotFoundException;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.rent.exception.RentErrorCode;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +42,7 @@ public class RentCommandService {
             final RentUpdateRequest rentUpdateRequest,
             final Long memberId) {
         Rent rent = rentRepository.findById(rentUpdateRequest.rentId())
-                .orElseThrow(RentNotFoundException::new);
+                .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
 
         rent.validateMine(memberId);
 
@@ -54,7 +55,7 @@ public class RentCommandService {
             final RentIdRequest rentIdRequest,
             final Long memberId) {
         Rent rent = rentRepository.findById(rentIdRequest.rentId())
-                .orElseThrow(RentNotFoundException::new);
+                .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
 
         rent.validateMine(memberId);
         rent.close();
@@ -64,7 +65,7 @@ public class RentCommandService {
     @TransactionalEventListener
     public void closeRent(RentClosedEvent event) {
         Rent rent = rentRepository.findById(event.getRentId())
-                .orElseThrow(RentNotFoundException::new);
+                .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
 
         rent.close();
     }
@@ -73,7 +74,7 @@ public class RentCommandService {
             final RentIdRequest rentIdRequest,
             final Long memberId) {
         Rent rent = rentRepository.findById(rentIdRequest.rentId())
-                .orElseThrow(RentNotFoundException::new);
+                .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
 
         rent.validateMine(memberId);
 

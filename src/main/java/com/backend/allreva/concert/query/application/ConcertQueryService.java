@@ -1,21 +1,23 @@
 package com.backend.allreva.concert.query.application;
 
+import java.util.List;
 
-import com.backend.allreva.concert.command.domain.ConcertRepository;
-import com.backend.allreva.concert.infra.elasticsearch.ConcertSearchRepository;
-import com.backend.allreva.concert.infra.elasticsearch.SortDirection;
-import com.backend.allreva.concert.exception.ConcertSearchNotFoundException;
-import com.backend.allreva.concert.query.application.response.ConcertDetailResponse;
-import com.backend.allreva.concert.query.application.response.ConcertMainResponse;
-import com.backend.allreva.concert.query.application.response.ConcertThumbnail;
-import com.backend.allreva.concert.infra.elasticsearch.ConcertDocument;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.concert.command.domain.ConcertRepository;
+import com.backend.allreva.concert.exception.ConcertErrorCode;
+import com.backend.allreva.concert.infra.elasticsearch.ConcertDocument;
+import com.backend.allreva.concert.infra.elasticsearch.ConcertSearchRepository;
+import com.backend.allreva.concert.infra.elasticsearch.SortDirection;
+import com.backend.allreva.concert.query.application.response.ConcertDetailResponse;
+import com.backend.allreva.concert.query.application.response.ConcertMainResponse;
+import com.backend.allreva.concert.query.application.response.ConcertThumbnail;
+
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RequiredArgsConstructor
 @Service
@@ -36,20 +38,20 @@ public class ConcertQueryService {
             final int size,
             final SortDirection sortDirection) {
 
-        SearchHits<ConcertDocument> searchHits = concertSearchRepository.searchMainConcerts(address, searchAfter, size +1, sortDirection);
+        SearchHits<ConcertDocument> searchHits = concertSearchRepository.searchMainConcerts(address, searchAfter,
+                size + 1, sortDirection);
         List<ConcertThumbnail> concerts = searchHits.getSearchHits().stream()
                 .map(SearchHit::getContent)
                 .map(ConcertThumbnail::from)
                 .limit(size)
                 .toList();
 
-        if(concerts.isEmpty()){
-            throw new ConcertSearchNotFoundException();
+        if (concerts.isEmpty()) {
+            throw new CustomException(ConcertErrorCode.CONCERT_SEARCH_NOT_FOUND);
         }
 
         boolean hasNext = searchHits.getSearchHits().size() > size;
-        List<Object> nextSearchAfter = hasNext ?
-                searchHits.getSearchHits().get(size - 1).getSortValues() : null;
+        List<Object> nextSearchAfter = hasNext ? searchHits.getSearchHits().get(size - 1).getSortValues() : null;
         return ConcertMainResponse.from(concerts, nextSearchAfter);
 
     }
