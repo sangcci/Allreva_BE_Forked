@@ -1,7 +1,12 @@
 package com.backend.allreva.rent.command.application;
 
-import com.backend.allreva.common.application.S3ImageService;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
+
 import com.backend.allreva.common.event.Events;
+import com.backend.allreva.common.storage.upload.StorageUploadService;
 import com.backend.allreva.rent.command.application.request.RentIdRequest;
 import com.backend.allreva.rent.command.application.request.RentRegisterRequest;
 import com.backend.allreva.rent.command.application.request.RentUpdateRequest;
@@ -10,12 +15,9 @@ import com.backend.allreva.rent.command.domain.RentClosedEvent;
 import com.backend.allreva.rent.command.domain.RentRepository;
 import com.backend.allreva.rent.command.domain.RentSaveEvent;
 import com.backend.allreva.rent.exception.RentNotFoundException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 @Slf4j
 @Service
@@ -24,12 +26,11 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class RentCommandService {
 
     private final RentRepository rentRepository;
-    private final S3ImageService s3ImageService;
+    private final StorageUploadService storageUploadService;
 
     public Long registerRent(
             final RentRegisterRequest rentRegisterRequest,
-            final Long memberId
-    ) {
+            final Long memberId) {
         Rent rent = rentRegisterRequest.toEntity(memberId);
         Rent savedRent = rentRepository.save(rent);
         Events.raise(new RentSaveEvent(savedRent));
@@ -38,8 +39,7 @@ public class RentCommandService {
 
     public Rent updateRent(
             final RentUpdateRequest rentUpdateRequest,
-            final Long memberId
-    ) {
+            final Long memberId) {
         Rent rent = rentRepository.findById(rentUpdateRequest.rentId())
                 .orElseThrow(RentNotFoundException::new);
 
@@ -52,8 +52,7 @@ public class RentCommandService {
 
     public void closeRent(
             final RentIdRequest rentIdRequest,
-            final Long memberId
-    ) {
+            final Long memberId) {
         Rent rent = rentRepository.findById(rentIdRequest.rentId())
                 .orElseThrow(RentNotFoundException::new);
 
@@ -72,14 +71,13 @@ public class RentCommandService {
 
     public void deleteRent(
             final RentIdRequest rentIdRequest,
-            final Long memberId
-    ) {
+            final Long memberId) {
         Rent rent = rentRepository.findById(rentIdRequest.rentId())
                 .orElseThrow(RentNotFoundException::new);
-        
+
         rent.validateMine(memberId);
 
-        s3ImageService.delete(rent.getDetailInfo().getImage().getUrl());
+        storageUploadService.deleteImage(rent.getDetailInfo().getImage().getUrl());
         rentRepository.delete(rent);
     }
 }

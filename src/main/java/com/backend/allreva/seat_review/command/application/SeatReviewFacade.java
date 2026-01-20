@@ -18,34 +18,31 @@ public class SeatReviewFacade {
 
     public Long createSeatReview(
             final ReviewCreateRequest request,
-            final Member member
-    ) {
+            final Member member) {
         Long seatReviewId = seatReviewService.createSeatReview(request, member);
-        // 이미지 url 저장
-        seatReviewImageService.uploadAndSaveImages(seatReviewId,request.imageUrls());
+
+        seatReviewImageService.saveImageMetadata(seatReviewId, request.imageUrls());
 
         return seatReviewId;
     }
 
     public Long updateSeatReview(
             final ReviewUpdateRequest request,
-            final Member member
-    ) {
+            final Member member) {
         SeatReview seatReview = seatReviewService.updateSeatReview(request, member);
 
         // 기존 이미지 삭제
         seatReviewImageService.deleteImages(request.seatReviewId());
 
         // 새로운 이미지 업로드
-        seatReviewImageService.uploadAndSaveImages(request.seatReviewId(), request.imageUrls());
+        seatReviewImageService.saveImageMetadata(request.seatReviewId(), request.imageUrls());
 
         return seatReview.getId();
     }
 
     public void deleteSeatReview(
             final Long seatReviewId,
-            final Member member
-    ) {
+            final Member member) {
         seatReviewImageService.deleteImages(seatReviewId);
 
         seatReviewService.deleteSeatReview(seatReviewId, member);

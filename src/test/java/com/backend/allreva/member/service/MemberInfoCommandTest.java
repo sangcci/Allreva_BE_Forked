@@ -5,19 +5,20 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
-import com.backend.allreva.common.application.S3ImageService;
-import com.backend.allreva.member.command.application.MemberInfoCommandService;
-import com.backend.allreva.member.command.domain.Member;
-import com.backend.allreva.member.command.domain.MemberRepository;
-import com.backend.allreva.member.command.domain.value.MemberRole;
-import com.backend.allreva.member.fixture.MemberFixture;
-import com.backend.allreva.member.fixture.MemberRequestFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.backend.allreva.common.storage.upload.StorageUploadService;
+import com.backend.allreva.member.command.application.MemberInfoCommandService;
+import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.member.command.domain.MemberRepository;
+import com.backend.allreva.member.command.domain.value.MemberRole;
+import com.backend.allreva.member.fixture.MemberFixture;
+import com.backend.allreva.member.fixture.MemberRequestFixture;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("NonAsciiCharacters")
@@ -28,7 +29,7 @@ class MemberInfoCommandTest {
     @Mock
     private MemberRepository memberRepository;
     @Mock
-    private S3ImageService s3ImageService;
+    private StorageUploadService storageUploadService;
 
     Member member;
 
@@ -48,7 +49,8 @@ class MemberInfoCommandTest {
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(updatedMember.getMemberInfo().getIntroduce()).isEqualTo(memberRegisterRequest.introduce());
+            softly.assertThat(updatedMember.getMemberInfo().getIntroduce())
+                    .isEqualTo(memberRegisterRequest.introduce());
             softly.assertThat(updatedMember.getMemberRole()).isEqualTo(MemberRole.USER);
         });
     }

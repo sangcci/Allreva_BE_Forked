@@ -6,7 +6,12 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 
-import com.backend.allreva.common.application.S3ImageService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import com.backend.allreva.common.storage.upload.StorageUploadService;
 import com.backend.allreva.rent.command.application.RentCommandService;
 import com.backend.allreva.rent.command.application.request.RentIdRequest;
 import com.backend.allreva.rent.command.application.request.RentRegisterRequest;
@@ -16,11 +21,8 @@ import com.backend.allreva.rent.command.domain.RentRepository;
 import com.backend.allreva.rent.exception.RentAccessDeniedException;
 import com.backend.allreva.rent.exception.RentNotFoundException;
 import com.backend.allreva.rent.fake.RentFakeRepository;
+
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 @Slf4j
 @ExtendWith(MockitoExtension.class)
@@ -29,12 +31,12 @@ class RentCommandServiceTest {
 
     private final RentCommandService rentCommandService;
     private final RentRepository rentRepository;
-    private final S3ImageService s3ImageService;
+    private final StorageUploadService storageUploadService;
 
     public RentCommandServiceTest() {
         this.rentRepository = new RentFakeRepository();
-        this.s3ImageService = Mockito.mock(S3ImageService.class);
-        this.rentCommandService = new RentCommandService(rentRepository, s3ImageService);
+        this.storageUploadService = Mockito.mock(StorageUploadService.class);
+        this.rentCommandService = new RentCommandService(rentRepository, storageUploadService);
     }
 
     @Test
@@ -179,9 +181,9 @@ class RentCommandServiceTest {
         // given
         var memberId = 1L;
         var rent = fixtureMonkey.giveMeBuilder(Rent.class)
-               .setNull("id")
-               .set("memberId", memberId)
-               .sample();
+                .setNull("id")
+                .set("memberId", memberId)
+                .sample();
         rentRepository.save(rent);
 
         var rentIdRequest = fixtureMonkey.giveMeBuilder(RentIdRequest.class)
@@ -192,7 +194,7 @@ class RentCommandServiceTest {
         rentCommandService.deleteRent(rentIdRequest, memberId);
 
         // then
-        verify(s3ImageService).delete(rent.getDetailInfo().getImage().getUrl());
+        verify(storageUploadService).deleteImage(rent.getDetailInfo().getImage().getUrl());
         var deletedRent = rentRepository.findById(rentIdRequest.rentId()).orElse(null);
         assertThat(deletedRent).isNull();
     }
@@ -202,8 +204,8 @@ class RentCommandServiceTest {
         // given
         var memberId = 1L;
         var rentIdRequest = fixtureMonkey.giveMeBuilder(RentIdRequest.class)
-               .set("rentId", 1L)
-              .sample();
+                .set("rentId", 1L)
+                .sample();
 
         // when & then
         assertThrows(RentNotFoundException.class,
@@ -215,15 +217,15 @@ class RentCommandServiceTest {
         // given
         var memberId = 1L;
         var rent = fixtureMonkey.giveMeBuilder(Rent.class)
-              .setNull("id")
-              .set("memberId", memberId)
-              .sample();
+                .setNull("id")
+                .set("memberId", memberId)
+                .sample();
         rentRepository.save(rent);
 
         var anotherMemberId = 2L;
         var rentIdRequest = fixtureMonkey.giveMeBuilder(RentIdRequest.class)
-             .set("rentId", rent.getId())
-             .sample();
+                .set("rentId", rent.getId())
+                .sample();
 
         // when & then
         assertThrows(RentAccessDeniedException.class,

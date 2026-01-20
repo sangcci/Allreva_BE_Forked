@@ -1,32 +1,32 @@
 package com.backend.allreva.diary.command.application;
 
-import com.backend.allreva.common.application.S3ImageService;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.backend.allreva.common.model.Image;
+import com.backend.allreva.common.storage.upload.StorageUploadService;
 import com.backend.allreva.diary.command.application.request.AddDiaryRequest;
 import com.backend.allreva.diary.command.application.request.UpdateDiaryRequest;
 import com.backend.allreva.diary.command.domain.ConcertDiary;
 import com.backend.allreva.diary.command.domain.DiaryRepository;
 import com.backend.allreva.diary.exception.DiaryNotFoundException;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Transactional
 @Service
 public class DiaryCommandService {
 
-    private final S3ImageService s3ImageService;
     private final DiaryRepository diaryRepository;
+    private final StorageUploadService storageUploadService;
 
     public Long add(
             final AddDiaryRequest request,
-            final Long memberId
-    ) {
+            final Long memberId) {
         ConcertDiary diary = request.to();
-
 
         diary.addImages(request.images());
         diary.addMemberId(memberId);
@@ -35,8 +35,7 @@ public class DiaryCommandService {
 
     public void update(
             final UpdateDiaryRequest request,
-            final Long memberId
-    ) {
+            final Long memberId) {
         ConcertDiary diary = diaryRepository.findById(request.diaryId())
                 .orElseThrow(DiaryNotFoundException::new);
 
@@ -47,8 +46,7 @@ public class DiaryCommandService {
                 request.episode(),
                 request.content(),
                 request.seatName(),
-                request.images()
-        );
+                request.images());
     }
 
     public void delete(final Long diaryId, final Long memberId) {
@@ -56,9 +54,8 @@ public class DiaryCommandService {
                 .orElseThrow(DiaryNotFoundException::new);
         diary.validateWriter(memberId);
 
-        diary.getDiaryImages().forEach(image -> {
-            s3ImageService.delete(image.getUrl());
-        });
+        List<String> diaryImages = diary.getDiaryImages().stream().map(Image::getUrl).toList();
+        storageUploadService.deleteImages(diaryImages);
 
         diaryRepository.deleteById(diaryId);
     }
