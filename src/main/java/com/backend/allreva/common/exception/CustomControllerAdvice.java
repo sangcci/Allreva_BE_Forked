@@ -1,7 +1,8 @@
 package com.backend.allreva.common.exception;
 
-import com.backend.allreva.common.dto.Response;
 import com.backend.allreva.common.exception.code.GlobalErrorCode;
+import com.backend.allreva.common.web.response.Response;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -20,9 +21,7 @@ public class CustomControllerAdvice {
                 .body(
                         Response.onFailure(
                                 e.getErrorCode().code(),
-                                e.getErrorCode().message()
-                        )
-                );
+                                e.getErrorCode().message()));
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
@@ -41,9 +40,7 @@ public class CustomControllerAdvice {
                 .body(
                         Response.onFailure(
                                 GlobalErrorCode.BAD_REQUEST_ERROR.getErrorCode().code(),
-                                errorMessage.toString()
-                        )
-                );
+                                errorMessage.toString()));
     }
 
     @ExceptionHandler(value = Exception.class)
@@ -53,8 +50,6 @@ public class CustomControllerAdvice {
                 .body(
                         Response.onFailure(
                                 GlobalErrorCode.SERVER_ERROR.getErrorCode().code(),
-                                GlobalErrorCode.SERVER_ERROR.getErrorCode().message()
-                               )
-                );
+                                GlobalErrorCode.SERVER_ERROR.getErrorCode().message()));
     }
 }

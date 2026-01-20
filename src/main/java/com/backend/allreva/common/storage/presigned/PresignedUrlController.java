@@ -1,16 +1,22 @@
 package com.backend.allreva.common.storage.presigned;
 
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.backend.allreva.auth.security.AuthMember;
-import com.backend.allreva.common.dto.Response;
 import com.backend.allreva.common.storage.presigned.dto.PresignedUrlRequest;
+import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.member.command.domain.Member;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController

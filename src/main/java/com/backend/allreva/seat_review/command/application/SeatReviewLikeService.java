@@ -18,8 +18,7 @@ public class SeatReviewLikeService {
 
     public Long increaseSeatReviewLike(
             final SeatReviewLikeRequest request,
-            final Member member
-    ) {
+            final Member member) {
         if (checkMemberLike(request.seatReviewId(), member.getId())) {
             throw new DuplicateLikeException();
         }
@@ -28,16 +27,15 @@ public class SeatReviewLikeService {
                 SeatReviewLike.builder()
                         .reviewId(request.seatReviewId())
                         .memberId(member.getId())
-                        .build()
-        );
+                        .build());
 
         return seatReviewLike.getId();
     }
 
+    // BUG: 좋아요 취소 시 로직 문제 발생
     public void cancelSeatReviewLike(
             final Long seatReviewId,
-            final Member member
-    ) {
+            final Member member) {
         System.out.println(member.getId());
         if (checkMemberLike(seatReviewId, member.getId())) {
             throw new NotLikeMemberException();
@@ -48,8 +46,7 @@ public class SeatReviewLikeService {
 
     private boolean checkMemberLike(
             final Long seatReviewId,
-            final Long memberId
-    ){
+            final Long memberId) {
         return seatReviewLikeRepository.existsByReviewIdAndMemberId(seatReviewId, memberId);
     }
 }

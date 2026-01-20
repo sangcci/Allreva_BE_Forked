@@ -9,7 +9,7 @@ import com.backend.allreva.chatting.chat.group.command.application.request.Updat
 import com.backend.allreva.chatting.chat.group.query.GroupChatQueryService;
 import com.backend.allreva.chatting.chat.group.query.response.GroupChatDetailResponse;
 import com.backend.allreva.chatting.chat.group.query.response.GroupChatOverviewResponse;
-import com.backend.allreva.common.dto.Response;
+import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.member.command.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -25,8 +25,7 @@ public class GroupChatController {
     @GetMapping("/{groupChatId}")
     public Response<GroupChatDetailResponse> findGroupChatInformation(
             @PathVariable("groupChatId") final Long groupChatId,
-            @AuthMember final Member member
-    ) {
+            @AuthMember final Member member) {
         GroupChatDetailResponse response = groupChatQueryService.findGroupChatInfo(member.getId(), groupChatId);
         return Response.onSuccess(response);
     }
@@ -34,8 +33,7 @@ public class GroupChatController {
     @GetMapping("/invitation/{groupChatId}")
     public Response<String> findInviteUrl(
             @PathVariable("groupChatId") final Long groupChatId,
-            @AuthMember final Member member
-    ) {
+            @AuthMember final Member member) {
         String inviteCode = groupChatQueryService
                 .findInviteCode(member.getId(), groupChatId);
         return Response.onSuccess(inviteCode);
@@ -44,19 +42,16 @@ public class GroupChatController {
     @PatchMapping
     public Response<Void> updateGroupChat(
             @RequestBody final UpdateGroupChatRequest request,
-            @AuthMember final Member member
-    ) {
+            @AuthMember final Member member) {
         groupChatCommandService.update(
                 request,
-                member.getId()
-        );
+                member.getId());
         return Response.onSuccess();
     }
 
     @GetMapping("/join/{uuid}")
     public Response<GroupChatOverviewResponse> findGroupChatOverview(
-            @PathVariable("uuid") final String uuid
-    ) {
+            @PathVariable("uuid") final String uuid) {
         GroupChatOverviewResponse response = groupChatQueryService.findOverview(uuid);
         return Response.onSuccess(response);
     }
@@ -64,8 +59,7 @@ public class GroupChatController {
     @PostMapping("/join")
     public Response<Long> joinGroupChat(
             @RequestBody final JoinGroupChatRequest request,
-            @AuthMember final Member member
-    ) {
+            @AuthMember final Member member) {
         Long groupChatId = groupChatCommandService
                 .join(request.uuid(), member.getId());
         return Response.onSuccess(groupChatId);
@@ -74,8 +68,7 @@ public class GroupChatController {
     @DeleteMapping("/leave")
     public Response<Void> leaveGroupChat(
             @RequestBody final LeaveGroupChatRequest request,
-            @AuthMember final Member member
-    ) {
+            @AuthMember final Member member) {
         groupChatCommandService
                 .leave(request.groupChatId(), member.getId());
         return Response.onSuccess();
@@ -84,12 +77,10 @@ public class GroupChatController {
     @DeleteMapping
     public Response<Void> deleteGroupChat(
             @RequestBody final DeleteGroupChatRequest request,
-            @AuthMember final Member member
-    ) {
+            @AuthMember final Member member) {
         groupChatCommandService.delete(
                 request.groupChatId(),
-                member.getId()
-        );
+                member.getId());
         return Response.onSuccess();
     }
 

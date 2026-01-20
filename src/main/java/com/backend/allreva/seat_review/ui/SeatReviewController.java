@@ -1,20 +1,29 @@
 package com.backend.allreva.seat_review.ui;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.backend.allreva.auth.security.AuthMember;
-import com.backend.allreva.common.dto.Response;
+import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.member.command.domain.Member;
 import com.backend.allreva.seat_review.command.application.SeatReviewFacade;
 import com.backend.allreva.seat_review.command.application.dto.ReviewCreateRequest;
 import com.backend.allreva.seat_review.command.application.dto.ReviewUpdateRequest;
 import com.backend.allreva.seat_review.query.application.SeatReviewQueryService;
 import com.backend.allreva.seat_review.query.application.dto.SeatReviewResponse;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/seat-review")
@@ -31,8 +40,7 @@ public class SeatReviewController implements SeatReviewControllerSwagger {
             @RequestBody @Valid final ReviewCreateRequest request,
             @AuthMember final Member member) {
         return Response.onSuccess(
-                seatReviewFacade.createSeatReview(request, member)
-        );
+                seatReviewFacade.createSeatReview(request, member));
     }
 
     @Override
@@ -41,8 +49,7 @@ public class SeatReviewController implements SeatReviewControllerSwagger {
             @RequestBody @Valid final ReviewUpdateRequest request,
             @AuthMember final Member member) {
         return Response.onSuccess(
-                seatReviewFacade.updateSeatReview(request, member)
-        );
+                seatReviewFacade.updateSeatReview(request, member));
     }
 
     @Override
@@ -55,7 +62,6 @@ public class SeatReviewController implements SeatReviewControllerSwagger {
         return Response.onSuccess();
     }
 
-
     @Override
     @GetMapping
     public Response<List<SeatReviewResponse>> getReviews(
@@ -64,12 +70,11 @@ public class SeatReviewController implements SeatReviewControllerSwagger {
             @RequestParam(defaultValue = "20") final int size,
             @RequestParam(defaultValue = "CREATED_DESC") final SortType sortType,
             @RequestParam final String hallId,
-            @AuthMember final Member member
-    ) {
-        SeatReviewSearchCondition condition = new SeatReviewSearchCondition(lastId, lastCreatedAt, size, sortType, hallId, member.getId());
+            @AuthMember final Member member) {
+        SeatReviewSearchCondition condition = new SeatReviewSearchCondition(lastId, lastCreatedAt, size, sortType,
+                hallId, member.getId());
         List<SeatReviewResponse> reviews = seatReviewQueryService.getReviews(condition, member.getId());
         return Response.onSuccess(reviews);
     }
-
 
 }

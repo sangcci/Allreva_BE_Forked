@@ -1,7 +1,8 @@
 package com.backend.allreva.auth.ui;
 
 import com.backend.allreva.auth.application.dto.UserInfoResponse;
-import com.backend.allreva.common.dto.Response;
+import com.backend.allreva.common.web.response.Response;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,27 +16,23 @@ public interface AuthControllerSwagger {
     Response<UserInfoResponse> authKakaoLogin(
             String authorizationCode,
             HttpServletRequest request,
-            HttpServletResponse response
-    );
+            HttpServletResponse response);
 
     @Operation(summary = "access token 재발급 요청", description = "refresh token을 이용하여 access token을 재발급합니다.")
     Response<Void> reissueToken(
             String refreshToken,
             HttpServletRequest request,
-            HttpServletResponse response
-    );
+            HttpServletResponse response);
 
     @Operation(summary = "로그인 체크", description = "refresh token을 이용하여 access token을 재발급합니다.")
     Response<UserInfoResponse> loginCheck(
             String refreshToken,
             HttpServletRequest request,
-            HttpServletResponse response
-    );
+            HttpServletResponse response);
 
     @Operation(summary = "로그아웃", description = "refresh token을 삭제함으로써 로그아웃합니다.")
     Response<Void> logout(
             final String refreshToken,
             final HttpServletRequest request,
-            final HttpServletResponse response
-    );
+            final HttpServletResponse response);
 }

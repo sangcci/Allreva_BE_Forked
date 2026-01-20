@@ -1,26 +1,30 @@
 package com.backend.allreva.concert.infra.dto;
 
-import com.backend.allreva.common.converter.DateConverter;
-import com.backend.allreva.common.model.Image;
-import com.backend.allreva.concert.command.domain.Concert;
-import com.backend.allreva.concert.command.domain.value.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.backend.allreva.concert.infra.dto.KopisConcertResponse.Db.Relate;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import com.backend.allreva.common.converter.DateConverter;
+import com.backend.allreva.common.model.Image;
+import com.backend.allreva.concert.command.domain.Concert;
+import com.backend.allreva.concert.command.domain.value.Code;
+import com.backend.allreva.concert.command.domain.value.ConcertInfo;
+import com.backend.allreva.concert.command.domain.value.ConcertStatus;
+import com.backend.allreva.concert.command.domain.value.DateInfo;
+import com.backend.allreva.concert.command.domain.value.Seller;
+import com.backend.allreva.concert.infra.dto.KopisConcertResponse.Db.Relate;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
@@ -35,27 +39,27 @@ public class KopisConcertResponse {
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class Db {
         @XmlElement(name = "mt20id")
-        private String concertCode; //공연 code
+        private String concertCode; // 공연 code
         @XmlElement(name = "prfnm")
-        private String prfnm; //공연명
+        private String prfnm; // 공연명
         @XmlElement(name = "prfpdfrom")
-        private String prfpdfrom; //시작 날짜
+        private String prfpdfrom; // 시작 날짜
         @XmlElement(name = "prfpdto")
-        private String prfpdto; //종료 날짜
+        private String prfpdto; // 종료 날짜
         @XmlElement(name = "poster")
-        private String poster; //포스터
+        private String poster; // 포스터
         @XmlElement(name = "pcseguidance")
-        private String pcseguidance; //가격
+        private String pcseguidance; // 가격
         @XmlElement(name = "prfstate")
-        private String prfstate; //공연상태
+        private String prfstate; // 공연상태
         @XmlElement(name = "dtguidance")
-        private String dtguidance; //공연 타임테이블
+        private String dtguidance; // 공연 타임테이블
         @XmlElement(name = "entrpsnmH")
-        private String entrpsnmH; //주최
+        private String entrpsnmH; // 주최
         @XmlElement(name = "styurls")
-        private Styurls styurls; //소개이미지 list
+        private Styurls styurls; // 소개이미지 list
         @XmlElement(name = "relates")
-        private Relates relates; //판매처 list
+        private Relates relates; // 판매처 list
 
         @Getter
         @XmlAccessorType(XmlAccessType.FIELD)
@@ -81,9 +85,8 @@ public class KopisConcertResponse {
         }
     }
 
-
     public static Concert toEntity(final String hallCode,
-                                   final KopisConcertResponse response) {
+            final KopisConcertResponse response) {
         Db db = response.getDb();
         return Concert.builder()
                 .concertInfo(toConcertInfo(db))
@@ -106,8 +109,7 @@ public class KopisConcertResponse {
                                 .startDate(DateConverter.convertToLocalDate(db.prfpdfrom))
                                 .endDate(DateConverter.convertToLocalDate(db.prfpdto))
                                 .timeTable(db.getDtguidance())
-                                .build()
-                )
+                                .build())
                 .build();
     }
 

@@ -3,8 +3,9 @@ package com.backend.allreva.auth.ui;
 import com.backend.allreva.auth.application.AuthService;
 import com.backend.allreva.auth.application.CookieService;
 import com.backend.allreva.auth.application.dto.UserInfoResponse;
-import com.backend.allreva.common.dto.Response;
 import com.backend.allreva.common.util.DomainUtils;
+import com.backend.allreva.common.web.response.Response;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +27,7 @@ public class AuthController implements AuthControllerSwagger {
     public Response<UserInfoResponse> authKakaoLogin(
             @RequestParam("code") final String authorizationCode,
             final HttpServletRequest request,
-            final HttpServletResponse response
-    ) {
+            final HttpServletResponse response) {
         String domainName = DomainUtils.getDomainName(request);
         UserInfoResponse userInfoResponse = authService.kakaoLogin(authorizationCode, domainName);
         if (userInfoResponse.isUser()) {
@@ -41,8 +41,7 @@ public class AuthController implements AuthControllerSwagger {
     public Response<Void> reissueToken(
             @CookieValue(name = "refreshToken", required = false) final String refreshToken,
             final HttpServletRequest request,
-            final HttpServletResponse response
-    ) {
+            final HttpServletResponse response) {
         String domainName = DomainUtils.getDomainName(request);
         UserInfoResponse userInfoResponse = authService.reissueAccessToken(refreshToken);
         cookieService.addRefreshTokenCookie(response, userInfoResponse.refreshToken(), domainName);
@@ -54,8 +53,7 @@ public class AuthController implements AuthControllerSwagger {
     public Response<UserInfoResponse> loginCheck(
             @CookieValue(name = "refreshToken", required = false) final String refreshToken,
             final HttpServletRequest request,
-            final HttpServletResponse response
-    ) {
+            final HttpServletResponse response) {
         String domainName = DomainUtils.getDomainName(request);
         UserInfoResponse userInfoResponse = authService.reissueAccessToken(refreshToken);
         cookieService.addRefreshTokenCookie(response, userInfoResponse.refreshToken(), domainName);
@@ -67,8 +65,7 @@ public class AuthController implements AuthControllerSwagger {
     public Response<Void> logout(
             @CookieValue(name = "refreshToken", required = false) final String refreshToken,
             final HttpServletRequest request,
-            final HttpServletResponse response
-    ) {
+            final HttpServletResponse response) {
         String domainName = DomainUtils.getDomainName(request);
         authService.logout(refreshToken);
         cookieService.deleteRefreshTokenCookie(response, domainName);

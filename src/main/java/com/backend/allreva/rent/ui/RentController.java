@@ -1,7 +1,21 @@
 package com.backend.allreva.rent.ui;
 
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.backend.allreva.auth.security.AuthMember;
-import com.backend.allreva.common.dto.Response;
+import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.member.command.domain.Member;
 import com.backend.allreva.rent.command.application.RentCommandFacade;
 import com.backend.allreva.rent.command.application.request.RentIdRequest;
@@ -15,20 +29,9 @@ import com.backend.allreva.rent.query.application.response.RentAdminSummaryRespo
 import com.backend.allreva.rent.query.application.response.RentDetailResponse;
 import com.backend.allreva.rent.query.application.response.RentSummaryResponse;
 import com.backend.allreva.survey.query.application.response.SortType;
+
 import jakarta.validation.constraints.Min;
-import java.time.LocalDate;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
 
 @Validated
 @RestController
@@ -42,8 +45,7 @@ public class RentController implements RentControllerSwagger {
     @PostMapping
     public Response<Long> createRent(
             @RequestBody final RentRegisterRequest rentRegisterRequest,
-            @AuthMember final Member member
-    ) {
+            @AuthMember final Member member) {
         Long rentIdResponse = rentCommandFacade.registerRent(rentRegisterRequest, member.getId());
         return Response.onSuccess(rentIdResponse);
     }
@@ -51,8 +53,7 @@ public class RentController implements RentControllerSwagger {
     @PatchMapping
     public Response<Void> updateRent(
             @RequestBody final RentUpdateRequest rentUpdateRequest,
-            @AuthMember final Member member
-    ) {
+            @AuthMember final Member member) {
         rentCommandFacade.updateRent(rentUpdateRequest, member.getId());
         return Response.onSuccess();
     }
@@ -60,8 +61,7 @@ public class RentController implements RentControllerSwagger {
     @PatchMapping("/close")
     public Response<Void> closeRent(
             @RequestBody final RentIdRequest rentIdRequest,
-            @AuthMember final Member member
-    ) {
+            @AuthMember final Member member) {
         rentCommandFacade.closeRent(rentIdRequest, member.getId());
         return Response.onSuccess();
     }
@@ -69,14 +69,13 @@ public class RentController implements RentControllerSwagger {
     @DeleteMapping
     public Response<Void> deleteRent(
             @RequestBody final RentIdRequest rentIdRequest,
-            @AuthMember final Member member
-    ) {
+            @AuthMember final Member member) {
         rentCommandFacade.deleteRent(rentIdRequest, member.getId());
         return Response.onSuccess();
     }
 
     @GetMapping("/main")
-    public Response<List<RentSummaryResponse>> getRentMainSummaries(){
+    public Response<List<RentSummaryResponse>> getRentMainSummaries() {
         return Response.onSuccess(rentQueryService.getRentMainSummaries());
     }
 
@@ -86,8 +85,7 @@ public class RentController implements RentControllerSwagger {
             @RequestParam(name = "sort", defaultValue = "LATEST") final SortType sortType,
             @RequestParam(name = "lastId", required = false) final Long lastId,
             @RequestParam(name = "lastEndDate", required = false) final LocalDate lastEndDate,
-            @RequestParam(name = "pageSize", defaultValue = "10") @Min(10) final int pageSize
-    ) {
+            @RequestParam(name = "pageSize", defaultValue = "10") @Min(10) final int pageSize) {
         return Response.onSuccess(rentQueryService.getRentSummaries(region, sortType, lastEndDate, lastId, pageSize));
     }
 
@@ -95,23 +93,20 @@ public class RentController implements RentControllerSwagger {
     public Response<List<RentAdminSummaryResponse>> getRentAdminSummaries(
             @AuthMember Member member,
             @RequestParam(name = "lastId", required = false) final Long lastId,
-            @RequestParam(name = "pageSize", defaultValue = "10") @Min(10) final int pageSize
-    ) {
+            @RequestParam(name = "pageSize", defaultValue = "10") @Min(10) final int pageSize) {
         return Response.onSuccess(rentQueryService.getRentAdminSummaries(member.getId(), lastId, pageSize));
     }
 
     @GetMapping("/{id}")
     public Response<RentDetailResponse> getRentDetailById(
             @PathVariable final Long id,
-            @AuthMember final Member member
-    ) {
+            @AuthMember final Member member) {
         return Response.onSuccess(rentQueryService.getRentDetail(id, member));
     }
 
     @GetMapping("/{id}/deposit-account")
     public Response<DepositAccountResponse> getDepositAccountById(
-            @PathVariable final Long id
-    ) {
+            @PathVariable final Long id) {
         return Response.onSuccess(rentQueryService.getDepositAccount(id));
     }
 
@@ -119,8 +114,7 @@ public class RentController implements RentControllerSwagger {
     public Response<RentAdminDetailResponse> getRentAdminDetail(
             @PathVariable("id") final Long rentId,
             @RequestParam final LocalDate boardingDate,
-            @AuthMember Member member
-    ) {
+            @AuthMember Member member) {
         return Response.onSuccess(rentQueryService.getRentAdminDetail(member.getId(), boardingDate, rentId));
     }
 }

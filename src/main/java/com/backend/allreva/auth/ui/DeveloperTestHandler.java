@@ -1,7 +1,7 @@
 package com.backend.allreva.auth.ui;
 
-import com.backend.allreva.common.dto.Response;
 import com.backend.allreva.common.model.Email;
+import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.member.command.domain.Member;
 import com.backend.allreva.member.command.domain.MemberRepository;
 import com.backend.allreva.member.command.domain.value.LoginProvider;

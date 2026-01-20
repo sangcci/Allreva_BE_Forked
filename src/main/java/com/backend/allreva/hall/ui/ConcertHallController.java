@@ -1,18 +1,20 @@
 package com.backend.allreva.hall.ui;
 
-import com.backend.allreva.common.dto.Response;
-import com.backend.allreva.hall.query.application.ConcertHallQueryService;
-import com.backend.allreva.hall.query.application.response.ConcertHallDetailResponse;
-import com.backend.allreva.hall.query.application.response.ConcertHallMainResponse;
-import com.backend.allreva.hall.query.application.response.RelatedConcertResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.backend.allreva.common.web.response.Response;
+import com.backend.allreva.hall.query.application.ConcertHallQueryService;
+import com.backend.allreva.hall.query.application.response.ConcertHallDetailResponse;
+import com.backend.allreva.hall.query.application.response.ConcertHallMainResponse;
+import com.backend.allreva.hall.query.application.response.RelatedConcertResponse;
+
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/concert-halls")
@@ -34,8 +36,7 @@ public class ConcertHallController implements ConcertHallControllerSwagger {
             final int pageSize,
             final String searchAfter1,
             final String searchAfter2,
-            final String searchAfter3
-    ) {
+            final String searchAfter3) {
         List<Object> searchAfter = Stream.of(searchAfter1, searchAfter2, searchAfter3)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -43,8 +44,7 @@ public class ConcertHallController implements ConcertHallControllerSwagger {
                 address,
                 seatScale,
                 searchAfter,
-                pageSize
-        );
+                pageSize);
         return Response.onSuccess(concertHallMain);
     }
 
@@ -55,7 +55,6 @@ public class ConcertHallController implements ConcertHallControllerSwagger {
             final Long lastViewCount,
             final int pageSize) {
         return Response.onSuccess(
-                concertHallQueryService.getRelatedConcert(hallCode, lastId, lastViewCount, pageSize)
-        );
+                concertHallQueryService.getRelatedConcert(hallCode, lastId, lastViewCount, pageSize));
     }
 }

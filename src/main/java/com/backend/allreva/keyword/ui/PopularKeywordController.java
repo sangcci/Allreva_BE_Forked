@@ -1,14 +1,16 @@
 package com.backend.allreva.keyword.ui;
 
-import com.backend.allreva.common.dto.Response;
-import com.backend.allreva.keyword.query.application.PopularKeywordQueryService;
-import com.backend.allreva.keyword.query.application.dto.PopularKeywordResponse;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.backend.allreva.common.web.response.Response;
+import com.backend.allreva.keyword.query.application.PopularKeywordQueryService;
+import com.backend.allreva.keyword.query.application.dto.PopularKeywordResponse;
+
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
@@ -20,7 +22,6 @@ public class PopularKeywordController {
     @GetMapping("/popular")
     public Response<List<PopularKeywordResponse>> getPopularKeywordRank() {
         return Response.onSuccess(
-                popularKeywordService.getPopularKeywordRank()
-        );
+                popularKeywordService.getPopularKeywordRank());
     }
 }
