@@ -12,8 +12,8 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import com.backend.allreva.common.converter.DateConverter;
 import com.backend.allreva.common.model.Image;
+import com.backend.allreva.common.util.DateConverter;
 import com.backend.allreva.concert.command.domain.Concert;
 import com.backend.allreva.concert.command.domain.value.Code;
 import com.backend.allreva.concert.command.domain.value.ConcertInfo;

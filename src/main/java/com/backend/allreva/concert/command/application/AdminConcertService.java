@@ -1,7 +1,7 @@
 package com.backend.allreva.concert.command.application;
 
-import com.backend.allreva.common.converter.DateConverter;
 import com.backend.allreva.common.util.CsvUtil;
+import com.backend.allreva.common.util.DateConverter;
 import com.backend.allreva.concert.command.domain.Concert;
 import com.backend.allreva.concert.command.domain.ConcertRepository;
 import com.backend.allreva.concert.infra.dto.KopisConcertResponse;
@@ -79,6 +79,6 @@ public class AdminConcertService {
         YearMonth yearMonth = YearMonth.of(year, month);
         String startDate = DateConverter.convertToyyyyMMdd(yearMonth.atDay(1));
         String endDate = DateConverter.convertToyyyyMMdd(yearMonth.atEndOfMonth());
-        return new String[]{startDate, endDate};
+        return new String[] { startDate, endDate };
     }
 }

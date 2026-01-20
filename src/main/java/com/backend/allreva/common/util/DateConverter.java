@@ -1,4 +1,4 @@
-package com.backend.allreva.common.converter;
+package com.backend.allreva.common.util;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
