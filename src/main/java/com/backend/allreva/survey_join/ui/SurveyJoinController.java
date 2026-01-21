@@ -10,9 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend.allreva.auth.security.AuthMember;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.auth.security.AuthMember;
 import com.backend.allreva.survey.query.application.response.CreatedSurveyResponse;
 import com.backend.allreva.survey_join.command.application.SurveyJoinCommandService;
 import com.backend.allreva.survey_join.command.application.request.JoinSurveyRequest;

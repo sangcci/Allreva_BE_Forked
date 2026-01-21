@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend.allreva.auth.security.AuthMember;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.member.command.application.MemberCommandFacade;
 import com.backend.allreva.member.command.application.request.MemberRegisterRequest;
@@ -17,6 +16,7 @@ import com.backend.allreva.member.command.application.request.RefundAccountReque
 import com.backend.allreva.member.command.domain.Member;
 import com.backend.allreva.member.query.application.MemberQueryService;
 import com.backend.allreva.member.query.application.response.MemberDetailResponse;
+import com.backend.allreva.module.auth.security.AuthMember;
 
 import lombok.RequiredArgsConstructor;
 

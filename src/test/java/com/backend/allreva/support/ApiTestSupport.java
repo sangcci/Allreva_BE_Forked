@@ -1,12 +1,12 @@
 package com.backend.allreva.support;
 
-import com.backend.allreva.auth.security.JwtAuthenticationFilter;
-import com.backend.allreva.auth.ui.AuthController;
 import com.backend.allreva.common.config.SecurityConfig;
 import com.backend.allreva.member.command.application.MemberCommandFacade;
 import com.backend.allreva.member.command.domain.Member;
 import com.backend.allreva.member.command.domain.value.MemberRole;
 import com.backend.allreva.member.fixture.MemberFixture;
+import com.backend.allreva.module.auth.presentation.AuthController;
+import com.backend.allreva.module.auth.security.JwtAuthenticationFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -20,13 +20,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(
-        controllers = {AuthController.class},
-        excludeFilters = @ComponentScan.Filter(
-                type = FilterType.ASSIGNABLE_TYPE,
-                classes = {JwtAuthenticationFilter.class, SecurityConfig.class}
-        )
-)
+@WebMvcTest(controllers = {
+        AuthController.class }, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
+                JwtAuthenticationFilter.class, SecurityConfig.class }))
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
 public abstract class ApiTestSupport {

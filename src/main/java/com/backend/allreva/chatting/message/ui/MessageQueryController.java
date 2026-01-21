@@ -7,12 +7,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend.allreva.auth.security.AuthMember;
 import com.backend.allreva.chatting.message.query.EnterChatResponse;
 import com.backend.allreva.chatting.message.query.MessageQueryService;
 import com.backend.allreva.chatting.message.query.MessageResponse;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.auth.security.AuthMember;
 
 import lombok.RequiredArgsConstructor;
 

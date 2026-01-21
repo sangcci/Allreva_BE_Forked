@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend.allreva.auth.security.AuthMember;
 import com.backend.allreva.chatting.chat.integration.model.ChatParticipantDoc;
 import com.backend.allreva.chatting.chat.integration.model.ChatParticipantRepository;
 import com.backend.allreva.chatting.chat.integration.model.value.ChatSummary;
@@ -14,6 +13,7 @@ import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.member.command.domain.Member;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.member.exception.MemberErrorCode;
+import com.backend.allreva.module.auth.security.AuthMember;
 
 import lombok.RequiredArgsConstructor;
 

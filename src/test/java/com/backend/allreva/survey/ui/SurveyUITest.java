@@ -12,8 +12,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.backend.allreva.auth.security.JwtAuthenticationFilter;
 import com.backend.allreva.common.config.SecurityConfig;
+import com.backend.allreva.module.auth.security.JwtAuthenticationFilter;
 import com.backend.allreva.support.ApiTestSupport;
 import com.backend.allreva.support.WithCustomMockUser;
 import com.backend.allreva.survey.command.application.SurveyCommandService;
@@ -47,13 +47,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 
-@WebMvcTest(
-        controllers = {SurveyController.class, SurveyJoinController.class},
-        excludeFilters = @ComponentScan.Filter(
-                type = FilterType.ASSIGNABLE_TYPE,
-                classes = {JwtAuthenticationFilter.class, SecurityConfig.class}
-        )
-)
+@WebMvcTest(controllers = { SurveyController.class,
+        SurveyJoinController.class }, excludeFilters = @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = {
+                JwtAuthenticationFilter.class, SecurityConfig.class }))
 @AutoConfigureMockMvc(addFilters = false)
 class SurveyUITest extends ApiTestSupport {
 
@@ -87,12 +83,11 @@ class SurveyUITest extends ApiTestSupport {
 
         // When & Then
         mockMvc.perform(post(BASE_URI)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value(1L))
-        ;
+                .andExpect(jsonPath("$.result").value(1L));
     }
 
     @Test
@@ -114,11 +109,10 @@ class SurveyUITest extends ApiTestSupport {
 
         // When & Then
         mockMvc.perform(patch(BASE_URI)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
-                .andExpect(status().isOk())
-        ;
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -133,11 +127,10 @@ class SurveyUITest extends ApiTestSupport {
 
         // When & Then
         mockMvc.perform(delete(BASE_URI)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
-                .andExpect(status().isOk())
-        ;
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -156,12 +149,11 @@ class SurveyUITest extends ApiTestSupport {
 
         // When & Then
         mockMvc.perform(get(BASE_URI + "/{id}", surveyId)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.result.surveyId").value(1L))
-                .andExpect(jsonPath("$.result.title").value("하현상 콘서트 차대절 수요조사합니다."))
-        ;
+                .andExpect(jsonPath("$.result.title").value("하현상 콘서트 차대절 수요조사합니다."));
     }
 
     @Test
@@ -174,19 +166,17 @@ class SurveyUITest extends ApiTestSupport {
                 LocalDate.of(2030, 12, 1),
                 BoardingType.DOWN,
                 2,
-                true
-        );
+                true);
         // Mocking
         doReturn(1L).when(surveyJoinCommandService).createSurveyResponse(any(), any());
 
         // When & Then
         mockMvc.perform(post(BASE_URI + "/apply")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(request)))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result").value(1L))
-        ;
+                .andExpect(jsonPath("$.result").value(1L));
     }
 
     @Test
@@ -202,7 +192,7 @@ class SurveyUITest extends ApiTestSupport {
                 LocalDate.now());
         responseList.add(response);
 
-        //param
+        // param
         Region region = Region.서울;
         SortType sortType = SortType.LATEST;
         Long lastId = 1L;
@@ -214,16 +204,15 @@ class SurveyUITest extends ApiTestSupport {
 
         // When & Then
         mockMvc.perform(get(BASE_URI + "/list")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .param("region", region.toString())
-                        .param("sortType", sortType.toString())
-                        .param("lastId", lastId.toString())
-                        .param("lastEndDate", lastEndDate.toString())
-                        .param("pageSize", String.valueOf(pageSize)))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .param("region", region.toString())
+                .param("sortType", sortType.toString())
+                .param("lastId", lastId.toString())
+                .param("lastEndDate", lastEndDate.toString())
+                .param("pageSize", String.valueOf(pageSize)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result[0].surveyId").value(1L))
-        ;
+                .andExpect(jsonPath("$.result[0].surveyId").value(1L));
     }
 
     @Test
@@ -239,8 +228,7 @@ class SurveyUITest extends ApiTestSupport {
                 LocalDateTime.now(),
                 LocalDate.of(2024, 11, 25),
                 12,
-                30
-        );
+                30);
 
         CreatedSurveyResponse response = new CreatedSurveyResponse(surveyResponse,
                 2,
@@ -255,12 +243,11 @@ class SurveyUITest extends ApiTestSupport {
 
         // When & Then
         mockMvc.perform(get(BASE_URI + "/member/list")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .param("pageSize", String.valueOf(pageSize)))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .param("pageSize", String.valueOf(pageSize)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result[0].surveyResponse.surveyId").value(1L))
-        ;
+                .andExpect(jsonPath("$.result[0].surveyResponse.surveyId").value(1L));
     }
 
     @Test
@@ -276,8 +263,7 @@ class SurveyUITest extends ApiTestSupport {
                 LocalDateTime.now(),
                 LocalDate.of(2024, 11, 25),
                 12,
-                30
-        );
+                30);
 
         JoinSurveyResponse response = new JoinSurveyResponse(surveyResponse,
                 1L,
@@ -293,11 +279,10 @@ class SurveyUITest extends ApiTestSupport {
 
         // When & Then
         mockMvc.perform(get(BASE_URI + "/member/apply/list")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .param("pageSize", String.valueOf(pageSize)))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .param("pageSize", String.valueOf(pageSize)))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.result[0].surveyJoinId").value(1L))
-        ;
+                .andExpect(jsonPath("$.result[0].surveyJoinId").value(1L));
     }
 }

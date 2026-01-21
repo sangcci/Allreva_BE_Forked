@@ -5,10 +5,6 @@ import static com.backend.allreva.common.config.SecurityEndpointPaths.ANONYMOUS_
 import static com.backend.allreva.common.config.SecurityEndpointPaths.USER_LIST;
 import static com.backend.allreva.common.config.SecurityEndpointPaths.WHITE_LIST;
 
-import com.backend.allreva.auth.security.CustomAccessDeniedHandler;
-import com.backend.allreva.auth.security.CustomAuthenticationEntryPoint;
-import com.backend.allreva.auth.security.JwtAuthenticationFilter;
-import com.backend.allreva.auth.security.JwtExceptionFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +22,11 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfigurationSource;
+
+import com.backend.allreva.module.auth.security.CustomAccessDeniedHandler;
+import com.backend.allreva.module.auth.security.CustomAuthenticationEntryPoint;
+import com.backend.allreva.module.auth.security.JwtAuthenticationFilter;
+import com.backend.allreva.module.auth.security.JwtExceptionFilter;
 
 @Configuration
 @EnableMethodSecurity
@@ -71,6 +72,7 @@ public class SecurityConfig {
     }
 
     @Bean
+            
     public AuthenticationManager authenticationManager(final AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }

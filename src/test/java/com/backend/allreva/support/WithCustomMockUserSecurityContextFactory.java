@@ -1,9 +1,10 @@
 package com.backend.allreva.support;
 
-import com.backend.allreva.auth.security.PrincipalDetails;
 import com.backend.allreva.member.command.domain.Member;
 import com.backend.allreva.member.command.domain.value.MemberRole;
 import com.backend.allreva.member.fixture.MemberFixture;
+import com.backend.allreva.module.auth.security.PrincipalDetails;
+
 import java.util.List;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,8 +19,8 @@ public class WithCustomMockUserSecurityContextFactory implements WithSecurityCon
         Member member = MemberFixture.createMemberFixture(1L, MemberRole.USER);
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
 
-        PrincipalDetails principalDetails = new PrincipalDetails(member);
-        UsernamePasswordAuthenticationToken token =
+        PrincipalDetails principalDetails = new Pri PasswordAuthenticationToken token =
+                
                 new UsernamePasswordAuthenticationToken(principalDetails, null, authorities);
 
         SecurityContext context = SecurityContextHolder.createEmptyContext();

@@ -1,7 +1,8 @@
 package com.backend.allreva.chatting.notification;
 
-import com.backend.allreva.auth.security.AuthMember;
 import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.auth.security.AuthMember;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;

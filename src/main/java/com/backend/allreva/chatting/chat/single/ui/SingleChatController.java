@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend.allreva.auth.security.AuthMember;
 import com.backend.allreva.chatting.chat.single.command.application.SingleChatCommandService;
 import com.backend.allreva.chatting.chat.single.command.application.dto.LeaveSingleChatRequest;
 import com.backend.allreva.chatting.chat.single.command.application.dto.StartSingleChattingRequest;
@@ -16,6 +15,7 @@ import com.backend.allreva.chatting.chat.single.query.SingleChatDetailResponse;
 import com.backend.allreva.chatting.chat.single.query.SingleChatQueryService;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.auth.security.AuthMember;
 
 import lombok.RequiredArgsConstructor;
 

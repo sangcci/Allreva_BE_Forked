@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.backend.allreva.auth.security.AuthMember;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.auth.security.AuthMember;
 import com.backend.allreva.seat_review.command.application.SeatReviewFacade;
 import com.backend.allreva.seat_review.command.application.dto.ReviewCreateRequest;
 import com.backend.allreva.seat_review.command.application.dto.ReviewUpdateRequest;

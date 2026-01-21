@@ -1,6 +1,5 @@
 package com.backend.allreva.chatting.chat.group.ui;
 
-import com.backend.allreva.auth.security.AuthMember;
 import com.backend.allreva.chatting.chat.group.command.application.GroupChatCommandService;
 import com.backend.allreva.chatting.chat.group.command.application.request.DeleteGroupChatRequest;
 import com.backend.allreva.chatting.chat.group.command.application.request.JoinGroupChatRequest;
@@ -11,6 +10,8 @@ import com.backend.allreva.chatting.chat.group.query.response.GroupChatDetailRes
 import com.backend.allreva.chatting.chat.group.query.response.GroupChatOverviewResponse;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.auth.security.AuthMember;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
