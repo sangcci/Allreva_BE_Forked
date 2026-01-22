@@ -1,7 +1,7 @@
-package com.backend.allreva.diary.domain;
+package com.backend.allreva.module.diary;
 
 import com.backend.allreva.common.model.Image;
-import com.backend.allreva.diary.command.domain.ConcertDiary;
+import com.backend.allreva.module.diary.domain.ConcertDiary;
 import com.backend.allreva.support.IntegrationTestSupport;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 class DiaryDomainTest extends IntegrationTestSupport {
-
 
     @DisplayName("공연 기록의 이미지를 수정하면 수정된 이미지로 대체된다")
     @Test
@@ -38,11 +37,9 @@ class DiaryDomainTest extends IntegrationTestSupport {
                 "episode1",
                 "내용",
                 "그냥 자리",
-                updatedImages
-        );
+                updatedImages);
 
         Assertions.assertThat(diary.getDiaryImages()).containsAll(updatedImages);
         Assertions.assertThat(diary.getDiaryImages()).doesNotContainAnyElementsOf(images);
-
     }
 }

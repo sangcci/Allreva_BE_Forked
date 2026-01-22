@@ -1,4 +1,4 @@
-package com.backend.allreva.diary.exception;
+package com.backend.allreva.module.diary.exception;
 
 import org.springframework.http.HttpStatus;
 

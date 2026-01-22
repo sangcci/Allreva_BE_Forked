@@ -1,7 +1,7 @@
-package com.backend.allreva.diary.infra;
+package com.backend.allreva.module.diary.infra;
 
-import com.backend.allreva.diary.query.response.DiaryDetailResponse;
-import com.backend.allreva.diary.query.response.DiarySummaryResponse;
+import com.backend.allreva.module.diary.application.dto.DiaryDetailResponse;
+import com.backend.allreva.module.diary.application.dto.DiarySummaryResponse;
 
 import java.util.List;
 

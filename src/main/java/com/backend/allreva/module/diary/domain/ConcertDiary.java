@@ -1,9 +1,9 @@
-package com.backend.allreva.diary.command.domain;
+package com.backend.allreva.module.diary.domain;
 
 import com.backend.allreva.common.model.BaseEntity;
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.diary.exception.DiaryErrorCode;
+import com.backend.allreva.module.diary.exception.DiaryErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -66,7 +66,9 @@ public class ConcertDiary extends BaseEntity {
     }
 
     public void addImages(final List<Image> images) {
-        this.diaryImages.addAll(images);
+        if (images != null) {
+            this.diaryImages.addAll(images);
+        }
     }
 
     public void addMemberId(final Long memberId) {
@@ -93,6 +95,8 @@ public class ConcertDiary extends BaseEntity {
         this.seatName = seatName;
 
         this.diaryImages.clear();
-        this.diaryImages.addAll(diaryImages);
+        if (diaryImages != null) {
+            this.diaryImages.addAll(diaryImages);
+        }
     }
 }

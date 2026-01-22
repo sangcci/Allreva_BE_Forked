@@ -1,4 +1,4 @@
-package com.backend.allreva.diary.ui;
+package com.backend.allreva.module.diary.presentation;
 
 import java.util.List;
 
@@ -13,32 +13,30 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.allreva.common.web.response.Response;
-import com.backend.allreva.diary.command.application.DiaryCommandService;
-import com.backend.allreva.diary.command.application.request.AddDiaryRequest;
-import com.backend.allreva.diary.command.application.request.UpdateDiaryRequest;
-import com.backend.allreva.diary.query.DiaryQueryService;
-import com.backend.allreva.diary.query.response.DiaryDetailResponse;
-import com.backend.allreva.diary.query.response.DiarySummaryResponse;
 import com.backend.allreva.member.command.domain.Member;
 import com.backend.allreva.module.auth.security.AuthMember;
+import com.backend.allreva.module.diary.application.DiaryService;
+import com.backend.allreva.module.diary.application.dto.AddDiaryRequest;
+import com.backend.allreva.module.diary.application.dto.DiaryDetailResponse;
+import com.backend.allreva.module.diary.application.dto.DiarySummaryResponse;
+import com.backend.allreva.module.diary.application.dto.UpdateDiaryRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
-@RequestMapping("/api/v1/diaries")
 @RestController
+@RequestMapping("/api/v1/diaries")
+@RequiredArgsConstructor
 public class DiaryController {
 
-    private final DiaryCommandService diaryCommandService;
-    private final DiaryQueryService diaryQueryService;
+    private final DiaryService diaryService;
 
     @Operation(summary = "공연 기록 등록", description = "이미지 URL 만 넣어주세요")
     @PostMapping
     public Response<Long> addDiary(
             @RequestBody final AddDiaryRequest request,
             @AuthMember final Member member) {
-        Long diaryId = diaryCommandService.add(request, member.getId());
+        Long diaryId = diaryService.add(request, member.getId());
         return Response.onSuccess(diaryId);
     }
 
@@ -47,7 +45,7 @@ public class DiaryController {
     public Response<Void> updateDiary(
             @RequestBody final UpdateDiaryRequest request,
             @AuthMember final Member member) {
-        diaryCommandService.update(request, member.getId());
+        diaryService.update(request, member.getId());
         return Response.onSuccess();
     }
 
@@ -56,7 +54,7 @@ public class DiaryController {
     public Response<DiaryDetailResponse> findDiaryDetail(
             @PathVariable("diaryId") final Long diaryId,
             @AuthMember final Member member) {
-        DiaryDetailResponse detail = diaryQueryService.findDetailById(diaryId, member.getId());
+        DiaryDetailResponse detail = diaryService.findDetailById(diaryId, member.getId());
         return Response.onSuccess(detail);
     }
 
@@ -66,7 +64,7 @@ public class DiaryController {
             @RequestParam(name = "year") final int year,
             @RequestParam(name = "month") final int month,
             @AuthMember final Member member) {
-        List<DiarySummaryResponse> summaries = diaryQueryService.findSummaries(
+        List<DiarySummaryResponse> summaries = diaryService.findSummaries(
                 member.getId(),
                 year,
                 month);
@@ -78,7 +76,7 @@ public class DiaryController {
     public Response<Void> deleteDiary(
             @PathVariable("diaryId") final Long diaryId,
             @AuthMember final Member member) {
-        diaryCommandService.delete(diaryId, member.getId());
+        diaryService.delete(diaryId, member.getId());
         return Response.onSuccess();
     }
 }

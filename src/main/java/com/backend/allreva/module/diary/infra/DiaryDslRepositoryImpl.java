@@ -1,21 +1,23 @@
-package com.backend.allreva.diary.infra;
+package com.backend.allreva.module.diary.infra;
 
-import com.backend.allreva.diary.query.response.DiaryDetailResponse;
-import com.backend.allreva.diary.query.response.DiarySummaryResponse;
-import com.querydsl.core.group.GroupBy;
-import com.querydsl.core.types.ConstructorExpression;
-import com.querydsl.core.types.Projections;
-import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+import static com.backend.allreva.common.model.QImage.image;
+import static com.backend.allreva.concert.command.domain.QConcert.concert;
+import static com.backend.allreva.module.diary.domain.QConcertDiary.concertDiary;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.List;
 
-import static com.backend.allreva.common.model.QImage.image;
-import static com.backend.allreva.concert.command.domain.QConcert.concert;
-import static com.backend.allreva.diary.command.domain.QConcertDiary.concertDiary;
+import org.springframework.stereotype.Repository;
+
+import com.backend.allreva.module.diary.application.dto.DiaryDetailResponse;
+import com.backend.allreva.module.diary.application.dto.DiarySummaryResponse;
+import com.querydsl.core.group.GroupBy;
+import com.querydsl.core.types.ConstructorExpression;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+
+import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Repository
@@ -26,8 +28,7 @@ public class DiaryDslRepositoryImpl implements DiaryDslRepository {
     @Override
     public DiaryDetailResponse findDetail(
             final Long diaryId,
-            final Long memberId
-    ) {
+            final Long memberId) {
         return queryFactory
                 .from(concertDiary)
                 .leftJoin(concertDiary.diaryImages, image)
@@ -47,16 +48,14 @@ public class DiaryDslRepositoryImpl implements DiaryDslRepository {
                 concertDiary.episode,
                 concertDiary.seatName,
                 GroupBy.list(image),
-                concertDiary.content
-                );
+                concertDiary.content);
     }
 
     @Override
     public List<DiarySummaryResponse> findSummaries(
             final Long memberId,
             final int year,
-            final int month
-    ) {
+            final int month) {
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDate startDate = yearMonth.atDay(1);
         LocalDate endDate = yearMonth.atEndOfMonth();
@@ -73,7 +72,6 @@ public class DiaryDslRepositoryImpl implements DiaryDslRepository {
         return Projections.constructor(DiarySummaryResponse.class,
                 concertDiary.id,
                 concert.poster,
-                concertDiary.diaryDate
-        );
+                concertDiary.diaryDate);
     }
 }
