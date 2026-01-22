@@ -54,18 +54,19 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     testImplementation 'org.springframework.security:spring-security-test'
 
-    // Jwt
+    // jwt
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 
-    // jpa
+    // database
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
-    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
-    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+    implementation("io.github.openfeign.querydsl:querydsl-core:7.1")
+    implementation("io.github.openfeign.querydsl:querydsl-jpa:7.1")
+    annotationProcessor("io.github.openfeign.querydsl:querydsl-apt:7.1:jpa")
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+    implementation 'org.springframework.boot:spring-boot-starter-data-elasticsearch'
     runtimeOnly 'com.h2database:h2'
     runtimeOnly 'com.mysql:mysql-connector-j'
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
@@ -106,4 +107,3 @@ tasks.named('test') {
 clean {
     delete file('src/main/generated')
 }
-
