@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 import com.backend.allreva.artist.command.domain.Artist;
 import com.backend.allreva.artist.command.domain.ArtistRepository;
 import com.backend.allreva.artist.exception.ArtistErrorCode;
+import com.backend.allreva.artist.infra.spotify.SpotifyAccountClient;
+import com.backend.allreva.artist.infra.spotify.SpotifyClient;
 import com.backend.allreva.artist.query.application.response.SpotifyArtistWrapper;
 import com.backend.allreva.artist.query.application.response.SpotifySearchResponse;
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.common.feign.SpotifyAccountClient;
-import com.backend.allreva.common.feign.SpotifyClient;
 
 import lombok.RequiredArgsConstructor;
 
