@@ -1,7 +1,8 @@
-package com.backend.allreva.common.event;
+package com.backend.allreva.module.notification.domain;
 
 import java.text.MessageFormat;
 import java.util.List;
+
 import lombok.Getter;
 
 @Getter
@@ -22,8 +23,7 @@ public enum NotificationMessage {
 
     public NotificationEvent toEvent(
             List<Long> recipientIds,
-            Object... args
-    ){
+            Object... args) {
         return NotificationEvent.builder()
                 .title(title)
                 .message(MessageFormat.format(message, args))

@@ -1,4 +1,4 @@
-package com.backend.allreva.notification.ui;
+package com.backend.allreva.module.notification.presentation;
 
 import java.util.List;
 
@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.member.command.domain.Member;
 import com.backend.allreva.module.auth.security.AuthMember;
-import com.backend.allreva.notification.command.NotificationService;
-import com.backend.allreva.notification.command.domain.Notification;
-import com.backend.allreva.notification.command.dto.DeviceTokenRequest;
-import com.backend.allreva.notification.command.dto.NotificationIdRequest;
+import com.backend.allreva.module.notification.application.NotificationService;
+import com.backend.allreva.module.notification.application.dto.NotificationTargetRequest;
+import com.backend.allreva.module.notification.application.dto.NotificationIdRequest;
+import com.backend.allreva.module.notification.domain.Notification;
 
 import lombok.RequiredArgsConstructor;
 
@@ -49,15 +49,15 @@ public class NotificationController implements NotificationSwagger {
     @PostMapping("/device-token")
     public Response<Void> registerDeviceToken(
             @AuthMember final Member member,
-            @RequestBody final DeviceTokenRequest deviceTokenRequest) {
-        notificationService.registerDeviceToken(member, deviceTokenRequest);
+            @RequestBody final NotificationTargetRequest deviceTokenRequest) {
+        notificationService.registerTarget(member, deviceTokenRequest);
         return Response.onSuccess();
     }
 
     @DeleteMapping("/device-token")
     public Response<Void> deleteDeviceToken(
             @RequestBody final Member member) {
-        notificationService.deleteDeviceToken(member);
+        notificationService.deleteTarget(member);
         return Response.onSuccess();
     }
 }

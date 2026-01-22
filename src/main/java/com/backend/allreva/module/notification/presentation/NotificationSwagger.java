@@ -1,12 +1,12 @@
-package com.backend.allreva.notification.ui;
+package com.backend.allreva.module.notification.presentation;
 
 import java.util.List;
 
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.member.command.domain.Member;
-import com.backend.allreva.notification.command.domain.Notification;
-import com.backend.allreva.notification.command.dto.DeviceTokenRequest;
-import com.backend.allreva.notification.command.dto.NotificationIdRequest;
+import com.backend.allreva.module.notification.application.dto.NotificationTargetRequest;
+import com.backend.allreva.module.notification.application.dto.NotificationIdRequest;
+import com.backend.allreva.module.notification.domain.Notification;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,7 +30,7 @@ public interface NotificationSwagger {
     @Operation(summary = "디바이스 토큰 등록")
     Response<Void> registerDeviceToken(
             Member member,
-            DeviceTokenRequest deviceTokenRequest);
+            NotificationTargetRequest deviceTokenRequest);
 
     @Operation(summary = "디바이스 토큰 삭제")
     Response<Void> deleteDeviceToken(

@@ -1,5 +1,14 @@
 package com.backend.allreva.survey_join.infra.rdb;
 
+import static com.backend.allreva.survey.command.domain.QSurvey.survey;
+import static com.backend.allreva.survey.command.domain.QSurveyBoardingDate.surveyBoardingDate;
+import static com.backend.allreva.survey_join.command.domain.QSurveyJoin.surveyJoin;
+
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
 import com.backend.allreva.survey.query.application.response.CreatedSurveyResponse;
 import com.backend.allreva.survey.query.application.response.SurveyResponse;
 import com.backend.allreva.survey_join.command.domain.value.BoardingType;
@@ -13,27 +22,19 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
-import java.time.LocalDate;
-import java.util.List;
-
-import static com.backend.allreva.survey.command.domain.QSurvey.survey;
-import static com.backend.allreva.survey.command.domain.QSurveyBoardingDate.surveyBoardingDate;
-import static com.backend.allreva.survey_join.command.domain.QSurveyJoin.surveyJoin;
 
 @Repository
 @RequiredArgsConstructor
 public class SurveyJoinDslRepositoryImpl implements SurveyJoinDslRepository {
     private final JPAQueryFactory jpaQueryFactory;
 
-
     @Override
     public List<CreatedSurveyResponse> getCreatedSurveyList(final Long memberId,
-                                                            final Long lastId,
-                                                            final LocalDate lastBoardingDate,
-                                                            final int pageSize) {
+            final Long lastId,
+            final LocalDate lastBoardingDate,
+            final int pageSize) {
 
         return jpaQueryFactory
                 .select(createdSurveyProjections())
@@ -68,7 +69,7 @@ public class SurveyJoinDslRepositoryImpl implements SurveyJoinDslRepository {
     }
 
     private BooleanExpression getPagingCondition(final Long lastId, final LocalDate lastBoardingDate) {
-        //첫페이지인 경우 조건 없음
+        // 첫페이지인 경우 조건 없음
         if (lastId == null && lastBoardingDate == null) {
             return null;
         }
@@ -76,20 +77,19 @@ public class SurveyJoinDslRepositoryImpl implements SurveyJoinDslRepository {
                 .or(survey.id.eq(lastId).and(surveyBoardingDate.date.gt(lastBoardingDate)));
     }
 
-    //해당하는 boardingType이면 passengerNum을 더함
+    // 해당하는 boardingType이면 passengerNum을 더함
     private NumberExpression<Integer> getPassengerSumByBoardingType(final BoardingType boardingType) {
         return Expressions.cases()
                 .when(surveyJoin.boardingType.eq(boardingType))
                 .then(surveyJoin.passengerNum)
                 .otherwise(0)
-                .sum();
+                .sumAggregate();
     }
-
 
     @Override
     public List<JoinSurveyResponse> getJoinSurveyList(final Long memberId,
-                                                      final Long lastId,
-                                                      final int pageSize) {
+            final Long lastId,
+            final int pageSize) {
         return jpaQueryFactory
                 .select(JoinSurveyProjections())
                 .from(survey)
@@ -120,13 +120,12 @@ public class SurveyJoinDslRepositoryImpl implements SurveyJoinDslRepository {
                 surveyJoin.id,
                 surveyJoin.createdAt,
                 surveyJoin.boardingType,
-                surveyJoin.passengerNum
-        );
+                surveyJoin.passengerNum);
     }
 
     private static Expression<Integer> getParticipationCount() {
         return ExpressionUtils.as(JPAExpressions
-                .select(surveyJoin.passengerNum.sum())
+                .select(surveyJoin.passengerNum.sumAggregate())
                 .from(surveyJoin)
                 .where(surveyJoin.surveyId.eq(survey.id)
                         .and(surveyJoin.boardingDate.eq(surveyBoardingDate.date)))

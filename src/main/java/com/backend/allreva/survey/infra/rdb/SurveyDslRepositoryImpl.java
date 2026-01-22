@@ -1,5 +1,15 @@
 package com.backend.allreva.survey.infra.rdb;
 
+import static com.backend.allreva.survey.command.domain.QSurvey.survey;
+import static com.backend.allreva.survey.command.domain.QSurveyBoardingDate.surveyBoardingDate;
+import static com.backend.allreva.survey_join.command.domain.QSurveyJoin.surveyJoin;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.stereotype.Repository;
+
 import com.backend.allreva.common.util.DateHolder;
 import com.backend.allreva.survey.command.domain.value.Region;
 import com.backend.allreva.survey.query.application.response.SortType;
@@ -15,16 +25,8 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
-import static com.backend.allreva.survey.command.domain.QSurvey.survey;
-import static com.backend.allreva.survey.command.domain.QSurveyBoardingDate.surveyBoardingDate;
-import static com.backend.allreva.survey_join.command.domain.QSurveyJoin.surveyJoin;
 
 @Repository
 @RequiredArgsConstructor
@@ -42,9 +44,8 @@ public class SurveyDslRepositoryImpl implements SurveyDslRepository {
                 .groupBy(surveyBoardingDate.date)
                 .transform(
                         GroupBy.groupBy(survey.id).as(
-                                surveyDetailProjections()
-                        )
-                ).get(surveyId);
+                                surveyDetailProjections()))
+                .get(surveyId);
     }
 
     private static ConstructorExpression<SurveyDetailResponse> surveyDetailProjections() {
@@ -55,20 +56,17 @@ public class SurveyDslRepositoryImpl implements SurveyDslRepository {
                         Projections.constructor(
                                 SurveyBoardingDateResponse.class,
                                 surveyBoardingDate.date,
-                                surveyJoin.passengerNum.sum()
-                        )),
+                                surveyJoin.passengerNum.sumAggregate())),
                 survey.information,
-                survey.isClosed
-        );
+                survey.isClosed);
     }
-
 
     @Override
     public List<SurveySummaryResponse> findSurveyList(final Region region,
-                                                      final SortType sortType,
-                                                      final Long lastId,
-                                                      final LocalDate lastEndDate,
-                                                      final int pageSize) {
+            final SortType sortType,
+            final Long lastId,
+            final LocalDate lastEndDate,
+            final int pageSize) {
 
         return queryFactory
                 .select(surveySummaryProjections())
@@ -105,7 +103,7 @@ public class SurveyDslRepositoryImpl implements SurveyDslRepository {
                         survey.region,
                         Expressions.as(
                                 JPAExpressions
-                                        .select(surveyJoin.passengerNum.sum().coalesce(0))
+                                        .select(surveyJoin.passengerNum.sumAggregate().coalesce(0))
                                         .from(surveyJoin)
                                         .where(surveyJoin.surveyId.eq(survey.id)
                                                 .and(surveyJoin.deletedAt.isNull())),
@@ -122,9 +120,8 @@ public class SurveyDslRepositoryImpl implements SurveyDslRepository {
                 survey.id,
                 survey.title,
                 survey.region,
-                surveyJoin.passengerNum.sum(),
-                survey.endDate
-        );
+                surveyJoin.passengerNum.sumAggregate(),
+                survey.endDate);
     }
 
     private static BooleanExpression getRegionCondition(final Region region) {
@@ -132,9 +129,9 @@ public class SurveyDslRepositoryImpl implements SurveyDslRepository {
     }
 
     private BooleanExpression getPagingCondition(final SortType sortType,
-                                                 final Long lastId,
-                                                 final LocalDate lastEndDate) {
-        //첫페이지인 경우 조건 없음
+            final Long lastId,
+            final LocalDate lastEndDate) {
+        // 첫페이지인 경우 조건 없음
         if (lastId == null && lastEndDate == null) {
             return null;
         }
@@ -142,7 +139,7 @@ public class SurveyDslRepositoryImpl implements SurveyDslRepository {
         switch (sortType) {
             case CLOSING -> {
                 return (survey.endDate.gt(lastEndDate))
-                        .or(survey.endDate.eq(lastEndDate).and(survey.id.gt(lastId))); //endDate가 같을 경우 lastId 오래된 순
+                        .or(survey.endDate.eq(lastEndDate).and(survey.id.gt(lastId))); // endDate가 같을 경우 lastId 오래된 순
             }
             case OLDEST -> {
                 return survey.id.gt(lastId);
@@ -156,18 +153,18 @@ public class SurveyDslRepositoryImpl implements SurveyDslRepository {
     private OrderSpecifier<?>[] orderSpecifiers(final SortType sortType) {
         switch (sortType) {
             case CLOSING -> {
-                return new OrderSpecifier[]{
+                return new OrderSpecifier[] {
                         survey.endDate.asc(),
                         survey.id.asc()
                 };
             }
             case OLDEST -> {
-                return new OrderSpecifier[]{
+                return new OrderSpecifier[] {
                         survey.id.asc()
                 };
             }
             default -> {
-                return new OrderSpecifier[]{
+                return new OrderSpecifier[] {
                         survey.id.desc()
                 };
             }

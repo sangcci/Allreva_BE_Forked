@@ -1,11 +1,14 @@
-package com.backend.allreva.notification.infra;
+package com.backend.allreva.module.notification.infra;
 
-import com.backend.allreva.notification.command.NotificationRepository;
-import com.backend.allreva.notification.command.domain.Notification;
 import java.util.List;
 import java.util.Optional;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Repository;
+
+import com.backend.allreva.module.notification.domain.Notification;
+import com.backend.allreva.module.notification.domain.NotificationRepository;
+
+import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
@@ -26,7 +29,8 @@ public class NotificationRepositoryImpl implements NotificationRepository {
     }
 
     @Override
-    public List<Notification> findNotificationsByRecipientId(final Long recipientId, final Long lastId, final int pageSize) {
+    public List<Notification> findNotificationsByRecipientId(final Long recipientId, final Long lastId,
+            final int pageSize) {
         return notificationDslRepository.findNotificationsByRecipientId(recipientId, lastId, pageSize);
     }
 

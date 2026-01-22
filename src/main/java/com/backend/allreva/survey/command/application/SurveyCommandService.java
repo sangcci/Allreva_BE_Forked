@@ -7,11 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.allreva.common.event.Events;
-import com.backend.allreva.common.event.NotificationMessage;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.concert.exception.ConcertErrorCode;
 import com.backend.allreva.concert.infra.dto.ConcertDateInfoResponse;
 import com.backend.allreva.concert.infra.rdb.ConcertJpaRepository;
+import com.backend.allreva.module.notification.domain.NotificationMessage;
 import com.backend.allreva.survey.command.application.request.OpenSurveyRequest;
 import com.backend.allreva.survey.command.application.request.SurveyIdRequest;
 import com.backend.allreva.survey.command.application.request.UpdateSurveyRequest;

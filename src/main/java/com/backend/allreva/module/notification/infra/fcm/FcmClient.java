@@ -1,6 +1,5 @@
-package com.backend.allreva.firebase.infra;
+package com.backend.allreva.module.notification.infra.fcm;
 
-import com.backend.allreva.firebase.dto.FcmMessage;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +13,5 @@ public interface FcmClient {
     String sendMessage(
             @RequestHeader("Authorization") final String authorization,
             @RequestBody final FcmMessage message,
-            @PathVariable("projectId") final String projectId
-    );
+            @PathVariable("projectId") final String projectId);
 }

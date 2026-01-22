@@ -1,26 +1,24 @@
-package com.backend.allreva.firebase.dto;
+package com.backend.allreva.module.notification.infra.fcm;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Builder;
 
 @Builder
 public record FcmMessage(
         @JsonProperty("validate_only") boolean validateOnly,
-        Message message
-) {
+        Message message) {
     @Builder
     public record Message(
             Notification notification,
-            String token
-    ) {
+            String token) {
 
     }
 
     @Builder
     public record Notification(
             String title,
-            String body
-    ) {
+            String body) {
 
     }
 
@@ -28,8 +26,7 @@ public record FcmMessage(
             final String token,
             final boolean validateOnly,
             final String title,
-            final String message
-    ) {
+            final String message) {
         return FcmMessage.builder()
                 .validateOnly(validateOnly)
                 .message(Message.builder()

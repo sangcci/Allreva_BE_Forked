@@ -1,4 +1,4 @@
-package com.backend.allreva.notification.command.domain;
+package com.backend.allreva.module.notification.domain;
 
 import com.backend.allreva.common.model.BaseEntity;
 import jakarta.persistence.Entity;

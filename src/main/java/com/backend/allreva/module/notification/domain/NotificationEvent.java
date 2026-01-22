@@ -1,6 +1,9 @@
-package com.backend.allreva.common.event;
+package com.backend.allreva.module.notification.domain;
 
 import java.util.List;
+
+import com.backend.allreva.common.event.Event;
+
 import lombok.Builder;
 import lombok.Getter;
 

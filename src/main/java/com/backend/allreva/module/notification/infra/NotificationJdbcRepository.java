@@ -1,12 +1,13 @@
-package com.backend.allreva.notification.infra;
+package com.backend.allreva.module.notification.infra;
 
-import com.backend.allreva.notification.command.domain.Notification;
 import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import com.backend.allreva.module.notification.domain.Notification;
 
 @Repository
 @RequiredArgsConstructor
@@ -29,7 +30,6 @@ public class NotificationJdbcRepository {
                     ps.setObject(5, now);
                     ps.setObject(6, now);
                     ps.setNull(7, Types.TIMESTAMP);
-                }
-        );
+                });
     }
 }
