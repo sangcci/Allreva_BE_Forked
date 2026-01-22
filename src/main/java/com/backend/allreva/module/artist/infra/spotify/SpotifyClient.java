@@ -1,11 +1,11 @@
-package com.backend.allreva.artist.infra.spotify;
+package com.backend.allreva.module.artist.infra.spotify;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.backend.allreva.artist.query.application.response.SpotifyArtistWrapper;
+import com.backend.allreva.module.artist.infra.spotify.dto.SpotifyArtistWrapper;
 
 @FeignClient(name = "spotify", url = "https://api.spotify.com")
 public interface SpotifyClient {

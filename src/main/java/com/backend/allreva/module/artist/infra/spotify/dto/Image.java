@@ -1,4 +1,4 @@
-package com.backend.allreva.artist.query.application.response;
+package com.backend.allreva.module.artist.infra.spotify.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -6,6 +6,5 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public record Image(
         String url,
         int height,
-        int width
-) {
+        int width) {
 }

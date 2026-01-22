@@ -1,8 +1,8 @@
-package com.backend.allreva.artist.ui;
+package com.backend.allreva.module.artist.presentation;
 
-import com.backend.allreva.artist.query.application.ArtistQueryService;
-import com.backend.allreva.artist.query.application.response.SpotifySearchResponse;
 import com.backend.allreva.common.web.response.Response;
+import com.backend.allreva.module.artist.application.dto.ArtistSearchResponse;
+import com.backend.allreva.module.artist.application.port.ArtistSearchPort;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,13 +16,13 @@ import java.util.List;
 @RequestMapping("/api/v1/artists")
 @RequiredArgsConstructor
 public class ArtistController {
-    private final ArtistQueryService artistQueryService;
+    private final ArtistSearchPort artistSearchPort;
 
     @GetMapping("/search")
-    public Response<List<SpotifySearchResponse>> searchArtist(
+    public Response<List<ArtistSearchResponse>> searchArtist(
             final @RequestParam String query) {
         return Response.onSuccess(
-                artistQueryService.searchArtist(query));
+                artistSearchPort.searchArtist(query));
     }
 
 }

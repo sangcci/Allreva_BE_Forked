@@ -1,20 +1,22 @@
 package com.backend.allreva.member.infra;
 
+import static com.backend.allreva.member.command.domain.QMember.member;
+import static com.backend.allreva.member.command.domain.QMemberArtist.memberArtist;
+import static com.backend.allreva.module.artist.domain.QArtist.artist;
+
+import org.springframework.stereotype.Repository;
+
 import com.backend.allreva.chatting.chat.single.command.domain.value.OtherMember;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.member.exception.MemberErrorCode;
 import com.backend.allreva.member.query.application.MemberDetailRepository;
 import com.backend.allreva.member.query.application.response.MemberDetailResponse;
+import com.backend.allreva.member.query.application.response.MemberDetailResponse.MemberArtistDetail;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 
-import static com.backend.allreva.artist.command.domain.QArtist.artist;
-import static com.backend.allreva.member.command.domain.QMember.member;
-import static com.backend.allreva.member.command.domain.QMemberArtist.memberArtist;
-import static com.backend.allreva.member.query.application.response.MemberDetailResponse.*;
+import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor

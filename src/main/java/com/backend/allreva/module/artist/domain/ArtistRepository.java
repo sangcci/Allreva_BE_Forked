@@ -1,4 +1,4 @@
-package com.backend.allreva.artist.command.domain;
+package com.backend.allreva.module.artist.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

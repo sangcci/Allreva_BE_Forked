@@ -1,4 +1,4 @@
-package com.backend.allreva.artist.command.domain;
+package com.backend.allreva.module.artist.domain;
 
 import com.backend.allreva.common.model.BaseEntity;
 import jakarta.persistence.Entity;
@@ -13,7 +13,6 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLRestriction("deleted_at is NULL")
 @SQLDelete(sql = "UPDATE artist SET deleted_at = NOW() WHERE id = ?")
-
 @Entity
 public class Artist extends BaseEntity {
 

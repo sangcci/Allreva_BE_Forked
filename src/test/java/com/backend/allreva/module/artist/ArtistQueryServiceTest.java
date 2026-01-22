@@ -1,4 +1,4 @@
-package com.backend.allreva.artist.integration;
+package com.backend.allreva.module.artist;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,15 +9,15 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.backend.allreva.artist.query.application.ArtistQueryService;
-import com.backend.allreva.artist.query.application.response.SpotifySearchResponse;
 import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.module.artist.application.dto.ArtistSearchResponse;
+import com.backend.allreva.module.artist.application.port.ArtistSearchPort;
 import com.backend.allreva.support.IntegrationTestSupport;
 
 class ArtistQueryServiceTest extends IntegrationTestSupport {
 
     @Autowired
-    ArtistQueryService artistQueryService;
+    ArtistSearchPort artistSearchPort;
 
     @DisplayName("아티스트 검색에 성공한다.")
     @Test
@@ -26,7 +26,7 @@ class ArtistQueryServiceTest extends IntegrationTestSupport {
         String query = "하현상";
 
         // when
-        List<SpotifySearchResponse> responses = artistQueryService.searchArtist(query);
+        List<ArtistSearchResponse> responses = artistSearchPort.searchArtist(query);
 
         // then
         assertThat(responses).isNotEmpty();
@@ -41,6 +41,6 @@ class ArtistQueryServiceTest extends IntegrationTestSupport {
         // when
         // then
         Assertions.assertThrows(CustomException.class,
-                () -> artistQueryService.searchArtist(query));
+                () -> artistSearchPort.searchArtist(query));
     }
 }

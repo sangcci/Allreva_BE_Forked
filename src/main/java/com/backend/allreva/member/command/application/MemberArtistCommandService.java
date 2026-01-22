@@ -1,12 +1,12 @@
 package com.backend.allreva.member.command.application;
 
-import com.backend.allreva.artist.command.application.ArtistCommandService;
-import com.backend.allreva.artist.query.application.ArtistQueryService;
 import com.backend.allreva.member.command.application.request.MemberArtistRequest;
 import com.backend.allreva.member.command.domain.Member;
 import com.backend.allreva.member.command.domain.MemberArtist;
 import com.backend.allreva.member.command.domain.MemberArtistRepository;
 import com.backend.allreva.member.command.domain.MemberArtistService;
+import com.backend.allreva.module.artist.application.ArtistService;
+import com.backend.allreva.module.artist.application.dto.ArtistCreateRequest;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,23 +17,26 @@ public class MemberArtistCommandService {
 
     private final MemberArtistRepository memberArtistRepository;
     private final MemberArtistService memberArtistService;
-    private final ArtistCommandService artistCommandService;
-    private final ArtistQueryService artistQueryService;
+    private final ArtistService artistService;
+
     /**
      * 관심 아티스트 업데이트
      */
     public void updateMemberArtist(
             final List<MemberArtistRequest> memberArtistRequests,
-            final Member member
-    ) {
-        artistCommandService.saveIfNotExist(memberArtistRequests);
+            final Member member) {
+        // MemberArtistRequest를 ArtistCreateRequest로 변환
+        List<ArtistCreateRequest> artistCreateRequests = memberArtistRequests.stream()
+                .map(req -> new ArtistCreateRequest(req.spotifyArtistId(), req.name()))
+                .toList();
+        artistService.saveIfNotExist(artistCreateRequests);
         List<MemberArtist> preMemberArtists = memberArtistRepository.findByMemberId(member.getId());
 
         // MemberArtist 추가
         // TODO: bulk insert 적용
         List<MemberArtist> addMemberArtists = memberArtistRequests.stream()
                 .filter(req -> memberArtistService.isNewMemberArtists(req, preMemberArtists))
-                .map(req -> artistQueryService.getArtistById(req.spotifyArtistId()))
+                .map(req -> artistService.getArtistById(req.spotifyArtistId()))
                 .map(artist -> MemberArtist.builder()
                         .memberId(member.getId())
                         .artistId(artist.getId())

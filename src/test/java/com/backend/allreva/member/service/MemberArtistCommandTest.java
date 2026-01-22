@@ -5,9 +5,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import com.backend.allreva.artist.command.application.ArtistCommandService;
-import com.backend.allreva.artist.command.domain.Artist;
-import com.backend.allreva.artist.query.application.ArtistQueryService;
+import com.backend.allreva.module.artist.application.ArtistService;
+import com.backend.allreva.module.artist.domain.Artist;
 import com.backend.allreva.member.command.application.MemberArtistCommandService;
 import com.backend.allreva.member.command.application.request.MemberArtistRequest;
 import com.backend.allreva.member.command.domain.Member;
@@ -31,10 +30,7 @@ class MemberArtistCommandTest {
     private MemberArtistRepository memberArtistRepository;
 
     @Mock
-    private ArtistQueryService artistQueryService;
-
-    @Mock
-    private ArtistCommandService artistCommandService;
+    private ArtistService artistService;
 
     @InjectMocks
     private MemberArtistCommandService memberArtistCommandService;
@@ -56,9 +52,9 @@ class MemberArtistCommandTest {
                 .id("spotify_1L")
                 .name("하현상")
                 .build();
-        given(artistQueryService.getArtistById(any(String.class))).willReturn(artist);
+        given(artistService.getArtistById(any(String.class))).willReturn(artist);
         given(memberArtistService.isNewMemberArtists(any(), any())).willReturn(true);
-        var memberArtistRequests = List.of(new MemberArtistRequest("spotify_1L","name1"));
+        var memberArtistRequests = List.of(new MemberArtistRequest("spotify_1L", "name1"));
 
         // when
         memberArtistCommandService.updateMemberArtist(memberArtistRequests, member);
@@ -66,6 +62,6 @@ class MemberArtistCommandTest {
         // then
         verify(memberArtistRepository, times(1)).deleteAll(any());
         verify(memberArtistRepository, times(1)).saveAll(any());
-        verify(artistCommandService, times(1)).saveIfNotExist(any());
+        verify(artistService, times(1)).saveIfNotExist(any());
     }
 }

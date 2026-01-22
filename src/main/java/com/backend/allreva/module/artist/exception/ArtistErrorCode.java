@@ -1,4 +1,4 @@
-package com.backend.allreva.artist.exception;
+package com.backend.allreva.module.artist.exception;
 
 import org.springframework.http.HttpStatus;
 

@@ -1,4 +1,4 @@
-package com.backend.allreva.artist.query.application.response;
+package com.backend.allreva.module.artist.infra.spotify.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -8,5 +8,5 @@ import java.util.List;
 public record SpotifySearchResponse(
         String id,
         String name,
-        List<Image> images
-) {}
+        List<Image> images) {
+}
