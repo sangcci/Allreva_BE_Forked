@@ -1,7 +1,7 @@
 package com.backend.allreva.concert.infra.rdb;
 
 import com.backend.allreva.concert.query.application.response.ConcertDetailResponse;
-import com.backend.allreva.concert.query.application.response.ConcertThumbnail;
+import com.backend.allreva.module.search.application.dto.ConcertThumbnail;
 import com.backend.allreva.hall.query.application.response.RelatedConcertResponse;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.ConstructorExpression;

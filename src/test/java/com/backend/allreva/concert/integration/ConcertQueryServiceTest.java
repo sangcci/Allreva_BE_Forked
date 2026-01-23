@@ -1,8 +1,8 @@
 package com.backend.allreva.concert.integration;
 
-import com.backend.allreva.concert.infra.elasticsearch.SortDirection;
+import com.backend.allreva.module.search.domain.SortDirection;
 import com.backend.allreva.concert.query.application.ConcertQueryService;
-import com.backend.allreva.concert.query.application.response.ConcertMainResponse;
+import com.backend.allreva.module.search.application.dto.ConcertMainResponse;
 import com.backend.allreva.support.IntegrationTestSupport;
 import lombok.extern.slf4j.Slf4j;
 import org.hamcrest.Matchers;

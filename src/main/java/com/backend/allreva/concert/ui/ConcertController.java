@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.allreva.common.web.response.Response;
-import com.backend.allreva.concert.infra.elasticsearch.SortDirection;
 import com.backend.allreva.concert.query.application.ConcertQueryService;
 import com.backend.allreva.concert.query.application.response.ConcertDetailResponse;
-import com.backend.allreva.concert.query.application.response.ConcertMainResponse;
-import com.backend.allreva.concert.query.application.response.ConcertThumbnail;
+import com.backend.allreva.module.search.application.dto.ConcertMainResponse;
+import com.backend.allreva.module.search.application.dto.ConcertThumbnail;
+import com.backend.allreva.module.search.domain.SortDirection;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

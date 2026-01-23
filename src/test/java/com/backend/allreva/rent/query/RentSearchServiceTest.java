@@ -2,10 +2,10 @@ package com.backend.allreva.rent.query;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.backend.allreva.rent.infra.elasticsearch.RentDocument;
-import com.backend.allreva.rent.infra.elasticsearch.RentDocumentRepository;
-import com.backend.allreva.rent.query.application.RentSearchService;
-import com.backend.allreva.rent.query.application.response.RentThumbnail;
+import com.backend.allreva.module.search.domain.RentDocument;
+import com.backend.allreva.module.search.domain.RentSearchRepository;
+import com.backend.allreva.module.search.application.RentSearchService;
+import com.backend.allreva.module.search.application.dto.RentThumbnail;
 import com.backend.allreva.support.IntegrationTestSupport;
 import java.time.LocalDate;
 import java.util.List;
@@ -22,7 +22,7 @@ class RentSearchServiceTest extends IntegrationTestSupport {
     @Autowired
     RentSearchService rentSearchService;
     @Autowired
-    RentDocumentRepository rentDocumentRepository;
+    RentSearchRepository rentSearchRepository;
 
     RentDocument rentDocument1;
     RentDocument rentDocument2;
@@ -54,16 +54,16 @@ class RentSearchServiceTest extends IntegrationTestSupport {
                 .edDate(LocalDate.now())
                 .build();
 
-        rentDocumentRepository.save(rentDocument1);
-        rentDocumentRepository.save(rentDocument2);
-        rentDocumentRepository.save(rentDocument3);
+        rentSearchRepository.save(rentDocument1);
+        rentSearchRepository.save(rentDocument2);
+        rentSearchRepository.save(rentDocument3);
     }
 
     @AfterAll
     void afterAll() {
-        rentDocumentRepository.delete(rentDocument1);
-        rentDocumentRepository.delete(rentDocument2);
-        rentDocumentRepository.delete(rentDocument3);
+        rentSearchRepository.deleteById(rentDocument1.getId());
+        rentSearchRepository.deleteById(rentDocument2.getId());
+        rentSearchRepository.deleteById(rentDocument3.getId());
     }
 
     @Test

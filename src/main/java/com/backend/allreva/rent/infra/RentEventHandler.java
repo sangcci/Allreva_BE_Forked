@@ -8,8 +8,8 @@ import com.backend.allreva.common.event.EventEntryRepository;
 import com.backend.allreva.common.event.deadletter.DeadLetterHandler;
 import com.backend.allreva.rent.command.domain.RentDeletedEvent;
 import com.backend.allreva.rent.command.domain.RentSaveEvent;
-import com.backend.allreva.rent.infra.elasticsearch.RentDocument;
-import com.backend.allreva.rent.infra.elasticsearch.RentDocumentRepository;
+import com.backend.allreva.module.search.domain.RentDocument;
+import com.backend.allreva.module.search.domain.RentSearchRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -23,7 +23,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Service
 public class RentEventHandler {
 
-    private final RentDocumentRepository rentDocumentRepository;
+    private final RentSearchRepository rentDocumentRepository;
 
     private final EventEntryRepository eventEntryRepository;
     private final DeadLetterHandler deadLetterHandler;

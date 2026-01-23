@@ -1,6 +1,6 @@
 package com.backend.allreva.survey.query.application.response;
 
-import com.backend.allreva.survey.infra.elasticsearch.SurveyDocument;
+import com.backend.allreva.module.search.domain.SurveyDocument;
 import com.backend.allreva.survey.command.domain.value.Region;
 
 import java.time.LocalDate;

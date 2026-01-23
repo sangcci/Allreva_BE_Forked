@@ -4,7 +4,7 @@ import com.backend.allreva.concert.command.domain.Concert;
 import com.backend.allreva.concert.command.domain.ConcertRepository;
 import com.backend.allreva.concert.command.domain.value.DateInfo;
 import com.backend.allreva.concert.query.application.response.ConcertDetailResponse;
-import com.backend.allreva.concert.query.application.response.ConcertThumbnail;
+import com.backend.allreva.module.search.application.dto.ConcertThumbnail;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;

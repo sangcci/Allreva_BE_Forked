@@ -12,8 +12,8 @@ import com.backend.allreva.common.event.EventEntryRepository;
 import com.backend.allreva.common.event.deadletter.DeadLetterHandler;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.survey.exception.SurveyErrorCode;
-import com.backend.allreva.survey.infra.elasticsearch.SurveyDocument;
-import com.backend.allreva.survey.infra.elasticsearch.SurveyDocumentRepository;
+import com.backend.allreva.module.search.domain.SurveyDocument;
+import com.backend.allreva.module.search.domain.SurveySearchRepository;
 import com.backend.allreva.survey_join.command.domain.SurveyJoinEvent;
 
 import co.elastic.clients.elasticsearch._types.ElasticsearchException;
@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class SurveyJoinEventHandler {
 
-    private final SurveyDocumentRepository surveyDocumentRepository;
+    private final SurveySearchRepository surveySearchRepository;
 
     private final EventEntryRepository eventEntryRepository;
     private final DeadLetterHandler deadLetterHandler;
@@ -38,11 +38,11 @@ public class SurveyJoinEventHandler {
         }
         try {
             Long surveyId = event.getSurveyId();
-            SurveyDocument surveyDocument = surveyDocumentRepository.findById(surveyId.toString())
+            SurveyDocument surveyDocument = surveySearchRepository.findById(surveyId.toString())
                     .orElseThrow(() -> new CustomException(SurveyErrorCode.SURVEY_NOT_FOUND));
 
             surveyDocument.updateParticipationCount(event.getParticipationCount());
-            surveyDocumentRepository.save(surveyDocument);
+            surveySearchRepository.save(surveyDocument);
             log.info("SurveyJoinEvent Sync 완료!! surveyId: {}", event.getSurveyId());
 
         } catch (ElasticsearchException | DataAccessException e) {

@@ -8,8 +8,8 @@ import com.backend.allreva.common.event.EventEntryRepository;
 import com.backend.allreva.common.event.deadletter.DeadLetterHandler;
 import com.backend.allreva.survey.command.domain.SurveyDeletedEvent;
 import com.backend.allreva.survey.command.domain.SurveySavedEvent;
-import com.backend.allreva.survey.infra.elasticsearch.SurveyDocument;
-import com.backend.allreva.survey.infra.elasticsearch.SurveyDocumentRepository;
+import com.backend.allreva.module.search.domain.SurveyDocument;
+import com.backend.allreva.module.search.domain.SurveySearchRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -23,7 +23,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Service
 public class SurveyEventHandler {
 
-    private final SurveyDocumentRepository surveyDocumentRepository;
+    private final SurveySearchRepository surveyDocumentRepository;
 
     private final EventEntryRepository eventEntryRepository;
     private final DeadLetterHandler deadLetterHandler;

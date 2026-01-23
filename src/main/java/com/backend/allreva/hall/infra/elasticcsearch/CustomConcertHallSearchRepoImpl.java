@@ -5,7 +5,7 @@ import co.elastic.clients.elasticsearch._types.SortOrder;
 import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
 import co.elastic.clients.json.JsonData;
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.concert.exception.search.SearchErrorCode;
+import com.backend.allreva.module.search.exception.SearchErrorCode;
 import com.backend.allreva.hall.query.domain.ConcertHallDocument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;

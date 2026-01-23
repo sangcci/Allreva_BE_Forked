@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.concert.command.domain.ViewAddedEvent;
 import com.backend.allreva.concert.exception.ConcertErrorCode;
-import com.backend.allreva.concert.infra.elasticsearch.ConcertDocument;
-import com.backend.allreva.concert.infra.elasticsearch.ConcertSearchRepository;
+import com.backend.allreva.module.search.domain.ConcertDocument;
+import com.backend.allreva.module.search.domain.ConcertSearchRepository;
 
 import lombok.RequiredArgsConstructor;
 
