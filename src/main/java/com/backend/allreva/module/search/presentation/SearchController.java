@@ -1,8 +1,10 @@
 package com.backend.allreva.module.search.presentation;
 
 import com.backend.allreva.common.web.response.Response;
+import com.backend.allreva.module.concert.hall.application.dto.ConcertHallMainResponse;
 import com.backend.allreva.module.search.application.*;
 import com.backend.allreva.module.search.application.dto.*;
+import com.backend.allreva.module.search.domain.SortDirection;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotEmpty;
@@ -25,6 +27,7 @@ public class SearchController {
 
     private final PopularKeywordService popularKeywordService;
     private final ConcertSearchService concertSearchService;
+    private final ConcertHallSearchService concertHallSearchService;
     private final RentSearchService rentSearchService;
     private final SurveySearchService surveySearchService;
 
@@ -120,5 +123,37 @@ public class SearchController {
 
         return Response.onSuccess(
                 surveySearchService.searchSurveyList(query, searchAfter, pageSize));
+    }
+
+    @Operation(summary = "메인 화면 콘서트 API", description = "searchAfter1, searchAfter2에 이전 SearchAfter에 있는 값들을 순서대로 넣어주어야 합니다.")
+    @GetMapping("/concert/main")
+    public Response<ConcertMainResponse> getConcertMainList(
+            @RequestParam(defaultValue = "") final String region,
+            @RequestParam(defaultValue = "DATE") final SortDirection sortDirection,
+            @RequestParam(defaultValue = "7") final int pageSize,
+            @RequestParam(required = false) final String searchAfter1,
+            @RequestParam(required = false) final String searchAfter2) {
+        List<Object> searchAfter = Stream.of(searchAfter1, searchAfter2)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        ConcertMainResponse concertMain = concertSearchService.searchMainConcerts(region, searchAfter, pageSize, sortDirection);
+        return Response.onSuccess(concertMain);
+    }
+
+    @Operation(summary = "메인 화면 공연장 API", description = "searchAfter1, searchAfter2, searchAfter3에 이전 SearchAfter에 있는 값들을 순서대로 넣어주어야 합니다.")
+    @GetMapping("/concert-hall/main")
+    public Response<ConcertHallMainResponse> getConcertHallMainList(
+            @RequestParam(defaultValue = "") final String address,
+            @RequestParam(defaultValue = "0") final int seatScale,
+            @RequestParam(defaultValue = "7") final int pageSize,
+            @RequestParam(required = false) final String searchAfter1,
+            @RequestParam(required = false) final String searchAfter2,
+            @RequestParam(required = false) final String searchAfter3) {
+        List<Object> searchAfter = Stream.of(searchAfter1, searchAfter2, searchAfter3)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        ConcertHallMainResponse concertHallMain = concertHallSearchService.searchMainConcertHalls(
+                address, seatScale, searchAfter, pageSize);
+        return Response.onSuccess(concertHallMain);
     }
 }

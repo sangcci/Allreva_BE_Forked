@@ -8,9 +8,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.allreva.common.event.Events;
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.concert.exception.ConcertErrorCode;
-import com.backend.allreva.concert.infra.dto.ConcertDateInfoResponse;
-import com.backend.allreva.concert.infra.rdb.ConcertJpaRepository;
+import com.backend.allreva.module.concert.concert.exception.ConcertErrorCode;
+import com.backend.allreva.module.concert.concert.application.dto.ConcertDateInfoResponse;
+import com.backend.allreva.module.concert.concert.infra.ConcertRepository;
 import com.backend.allreva.module.notification.domain.NotificationMessage;
 import com.backend.allreva.survey.command.application.request.OpenSurveyRequest;
 import com.backend.allreva.survey.command.application.request.SurveyIdRequest;
@@ -33,7 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SurveyCommandService {
     private final SurveyRepository surveyRepository;
     private final SurveyBoardingDateCommandRepository surveyBoardingDateCommandRepository;
-    private final ConcertJpaRepository concertRepository;
+    private final ConcertRepository concertRepository;
     private final SurveyConverter surveyConverter;
 
     /**

@@ -1,10 +1,9 @@
 package com.backend.allreva.support;
 
 import com.backend.allreva.common.config.SecurityConfig;
-import com.backend.allreva.member.command.application.MemberCommandFacade;
-import com.backend.allreva.member.command.domain.Member;
-import com.backend.allreva.member.command.domain.value.MemberRole;
-import com.backend.allreva.member.fixture.MemberFixture;
+import com.backend.allreva.module.member.domain.Member;
+import com.backend.allreva.module.member.domain.value.MemberRole;
+import com.backend.allreva.module.member.fixture.MemberFixture;
 import com.backend.allreva.module.auth.presentation.AuthController;
 import com.backend.allreva.module.auth.security.JwtAuthenticationFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -33,14 +32,14 @@ public abstract class ApiTestSupport {
     @Autowired
     protected ObjectMapper objectMapper;
 
-    @MockBean
-    protected MemberCommandFacade memberCommandFacade;
+    // @MockBean
+    // protected MemberCommandFacade memberCommandFacade;
 
     protected Member member;
 
     @BeforeEach
     void setUp() {
-        member = MemberFixture.createMemberFixture(1L, MemberRole.USER);
+        member = MemberFixture.createMember(1L, MemberRole.USER);
     }
 
     @AfterEach

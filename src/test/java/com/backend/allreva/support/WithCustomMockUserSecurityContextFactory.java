@@ -8,16 +8,16 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.context.support.WithSecurityContextFactory;
 
-import com.backend.allreva.member.command.domain.Member;
-import com.backend.allreva.member.command.domain.value.MemberRole;
-import com.backend.allreva.member.fixture.MemberFixture;
+import com.backend.allreva.module.member.domain.Member;
+import com.backend.allreva.module.member.domain.value.MemberRole;
+import com.backend.allreva.module.member.fixture.MemberFixture;
 import com.backend.allreva.module.auth.security.PrincipalDetails;
 
 public class WithCustomMockUserSecurityContextFactory implements WithSecurityContextFactory<WithCustomMockUser> {
 
     @Override
     public SecurityContext createSecurityContext(WithCustomMockUser annotation) {
-        Member member = MemberFixture.createMemberFixture(1L, MemberRole.USER);
+        Member member = MemberFixture.createMember(1L, MemberRole.USER);
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
 
         PrincipalDetails principalDetails = new PrincipalDetails(member);

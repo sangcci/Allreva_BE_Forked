@@ -1,7 +1,7 @@
 package com.backend.allreva.rent.infra.rdb;
 
-import static com.backend.allreva.concert.command.domain.QConcert.concert;
-import static com.backend.allreva.hall.command.domain.QConcertHall.concertHall;
+import static com.backend.allreva.module.concert.concert.domain.QConcert.concert;
+import static com.backend.allreva.module.concert.hall.domain.QConcertHall.concertHall;
 import static com.backend.allreva.rent.command.domain.QRent.rent;
 import static com.backend.allreva.rent.command.domain.QRentBoardingInfo.rentBoardingInfo;
 import static com.backend.allreva.rent_join.command.domain.QRentJoin.rentJoin;

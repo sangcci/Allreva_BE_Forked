@@ -1,15 +1,15 @@
 package com.backend.allreva.rent.query;
 
-import static com.backend.allreva.concert.fixture.ConcertFixture.createConcertFixture;
-import static com.backend.allreva.concert.fixture.ConcertHallFixture.createConcertHallFixture;
-import static com.backend.allreva.member.fixture.MemberFixture.createMemberFixture;
+import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
+import com.backend.allreva.module.concert.hall.fixture.ConcertHallFixture;
+import static com.backend.allreva.module.member.fixture.MemberFixture.createMember;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.backend.allreva.common.model.Image;
-import com.backend.allreva.concert.command.domain.ConcertRepository;
-import com.backend.allreva.hall.command.domain.ConcertHallRepository;
-import com.backend.allreva.member.command.domain.value.MemberRole;
+import com.backend.allreva.module.concert.concert.infra.ConcertRepository;
+import com.backend.allreva.module.concert.hall.domain.ConcertHallRepository;
+import com.backend.allreva.module.member.domain.value.MemberRole;
 import com.backend.allreva.rent.command.domain.Rent;
 import com.backend.allreva.rent.command.domain.RentBoardingInfo;
 import com.backend.allreva.rent.command.domain.RentRepository;
@@ -86,11 +86,11 @@ class RentMainPageTest extends IntegrationTestSupport {
     @Test
     void 차량_대절_폼_상세_조회를_성공한다() {
         // given
-        var concertHall = concertHallRepository.save(createConcertHallFixture());
-        var concert = concertRepository.save(createConcertFixture(concertHall.getId()));
+        var concertHall = concertHallRepository.save(ConcertHallFixture.createConcertHall("FC001"));
+        var concert = concertRepository.save(ConcertFixture.createConcertWithHallCode(concertHall.getId()));
 
         var registerId = 1L;
-        var register = createMemberFixture(registerId, MemberRole.USER);
+        var register = createMember(registerId, MemberRole.USER);
         var rent = rentRepository.save(createRentFixture(registerId, concert.getId(), Region.서울, LocalDate.of(2024, 9, 21)));
 
         var userA = 2L;
@@ -117,8 +117,8 @@ class RentMainPageTest extends IntegrationTestSupport {
     void 차량_대절_폼_상세_조회할_때_익명_사용자면_신청_여부와_환불_계좌를_제공하지_않는다() {
         // given
         var registerId = 1L;
-        var concertHall = concertHallRepository.save(createConcertHallFixture());
-        var concert = concertRepository.save(createConcertFixture(concertHall.getId()));
+        var concertHall = concertHallRepository.save(ConcertHallFixture.createConcertHall("FC001"));
+        var concert = concertRepository.save(ConcertFixture.createConcertWithHallCode(concertHall.getId()));
         var rent = rentRepository.save(createRentFixture(registerId, concert.getId(), Region.서울, LocalDate.of(2024, 9, 21)));
 
         // when

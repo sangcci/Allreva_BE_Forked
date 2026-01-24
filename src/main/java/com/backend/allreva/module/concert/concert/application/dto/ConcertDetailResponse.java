@@ -1,0 +1,30 @@
+package com.backend.allreva.module.concert.concert.application.dto;
+
+
+import com.backend.allreva.common.model.Image;
+import com.backend.allreva.module.concert.concert.domain.ConcertInfo;
+import com.backend.allreva.module.concert.concert.domain.Seller;
+import com.backend.allreva.module.concert.hall.domain.ConvenienceInfo;
+import lombok.AccessLevel;
+import lombok.Builder;
+
+import java.util.List;
+import java.util.Set;
+
+@Builder(access = AccessLevel.PRIVATE)
+public record ConcertDetailResponse(
+
+        Image poster,
+        List<Image> detailImages,
+        ConcertInfo concertInfo,
+        Set<Seller> sellers,
+
+        String hallCode,
+        String hallName,
+        Integer seatScale,
+        ConvenienceInfo convenienceInfo,
+        String address
+
+) {
+    public static final ConcertDetailResponse EMPTY = ConcertDetailResponse.builder().build();
+}
