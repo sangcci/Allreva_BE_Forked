@@ -6,7 +6,7 @@ import com.backend.allreva.chatting.chat.single.command.domain.event.AddedSingle
 import com.backend.allreva.chatting.chat.single.command.domain.event.StartedSingleChatEvent;
 import com.backend.allreva.chatting.chat.single.command.domain.value.OtherMember;
 import com.backend.allreva.common.event.Events;
-import com.backend.allreva.member.query.application.MemberDetailRepository;
+import com.backend.allreva.module.member.application.port.MemberDetailRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;

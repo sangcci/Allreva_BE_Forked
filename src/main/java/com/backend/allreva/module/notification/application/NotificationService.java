@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.notification.application.dto.NotificationTargetRequest;
 import com.backend.allreva.module.notification.application.dto.NotificationIdRequest;
 import com.backend.allreva.module.notification.application.port.NotificationSender;

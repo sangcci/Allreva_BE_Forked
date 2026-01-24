@@ -1,6 +1,6 @@
 package com.backend.allreva.seat_review.command.application;
 
-import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.seat_review.command.application.dto.ReviewCreateRequest;
 import com.backend.allreva.seat_review.command.application.dto.ReviewUpdateRequest;
 import com.backend.allreva.seat_review.command.domain.SeatReview;

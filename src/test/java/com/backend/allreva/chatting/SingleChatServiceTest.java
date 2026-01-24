@@ -6,11 +6,11 @@ import com.backend.allreva.chatting.chat.single.command.domain.MemberSingleChatR
 import com.backend.allreva.chatting.chat.single.command.domain.SingleChatRepository;
 import com.backend.allreva.chatting.chat.single.query.SingleChatQueryService;
 import com.backend.allreva.common.event.Events;
-import com.backend.allreva.member.command.domain.AddedMemberEvent;
-import com.backend.allreva.member.command.domain.Member;
-import com.backend.allreva.member.command.domain.MemberRepository;
-import com.backend.allreva.member.command.domain.value.MemberRole;
-import com.backend.allreva.member.fixture.MemberFixture;
+import com.backend.allreva.module.member.domain.Member;
+import com.backend.allreva.module.member.domain.MemberRegisteredEvent;
+import com.backend.allreva.module.member.domain.MemberRepository;
+import com.backend.allreva.module.member.domain.value.MemberRole;
+import com.backend.allreva.module.member.fixture.MemberFixture;
 import com.backend.allreva.support.IntegrationTestSupport;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
@@ -42,19 +42,19 @@ class SingleChatServiceTest extends IntegrationTestSupport {
 
     @BeforeEach
     void setup() throws InterruptedException {
-        Member firstMember = MemberFixture.createMemberFixture(1L, MemberRole.USER);
+        Member firstMember = MemberFixture.createMember(1L, MemberRole.USER);
         memberA = memberRepository.save(firstMember);
-        Member secondMember = MemberFixture.createMemberFixture(2L, MemberRole.USER);
+        Member secondMember = MemberFixture.createMember(2L, MemberRole.USER);
         memberB = memberRepository.save(secondMember);
 
         asyncAspect.init();
-        AddedMemberEvent addedEvent = new AddedMemberEvent(memberA.getId());
-        Events.raise(addedEvent);
+        MemberRegisteredEvent memberRegisteredEvent1 = new MemberRegisteredEvent(memberA.getId());
+        Events.raise(memberRegisteredEvent1);
         asyncAspect.await();
 
         asyncAspect.init();
-        AddedMemberEvent addedEvent2 = new AddedMemberEvent(memberB.getId());
-        Events.raise(addedEvent2);
+        MemberRegisteredEvent memberRegisteredEvent2 = new MemberRegisteredEvent(memberB.getId());
+        Events.raise(memberRegisteredEvent2);
         asyncAspect.await();
     }
 

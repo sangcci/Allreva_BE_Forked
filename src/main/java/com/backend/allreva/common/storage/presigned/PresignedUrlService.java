@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.storage.exception.StorageErrorCode;
 import com.backend.allreva.common.storage.presigned.dto.PresignedUrlRequest;
-import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.member.domain.Member;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

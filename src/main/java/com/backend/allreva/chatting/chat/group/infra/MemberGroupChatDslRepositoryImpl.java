@@ -4,7 +4,7 @@ import com.backend.allreva.chatting.chat.group.query.response.GroupChatDetailRes
 import com.backend.allreva.chatting.chat.group.query.response.GroupChatOverviewResponse;
 import com.backend.allreva.chatting.chat.integration.model.value.Participant;
 import com.backend.allreva.common.model.Image;
-import com.backend.allreva.member.command.domain.QMember;
+import com.backend.allreva.module.member.domain.QMember;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;

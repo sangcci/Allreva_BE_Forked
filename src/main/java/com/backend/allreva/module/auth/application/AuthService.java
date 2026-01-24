@@ -7,10 +7,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.Email;
-import com.backend.allreva.member.command.domain.Member;
-import com.backend.allreva.member.command.domain.MemberRepository;
-import com.backend.allreva.member.command.domain.value.LoginProvider;
-import com.backend.allreva.member.exception.MemberErrorCode;
+import com.backend.allreva.module.member.domain.Member;
+import com.backend.allreva.module.member.domain.MemberRepository;
+import com.backend.allreva.module.member.domain.value.LoginProvider;
+import com.backend.allreva.module.member.exception.MemberErrorCode;
 import com.backend.allreva.module.auth.application.dto.UserInfo;
 import com.backend.allreva.module.auth.application.dto.UserInfoResponse;
 import com.backend.allreva.module.auth.exception.JwtErrorCode;

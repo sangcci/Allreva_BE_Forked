@@ -1,6 +1,6 @@
 package com.backend.allreva.chatting.notification;
 
-import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.auth.security.AuthMember;
 
 import lombok.RequiredArgsConstructor;

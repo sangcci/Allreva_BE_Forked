@@ -4,6 +4,11 @@ import static com.backend.allreva.rent.fixture.RentRegisterRequestFixture.create
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.backend.allreva.module.member.domain.Member;
+import com.backend.allreva.module.member.domain.MemberRegisteredEvent;
+import com.backend.allreva.module.member.domain.MemberRepository;
+import com.backend.allreva.module.member.domain.value.MemberRole;
+import com.backend.allreva.module.member.fixture.MemberFixture;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,11 +29,7 @@ import com.backend.allreva.chatting.chat.integration.model.value.ChatType;
 import com.backend.allreva.common.event.Events;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.Image;
-import com.backend.allreva.member.command.domain.AddedMemberEvent;
-import com.backend.allreva.member.command.domain.Member;
-import com.backend.allreva.member.command.domain.MemberRepository;
-import com.backend.allreva.member.command.domain.value.MemberRole;
-import com.backend.allreva.member.fixture.MemberFixture;
+
 import com.backend.allreva.rent.command.application.RentCommandFacade;
 import com.backend.allreva.rent.infra.rdb.RentJpaRepository;
 import com.backend.allreva.support.IntegrationTestSupport;
@@ -58,12 +59,12 @@ class GroupChatServiceTest extends IntegrationTestSupport {
 
     @BeforeEach
     void setup() throws InterruptedException {
-        Member member = MemberFixture.createMemberFixture(1L, MemberRole.USER);
+        Member member = MemberFixture.createMember(1L, MemberRole.USER);
         savedMember = memberRepository.save(member);
 
         asyncAspect.init();
-        AddedMemberEvent addedEvent = new AddedMemberEvent(savedMember.getId());
-        Events.raise(addedEvent);
+        MemberRegisteredEvent memberRegisteredEvent = new MemberRegisteredEvent(savedMember.getId());
+        Events.raise(memberRegisteredEvent);
         asyncAspect.await();
     }
 

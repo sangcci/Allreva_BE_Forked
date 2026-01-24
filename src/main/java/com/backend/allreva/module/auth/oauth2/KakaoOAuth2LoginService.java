@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.member.command.domain.value.LoginProvider;
+import com.backend.allreva.module.member.domain.value.LoginProvider;
 import com.backend.allreva.module.auth.application.OAuth2LoginService;
 import com.backend.allreva.module.auth.application.dto.UserInfo;
 import com.backend.allreva.module.auth.exception.OAuth2ErrorCode;

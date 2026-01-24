@@ -2,10 +2,10 @@ package com.backend.allreva.module.auth.presentation;
 
 import com.backend.allreva.common.model.Email;
 import com.backend.allreva.common.web.response.Response;
-import com.backend.allreva.member.command.domain.Member;
-import com.backend.allreva.member.command.domain.MemberRepository;
-import com.backend.allreva.member.command.domain.value.LoginProvider;
-import com.backend.allreva.member.command.domain.value.MemberRole;
+import com.backend.allreva.module.member.domain.Member;
+import com.backend.allreva.module.member.domain.MemberRepository;
+import com.backend.allreva.module.member.domain.value.LoginProvider;
+import com.backend.allreva.module.member.domain.value.MemberRole;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -16,9 +16,9 @@ import com.backend.allreva.chatting.message.domain.SingleMessage;
 import com.backend.allreva.chatting.message.domain.value.Content;
 import com.backend.allreva.chatting.notification.MessageSseService;
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.member.command.domain.Member;
-import com.backend.allreva.member.command.domain.MemberRepository;
-import com.backend.allreva.member.exception.MemberErrorCode;
+import com.backend.allreva.module.member.domain.Member;
+import com.backend.allreva.module.member.domain.MemberRepository;
+import com.backend.allreva.module.member.exception.MemberErrorCode;
 
 import lombok.RequiredArgsConstructor;
 

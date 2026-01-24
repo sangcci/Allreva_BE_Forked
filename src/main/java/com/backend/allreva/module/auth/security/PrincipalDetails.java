@@ -1,6 +1,6 @@
 package com.backend.allreva.module.auth.security;
 
-import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.member.domain.Member;
 import java.util.Collection;
 import java.util.Collections;
 import lombok.Getter;

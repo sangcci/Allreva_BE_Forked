@@ -5,10 +5,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import com.backend.allreva.member.command.domain.MemberRepository;
-import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.member.domain.MemberRepository;
+import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.member.exception.MemberErrorCode;
+import com.backend.allreva.module.member.exception.MemberErrorCode;
 
 import lombok.RequiredArgsConstructor;
 

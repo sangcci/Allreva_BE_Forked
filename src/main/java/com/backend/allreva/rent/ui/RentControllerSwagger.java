@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import com.backend.allreva.common.web.response.Response;
-import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.rent.command.application.request.RentIdRequest;
 import com.backend.allreva.rent.command.application.request.RentRegisterRequest;
 import com.backend.allreva.rent.command.application.request.RentUpdateRequest;

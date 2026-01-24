@@ -6,7 +6,7 @@ import com.backend.allreva.chatting.message.domain.GroupMessageRepository;
 import com.backend.allreva.chatting.message.domain.SingleMessage;
 import com.backend.allreva.chatting.message.domain.SingleMessageRepository;
 import com.backend.allreva.chatting.message.domain.value.Content;
-import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

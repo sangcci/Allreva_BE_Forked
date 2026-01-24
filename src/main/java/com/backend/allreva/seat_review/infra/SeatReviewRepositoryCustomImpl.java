@@ -1,6 +1,6 @@
 package com.backend.allreva.seat_review.infra;
 
-import com.backend.allreva.member.command.domain.QMember;
+import com.backend.allreva.module.member.domain.QMember;
 import com.backend.allreva.seat_review.command.domain.QSeatReview;
 import com.backend.allreva.seat_review.command.domain.QSeatReviewImage;
 import com.backend.allreva.seat_review.query.application.dto.SeatReviewResponse;

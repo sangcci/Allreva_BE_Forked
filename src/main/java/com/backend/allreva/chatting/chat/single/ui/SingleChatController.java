@@ -14,7 +14,7 @@ import com.backend.allreva.chatting.chat.single.command.application.dto.StartSin
 import com.backend.allreva.chatting.chat.single.query.SingleChatDetailResponse;
 import com.backend.allreva.chatting.chat.single.query.SingleChatQueryService;
 import com.backend.allreva.common.web.response.Response;
-import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.auth.security.AuthMember;
 
 import lombok.RequiredArgsConstructor;

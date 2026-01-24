@@ -10,7 +10,7 @@ import com.backend.allreva.chatting.chat.single.command.domain.value.OtherMember
 import com.backend.allreva.chatting.message.domain.GroupMessageRepository;
 import com.backend.allreva.chatting.message.domain.SingleMessageRepository;
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.member.exception.MemberErrorCode;
+import com.backend.allreva.module.member.exception.MemberErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

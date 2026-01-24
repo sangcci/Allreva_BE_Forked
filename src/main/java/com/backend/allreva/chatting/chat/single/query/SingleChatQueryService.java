@@ -1,7 +1,7 @@
 package com.backend.allreva.chatting.chat.single.query;
 
 import com.backend.allreva.chatting.chat.single.command.domain.SingleChatRepository;
-import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

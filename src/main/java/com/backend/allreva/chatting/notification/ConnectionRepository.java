@@ -8,7 +8,7 @@ import com.backend.allreva.chatting.chat.single.command.domain.MemberSingleChatR
 import com.backend.allreva.chatting.notification.event.TimedOutEvent;
 import com.backend.allreva.common.event.Events;
 import com.backend.allreva.common.model.Image;
-import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

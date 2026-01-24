@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.allreva.common.storage.presigned.dto.PresignedUrlRequest;
 import com.backend.allreva.common.web.response.Response;
-import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.auth.security.AuthMember;
 
 import io.swagger.v3.oas.annotations.Operation;

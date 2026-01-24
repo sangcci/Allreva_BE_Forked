@@ -1,7 +1,7 @@
 package com.backend.allreva.seat_review.ui;
 
 import com.backend.allreva.common.web.response.Response;
-import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.seat_review.command.application.dto.SeatReviewLikeRequest;
 
 import io.swagger.v3.oas.annotations.Operation;

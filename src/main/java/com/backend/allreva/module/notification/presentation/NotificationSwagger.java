@@ -3,7 +3,7 @@ package com.backend.allreva.module.notification.presentation;
 import java.util.List;
 
 import com.backend.allreva.common.web.response.Response;
-import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.notification.application.dto.NotificationTargetRequest;
 import com.backend.allreva.module.notification.application.dto.NotificationIdRequest;
 import com.backend.allreva.module.notification.domain.Notification;

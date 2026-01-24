@@ -1,0 +1,65 @@
+package com.backend.allreva.module.member.infra;
+
+import static com.backend.allreva.module.member.domain.QMember.member;
+import static com.backend.allreva.module.member.domain.QMemberArtist.memberArtist;
+import static com.backend.allreva.module.artist.domain.QArtist.artist;
+
+import org.springframework.stereotype.Repository;
+
+import com.backend.allreva.chatting.chat.single.command.domain.value.OtherMember;
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.module.member.exception.MemberErrorCode;
+import com.backend.allreva.module.member.application.port.MemberDetailRepository;
+import com.backend.allreva.module.member.application.dto.MemberDetailResponse;
+import com.backend.allreva.module.member.application.dto.MemberDetailResponse.MemberArtistDetail;
+import com.querydsl.core.types.ConstructorExpression;
+import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+
+import lombok.RequiredArgsConstructor;
+
+@Repository
+@RequiredArgsConstructor
+public class MemberDetailRepositoryImpl implements MemberDetailRepository {
+
+    private final JPAQueryFactory queryFactory;
+
+    @Override
+    public MemberDetailResponse findById(final Long id) {
+        return queryFactory.select(memberDetailProjections())
+                .from(member)
+                .leftJoin(memberArtist).on(memberArtist.memberId.eq(member.id))
+                .leftJoin(artist).on(artist.id.eq(memberArtist.artistId))
+                .where(member.id.eq(id))
+                .fetchFirst();
+    }
+
+    private ConstructorExpression<MemberDetailResponse> memberDetailProjections() {
+        return Projections.constructor(MemberDetailResponse.class,
+                member.email.email,
+                member.memberInfo.nickname,
+                member.memberInfo.introduce,
+                member.memberInfo.profileImageUrl,
+                Projections.list(Projections.constructor(MemberArtistDetail.class,
+                        memberArtist.artistId,
+                        artist.name)),
+                member.refundAccount);
+    }
+
+    @Override
+    public OtherMember findMemberSummary(Long memberId) {
+        OtherMember otherMember = queryFactory
+                .select(Projections.constructor(OtherMember.class,
+                        member.id,
+                        member.memberInfo.nickname,
+                        member.memberInfo.profileImageUrl))
+                .from(member)
+                .where(member.id.eq(memberId))
+                .fetchFirst();
+
+        if (otherMember == null) {
+            throw new CustomException(MemberErrorCode.MEMBER_NOT_FOUND);
+        }
+        return otherMember;
+    }
+}

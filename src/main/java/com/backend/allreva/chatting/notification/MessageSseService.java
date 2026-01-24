@@ -4,7 +4,7 @@ import com.backend.allreva.chatting.chat.integration.model.value.ChatType;
 import com.backend.allreva.chatting.chat.integration.model.value.PreviewMessage;
 import com.backend.allreva.chatting.notification.event.ConnectedEvent;
 import com.backend.allreva.common.event.Events;
-import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;

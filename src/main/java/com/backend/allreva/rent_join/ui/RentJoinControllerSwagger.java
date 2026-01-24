@@ -3,7 +3,7 @@ package com.backend.allreva.rent_join.ui;
 import java.util.List;
 
 import com.backend.allreva.common.web.response.Response;
-import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.rent_join.command.application.request.RentJoinApplyRequest;
 import com.backend.allreva.rent_join.command.application.request.RentJoinIdRequest;
 import com.backend.allreva.rent_join.command.application.request.RentJoinUpdateRequest;

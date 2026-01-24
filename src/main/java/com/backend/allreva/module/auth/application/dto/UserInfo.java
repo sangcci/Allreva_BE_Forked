@@ -1,6 +1,6 @@
 package com.backend.allreva.module.auth.application.dto;
 
-import com.backend.allreva.member.command.domain.value.LoginProvider;
+import com.backend.allreva.module.member.domain.value.LoginProvider;
 import lombok.Builder;
 
 @Builder

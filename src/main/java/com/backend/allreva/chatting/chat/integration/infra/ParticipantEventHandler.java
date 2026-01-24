@@ -36,7 +36,7 @@ import com.backend.allreva.chatting.message.domain.GroupMessageRepository;
 import com.backend.allreva.chatting.message.domain.SingleMessageRepository;
 import com.backend.allreva.chatting.notification.event.ConnectedEvent;
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.member.command.domain.AddedMemberEvent;
+import com.backend.allreva.module.member.domain.MemberRegisteredEvent;
 
 import lombok.RequiredArgsConstructor;
 
@@ -57,7 +57,7 @@ public class ParticipantEventHandler {
     @Async
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT, fallbackExecution = true)
-    public void onMessage(final AddedMemberEvent event) {
+    public void onMessage(final MemberRegisteredEvent event) {
         ChatParticipantDoc participantDoc = new ChatParticipantDoc(event.getMemberId());
         participantRepository.save(participantDoc);
     }

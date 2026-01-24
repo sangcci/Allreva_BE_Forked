@@ -6,7 +6,7 @@ import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.hall.exception.ConcertHallErrorCode;
 import com.backend.allreva.hall.infra.elasticcsearch.ConcertHallSearchRepository;
 import com.backend.allreva.hall.query.domain.ConcertHallDocument;
-import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.seat_review.command.application.dto.ReviewCreateRequest;
 import com.backend.allreva.seat_review.command.application.dto.ReviewUpdateRequest;
 import com.backend.allreva.seat_review.command.domain.SeatReview;

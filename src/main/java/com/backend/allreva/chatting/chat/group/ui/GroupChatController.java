@@ -9,7 +9,7 @@ import com.backend.allreva.chatting.chat.group.query.GroupChatQueryService;
 import com.backend.allreva.chatting.chat.group.query.response.GroupChatDetailResponse;
 import com.backend.allreva.chatting.chat.group.query.response.GroupChatOverviewResponse;
 import com.backend.allreva.common.web.response.Response;
-import com.backend.allreva.member.command.domain.Member;
+import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.auth.security.AuthMember;
 
 import lombok.RequiredArgsConstructor;

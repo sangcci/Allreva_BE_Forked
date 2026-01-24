@@ -1,6 +1,6 @@
 package com.backend.allreva.rent.query.application.response;
 
-import com.backend.allreva.member.command.domain.value.RefundAccount;
+import com.backend.allreva.module.member.domain.value.RefundAccount;
 import com.backend.allreva.rent.command.domain.value.BusSize;
 import com.backend.allreva.rent.command.domain.value.BusType;
 import com.backend.allreva.rent.command.domain.value.Region;
