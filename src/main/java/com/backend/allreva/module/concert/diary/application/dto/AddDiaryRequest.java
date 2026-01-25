@@ -1,4 +1,4 @@
-package com.backend.allreva.module.diary.application.dto;
+package com.backend.allreva.module.concert.diary.application.dto;
 
 import com.backend.allreva.common.model.Image;
 import jakarta.validation.constraints.NotNull;

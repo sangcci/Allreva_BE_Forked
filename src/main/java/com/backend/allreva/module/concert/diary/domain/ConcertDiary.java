@@ -1,9 +1,9 @@
-package com.backend.allreva.module.diary.domain;
+package com.backend.allreva.module.concert.diary.domain;
 
 import com.backend.allreva.common.model.BaseEntity;
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.module.diary.exception.DiaryErrorCode;
+import com.backend.allreva.module.concert.diary.exception.DiaryErrorCode;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

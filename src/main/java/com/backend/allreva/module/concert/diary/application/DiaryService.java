@@ -1,4 +1,4 @@
-package com.backend.allreva.module.diary.application;
+package com.backend.allreva.module.concert.diary.application;
 
 import java.util.List;
 
@@ -8,13 +8,13 @@ import org.springframework.transaction.annotation.Transactional;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.common.storage.upload.StorageUploadService;
-import com.backend.allreva.module.diary.application.dto.AddDiaryRequest;
-import com.backend.allreva.module.diary.application.dto.DiaryDetailResponse;
-import com.backend.allreva.module.diary.application.dto.DiarySummaryResponse;
-import com.backend.allreva.module.diary.application.dto.UpdateDiaryRequest;
-import com.backend.allreva.module.diary.domain.ConcertDiary;
-import com.backend.allreva.module.diary.domain.DiaryRepository;
-import com.backend.allreva.module.diary.exception.DiaryErrorCode;
+import com.backend.allreva.module.concert.diary.application.dto.AddDiaryRequest;
+import com.backend.allreva.module.concert.diary.application.dto.DiaryDetailResponse;
+import com.backend.allreva.module.concert.diary.application.dto.DiarySummaryResponse;
+import com.backend.allreva.module.concert.diary.application.dto.UpdateDiaryRequest;
+import com.backend.allreva.module.concert.diary.domain.ConcertDiary;
+import com.backend.allreva.module.concert.diary.domain.DiaryRepository;
+import com.backend.allreva.module.concert.diary.exception.DiaryErrorCode;
 
 import lombok.RequiredArgsConstructor;
 

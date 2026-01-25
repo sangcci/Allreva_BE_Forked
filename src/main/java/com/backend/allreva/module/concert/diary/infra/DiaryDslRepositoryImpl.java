@@ -1,4 +1,4 @@
-package com.backend.allreva.module.diary.infra;
+package com.backend.allreva.module.concert.diary.infra;
 
 import static com.backend.allreva.common.model.QImage.image;
 import static com.backend.allreva.module.concert.concert.domain.QConcert.concert;
@@ -10,8 +10,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import com.backend.allreva.module.diary.application.dto.DiaryDetailResponse;
-import com.backend.allreva.module.diary.application.dto.DiarySummaryResponse;
+import com.backend.allreva.module.concert.diary.application.dto.DiaryDetailResponse;
+import com.backend.allreva.module.concert.diary.application.dto.DiarySummaryResponse;
 import com.querydsl.core.group.GroupBy;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;

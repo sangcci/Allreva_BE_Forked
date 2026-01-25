@@ -1,4 +1,4 @@
-package com.backend.allreva.module.diary.presentation;
+package com.backend.allreva.module.concert.diary.presentation;
 
 import java.util.List;
 
@@ -15,11 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.auth.security.AuthMember;
-import com.backend.allreva.module.diary.application.DiaryService;
-import com.backend.allreva.module.diary.application.dto.AddDiaryRequest;
-import com.backend.allreva.module.diary.application.dto.DiaryDetailResponse;
-import com.backend.allreva.module.diary.application.dto.DiarySummaryResponse;
-import com.backend.allreva.module.diary.application.dto.UpdateDiaryRequest;
+import com.backend.allreva.module.concert.diary.application.DiaryService;
+import com.backend.allreva.module.concert.diary.application.dto.AddDiaryRequest;
+import com.backend.allreva.module.concert.diary.application.dto.DiaryDetailResponse;
+import com.backend.allreva.module.concert.diary.application.dto.DiarySummaryResponse;
+import com.backend.allreva.module.concert.diary.application.dto.UpdateDiaryRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
