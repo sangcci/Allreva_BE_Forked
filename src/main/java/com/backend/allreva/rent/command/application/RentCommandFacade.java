@@ -1,9 +1,10 @@
 package com.backend.allreva.rent.command.application;
 
-import com.backend.allreva.chatting.chat.group.command.application.GroupChatCommandService;
-import com.backend.allreva.chatting.chat.group.command.application.request.AddGroupChatRequest;
+import com.backend.allreva.module.chat.application.GroupChatService;
+import com.backend.allreva.module.chat.application.dto.AddGroupChatRequest;
 import com.backend.allreva.common.event.Events;
-import com.backend.allreva.module.notification.domain.NotificationMessage;
+import com.backend.allreva.module.notification.domain.NotificationEvent;
+import com.backend.allreva.module.notification.domain.NotificationType;
 import com.backend.allreva.rent.command.application.request.RentIdRequest;
 import com.backend.allreva.rent.command.application.request.RentRegisterRequest;
 import com.backend.allreva.rent.command.application.request.RentUpdateRequest;
@@ -18,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RentCommandFacade {
 
     private final RentCommandService rentCommandService;
-    private final GroupChatCommandService groupChatCommandService;
+    private final GroupChatService groupChatService;
 
     public Long registerRent(
             final RentRegisterRequest rentRegisterRequest,
@@ -27,7 +28,7 @@ public class RentCommandFacade {
         Long rentId = rentCommandService.registerRent(rentRegisterRequest, memberId);
 
         // create group chat
-        groupChatCommandService.add(
+        groupChatService.add(
                 new AddGroupChatRequest(
                         rentRegisterRequest.title(),
                         rentRegisterRequest.maxPassenger()),
@@ -35,10 +36,14 @@ public class RentCommandFacade {
                 memberId);
 
         // push notification
-        List<Long> recipientIds = List.of(memberId);
-        Events.raise(
-                NotificationMessage.NEW_RENT_REGISTERED
-                        .toEvent(recipientIds, rentRegisterRequest.title()));
+        Events.raise(NotificationEvent.builder()
+                .type(NotificationType.RENT_REGISTERED)
+                .recipientIds(List.of(memberId))
+                .senderId(memberId)
+                .roomId(rentId)
+                .roomName(rentRegisterRequest.title())
+                .content(rentRegisterRequest.title() + " 차량 대절이 등록되었습니다.")
+                .build());
 
         return rentId;
     }

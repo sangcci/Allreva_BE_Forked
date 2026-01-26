@@ -11,7 +11,8 @@ import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.concert.concert.exception.ConcertErrorCode;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDateInfoResponse;
 import com.backend.allreva.module.concert.concert.infra.ConcertRepository;
-import com.backend.allreva.module.notification.domain.NotificationMessage;
+import com.backend.allreva.module.notification.domain.NotificationEvent;
+import com.backend.allreva.module.notification.domain.NotificationType;
 import com.backend.allreva.survey.command.application.request.OpenSurveyRequest;
 import com.backend.allreva.survey.command.application.request.SurveyIdRequest;
 import com.backend.allreva.survey.command.application.request.UpdateSurveyRequest;
@@ -50,10 +51,14 @@ public class SurveyCommandService {
         Events.raise(new SurveySavedEvent(survey));
 
         // push notification
-        List<Long> recipientIds = List.of(memberId);
-        Events.raise(
-                NotificationMessage.NEW_SURVEY_REGISTERED
-                        .toEvent(recipientIds, request.title()));
+        Events.raise(NotificationEvent.builder()
+                .type(NotificationType.SURVEY_REGISTERED)
+                .recipientIds(List.of(memberId))
+                .senderId(memberId)
+                .roomId(survey.getId())
+                .roomName(request.title())
+                .content(request.title() + " 수요조사가 등록되었습니다.")
+                .build());
 
         return survey.getId();
     }

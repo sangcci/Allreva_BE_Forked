@@ -16,16 +16,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.backend.allreva.chatting.chat.group.command.application.GroupChatCommandService;
-import com.backend.allreva.chatting.chat.group.command.application.request.AddGroupChatRequest;
-import com.backend.allreva.chatting.chat.group.command.domain.GroupChat;
-import com.backend.allreva.chatting.chat.group.command.domain.GroupChatRepository;
-import com.backend.allreva.chatting.chat.group.command.domain.MemberGroupChatRepository;
-import com.backend.allreva.chatting.chat.group.query.GroupChatQueryService;
-import com.backend.allreva.chatting.chat.group.query.response.GroupChatDetailResponse;
-import com.backend.allreva.chatting.chat.integration.model.ChatParticipantRepository;
-import com.backend.allreva.chatting.chat.integration.model.value.ChatSummary;
-import com.backend.allreva.chatting.chat.integration.model.value.ChatType;
+import com.backend.allreva.module.chat.application.GroupChatService;
+import com.backend.allreva.module.chat.application.dto.AddGroupChatRequest;
+import com.backend.allreva.module.chat.domain.GroupChat;
+import com.backend.allreva.module.chat.domain.GroupChatRepository;
+import com.backend.allreva.module.chat.domain.MemberGroupChatRepository;
+import com.backend.allreva.module.chat.application.GroupChatService;
+import com.backend.allreva.module.chat.application.dto.GroupChatDetailResponse;
+import com.backend.allreva.module.chat.domain.participant.ChatParticipantRepository;
+import com.backend.allreva.module.chat.domain.participant.value.ChatSummary;
+import com.backend.allreva.module.chat.domain.participant.value.ChatType;
 import com.backend.allreva.common.event.Events;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.Image;
@@ -37,9 +37,9 @@ import com.backend.allreva.support.IntegrationTestSupport;
 class GroupChatServiceTest extends IntegrationTestSupport {
 
     @Autowired
-    private GroupChatCommandService groupChatCommandService;
+    private GroupChatService groupChatCommandService;
     @Autowired
-    private GroupChatQueryService groupChatQueryService;
+    private GroupChatService groupChatQueryService;
 
     @Autowired
     private RentCommandFacade rentCommandFacade;
@@ -152,7 +152,7 @@ class GroupChatServiceTest extends IntegrationTestSupport {
         asyncAspect.await();
 
         var participantDoc = participantRepository
-                .findChatParticipantDocByMemberId(savedMember.getId())
+                .findChatParticipantByMemberId(savedMember.getId())
                 .get();
 
         // Then

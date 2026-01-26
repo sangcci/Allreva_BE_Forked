@@ -1,7 +1,7 @@
 package com.backend.allreva.chatting;
 
-import com.backend.allreva.chatting.chat.group.command.domain.GroupChat;
-import com.backend.allreva.chatting.chat.group.command.domain.value.Title;
+import com.backend.allreva.module.chat.domain.GroupChat;
+import com.backend.allreva.module.chat.domain.value.Title;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.support.IntegrationTestSupport;

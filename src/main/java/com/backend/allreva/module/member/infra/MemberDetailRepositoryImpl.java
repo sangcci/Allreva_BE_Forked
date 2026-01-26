@@ -5,10 +5,6 @@ import static com.backend.allreva.module.member.domain.QMemberArtist.memberArtis
 import static com.backend.allreva.module.artist.domain.QArtist.artist;
 
 import org.springframework.stereotype.Repository;
-
-import com.backend.allreva.chatting.chat.single.command.domain.value.OtherMember;
-import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.module.member.exception.MemberErrorCode;
 import com.backend.allreva.module.member.application.port.MemberDetailRepository;
 import com.backend.allreva.module.member.application.dto.MemberDetailResponse;
 import com.backend.allreva.module.member.application.dto.MemberDetailResponse.MemberArtistDetail;
@@ -44,22 +40,5 @@ public class MemberDetailRepositoryImpl implements MemberDetailRepository {
                         memberArtist.artistId,
                         artist.name)),
                 member.refundAccount);
-    }
-
-    @Override
-    public OtherMember findMemberSummary(Long memberId) {
-        OtherMember otherMember = queryFactory
-                .select(Projections.constructor(OtherMember.class,
-                        member.id,
-                        member.memberInfo.nickname,
-                        member.memberInfo.profileImageUrl))
-                .from(member)
-                .where(member.id.eq(memberId))
-                .fetchFirst();
-
-        if (otherMember == null) {
-            throw new CustomException(MemberErrorCode.MEMBER_NOT_FOUND);
-        }
-        return otherMember;
     }
 }

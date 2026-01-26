@@ -2,7 +2,7 @@ package com.backend.allreva.module.concert.diary.infra;
 
 import static com.backend.allreva.common.model.QImage.image;
 import static com.backend.allreva.module.concert.concert.domain.QConcert.concert;
-import static com.backend.allreva.module.diary.domain.QConcertDiary.concertDiary;
+import static com.backend.allreva.module.concert.diary.domain.QConcertDiary.concertDiary;
 
 import java.time.LocalDate;
 import java.time.YearMonth;
