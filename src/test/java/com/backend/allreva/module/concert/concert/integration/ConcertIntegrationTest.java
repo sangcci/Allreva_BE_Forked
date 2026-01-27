@@ -1,5 +1,9 @@
 package com.backend.allreva.module.concert.concert.integration;
 
+import static com.backend.allreva.module.concert.hall.fixture.ConcertHallFixture.createTestConcertHall;
+
+import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createTestConcert;
+
 import com.backend.allreva.module.concert.concert.application.ConcertService;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailResponse;
 import com.backend.allreva.module.concert.concert.domain.Concert;

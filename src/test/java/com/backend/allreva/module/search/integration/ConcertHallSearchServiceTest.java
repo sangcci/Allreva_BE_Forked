@@ -1,5 +1,7 @@
 package com.backend.allreva.module.search.integration;
 
+import static com.backend.allreva.module.concert.hall.fixture.ConcertHallFixture.createTestConcertHall;
+
 import com.backend.allreva.module.concert.hall.application.dto.ConcertHallMainResponse;
 import com.backend.allreva.module.concert.hall.domain.ConcertHallRepository;
 import com.backend.allreva.module.search.application.ConcertHallSearchService;

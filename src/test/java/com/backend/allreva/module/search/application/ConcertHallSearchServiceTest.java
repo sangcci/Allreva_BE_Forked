@@ -68,9 +68,7 @@ class ConcertHallSearchServiceTest {
                 SearchHit<ConcertHallDocument> hit2 = mock(SearchHit.class);
 
                 given(hit1.getContent()).willReturn(hallDoc1);
-                given(hit1.getSortValues()).willReturn(List.of("sort1"));
                 given(hit2.getContent()).willReturn(hallDoc2);
-                given(hit2.getSortValues()).willReturn(List.of("sort2"));
 
                 @SuppressWarnings("unchecked")
                 SearchHits<ConcertHallDocument> searchHits = mock(SearchHits.class);
@@ -132,7 +130,6 @@ class ConcertHallSearchServiceTest {
 
                 ConcertHallDocument hallDoc1 = createMockHallDocument("hall1", "홀1", 1500);
                 ConcertHallDocument hallDoc2 = createMockHallDocument("hall2", "홀2", 1600);
-                ConcertHallDocument hallDoc3 = createMockHallDocument("hall3", "홀3", 1700);
 
                 @SuppressWarnings("unchecked")
                 SearchHit<ConcertHallDocument> hit1 = mock(SearchHit.class);
@@ -142,11 +139,8 @@ class ConcertHallSearchServiceTest {
                 SearchHit<ConcertHallDocument> hit3 = mock(SearchHit.class);
 
                 given(hit1.getContent()).willReturn(hallDoc1);
-                given(hit1.getSortValues()).willReturn(List.of("sort1"));
                 given(hit2.getContent()).willReturn(hallDoc2);
                 given(hit2.getSortValues()).willReturn(List.of("sort2"));
-                given(hit3.getContent()).willReturn(hallDoc3);
-                given(hit3.getSortValues()).willReturn(List.of("sort3"));
 
                 @SuppressWarnings("unchecked")
                 SearchHits<ConcertHallDocument> searchHits = mock(SearchHits.class);
@@ -176,10 +170,15 @@ class ConcertHallSearchServiceTest {
         given(doc.getId()).willReturn(id);
         given(doc.getName()).willReturn(name);
         given(doc.getSeatScale()).willReturn(seatScale);
-        given(doc.getStar()).willReturn(4.5);
-        given(doc.getLongitude()).willReturn(127.0);
-        given(doc.getLatitude()).willReturn(37.5);
         given(doc.getAddress()).willReturn("서울특별시");
+        given(doc.getParking()).willReturn(true);
+        given(doc.getRestaurant()).willReturn(true);
+        given(doc.getCafe()).willReturn(true);
+        given(doc.getStore()).willReturn(false);
+        given(doc.getParkBarrier()).willReturn(true);
+        given(doc.getRestBarrier()).willReturn(true);
+        given(doc.getElevBarrier()).willReturn(true);
+        given(doc.getRunwBarrier()).willReturn(false);
         return doc;
     }
 }

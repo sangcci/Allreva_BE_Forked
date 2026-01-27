@@ -1,5 +1,11 @@
 package com.backend.allreva.survey.integration;
 
+import static com.backend.allreva.survey.fixture.SurveyRequestFixture.createOpenSurveyRequest;
+
+import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createTestConcert;
+
+import static com.backend.allreva.module.member.fixture.MemberFixture.createTestMember;
+
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.infra.ConcertRepository;
 import com.backend.allreva.module.member.domain.Member;

@@ -1,5 +1,9 @@
 package com.backend.allreva.module.concert.diary.integration;
 
+import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createTestConcert;
+
+import static com.backend.allreva.module.member.fixture.MemberFixture.createTestMember;
+
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.common.storage.upload.StorageUploadService;

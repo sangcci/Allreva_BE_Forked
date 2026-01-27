@@ -1,5 +1,11 @@
 package com.backend.allreva.survey.integration;
 
+import static com.backend.allreva.survey.fixture.SurveyRequestFixture.createOpenSurveyRequest;
+
+import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createTestConcert;
+
+import static com.backend.allreva.module.member.fixture.MemberFixture.createTestMember;
+
 import static java.util.List.of;
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;

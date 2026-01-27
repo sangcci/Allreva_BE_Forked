@@ -23,4 +23,15 @@ public final class MemberFixture {
         ReflectionTestUtils.setField(member, "id", memberId);
         return member;
     }
+
+    public static Member createTestMember() {
+        return Member.builder()
+                .email(new Email("example@example.com"))
+                .memberRole(MemberRole.USER)
+                .loginProvider(LoginProvider.GOOGLE)
+                .nickname("JohnDoe")
+                .introduce("Hello, I'm John.")
+                .profileImageUrl("http://example.com/profile.jpg")
+                .build();
+    }
 }
