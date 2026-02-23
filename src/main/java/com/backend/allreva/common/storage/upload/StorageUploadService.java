@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.common.storage.exception.StorageErrorCode;
-import com.backend.allreva.module.concert.review.application.dto.FileData;
+import com.backend.allreva.module.review.concert_review.application.dto.FileData;
 
 import io.awspring.cloud.s3.ObjectMetadata;
 import io.awspring.cloud.s3.S3Operations;

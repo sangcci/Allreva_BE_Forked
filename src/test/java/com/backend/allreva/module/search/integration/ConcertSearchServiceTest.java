@@ -1,11 +1,11 @@
 package com.backend.allreva.module.search.integration;
 
-import static com.backend.allreva.module.concert.hall.fixture.ConcertHallFixture.createConcertHall;
+import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createConcertHall;
 import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createTestConcert;
 
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.module.concert.concert.infra.ConcertRepository;
-import com.backend.allreva.module.concert.hall.domain.ConcertHallRepository;
+import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
+import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import com.backend.allreva.module.search.application.ConcertSearchService;
 import com.backend.allreva.module.search.application.dto.ConcertMainResponse;
 import com.backend.allreva.module.search.application.dto.ConcertSearchListResponse;

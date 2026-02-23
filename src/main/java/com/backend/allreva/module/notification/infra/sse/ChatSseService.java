@@ -1,7 +1,7 @@
 package com.backend.allreva.module.notification.infra.sse;
 
-import com.backend.allreva.module.chat.domain.participant.value.ChatType;
-import com.backend.allreva.module.chat.domain.participant.value.PreviewMessage;
+import com.backend.allreva.module.recruitment.chat.domain.participant.value.ChatType;
+import com.backend.allreva.module.recruitment.chat.domain.participant.value.PreviewMessage;
 import com.backend.allreva.module.notification.infra.sse.event.SseConnectedEvent;
 import com.backend.allreva.common.event.Events;
 import com.backend.allreva.module.member.domain.Member;

@@ -1,7 +1,7 @@
 package com.backend.allreva.rent.command.application;
 
-import com.backend.allreva.module.chat.application.GroupChatService;
-import com.backend.allreva.module.chat.application.dto.AddGroupChatRequest;
+import com.backend.allreva.module.recruitment.chat.application.GroupChatService;
+import com.backend.allreva.module.recruitment.chat.application.dto.AddGroupChatRequest;
 import com.backend.allreva.common.event.Events;
 import com.backend.allreva.module.notification.domain.NotificationEvent;
 import com.backend.allreva.module.notification.domain.NotificationType;

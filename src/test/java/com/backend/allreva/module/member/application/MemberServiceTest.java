@@ -1,7 +1,7 @@
 package com.backend.allreva.module.member.application;
 
-import com.backend.allreva.module.artist.application.ArtistService;
-import com.backend.allreva.module.artist.domain.Artist;
+import com.backend.allreva.module.concert.artist.application.ArtistService;
+import com.backend.allreva.module.concert.artist.domain.Artist;
 import com.backend.allreva.module.member.application.dto.MemberArtistRequest;
 import com.backend.allreva.module.member.application.dto.MemberRegisterRequest;
 import com.backend.allreva.module.member.application.dto.NicknameDuplication;

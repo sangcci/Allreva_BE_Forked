@@ -1,8 +1,8 @@
 package com.backend.allreva.module.notification.infra.sse;
 
-import com.backend.allreva.module.chat.domain.participant.value.ChatType;
-import com.backend.allreva.module.chat.domain.participant.value.Participant;
-import com.backend.allreva.module.chat.domain.participant.value.PreviewMessage;
+import com.backend.allreva.module.recruitment.chat.domain.participant.value.ChatType;
+import com.backend.allreva.module.recruitment.chat.domain.participant.value.Participant;
+import com.backend.allreva.module.recruitment.chat.domain.participant.value.PreviewMessage;
 import lombok.Getter;
 
 @Getter

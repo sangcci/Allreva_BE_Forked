@@ -10,7 +10,7 @@ import com.backend.allreva.common.event.Events;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.concert.concert.exception.ConcertErrorCode;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDateInfoResponse;
-import com.backend.allreva.module.concert.concert.infra.ConcertRepository;
+import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.notification.domain.NotificationEvent;
 import com.backend.allreva.module.notification.domain.NotificationType;
 import com.backend.allreva.survey.command.application.request.OpenSurveyRequest;

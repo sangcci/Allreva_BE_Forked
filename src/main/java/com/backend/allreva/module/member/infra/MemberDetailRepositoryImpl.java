@@ -2,7 +2,7 @@ package com.backend.allreva.module.member.infra;
 
 import static com.backend.allreva.module.member.domain.QMember.member;
 import static com.backend.allreva.module.member.domain.QMemberArtist.memberArtist;
-import static com.backend.allreva.module.artist.domain.QArtist.artist;
+import static com.backend.allreva.module.concert.artist.domain.QArtist.artist;
 
 import org.springframework.stereotype.Repository;
 import com.backend.allreva.module.member.application.port.MemberDetailRepository;

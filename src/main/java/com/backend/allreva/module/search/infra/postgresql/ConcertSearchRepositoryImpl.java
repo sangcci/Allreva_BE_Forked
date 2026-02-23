@@ -1,7 +1,7 @@
 package com.backend.allreva.module.search.infra.postgresql;
 
 import com.backend.allreva.module.concert.concert.domain.QConcert;
-import com.backend.allreva.module.concert.hall.domain.QConcertHall;
+import com.backend.allreva.module.concert.place.domain.QConcertHall;
 import com.backend.allreva.module.search.application.dto.ConcertMainResponse;
 import com.backend.allreva.module.search.application.dto.ConcertSearchListResponse;
 import com.backend.allreva.module.search.application.dto.ConcertThumbnail;

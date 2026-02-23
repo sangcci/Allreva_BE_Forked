@@ -1,14 +1,14 @@
 package com.backend.allreva.rent.query;
 
 import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
-import com.backend.allreva.module.concert.hall.fixture.ConcertHallFixture;
+import com.backend.allreva.module.concert.place.fixture.ConcertHallFixture;
 import static com.backend.allreva.module.member.fixture.MemberFixture.createMember;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.backend.allreva.common.model.Image;
-import com.backend.allreva.module.concert.concert.infra.ConcertRepository;
-import com.backend.allreva.module.concert.hall.domain.ConcertHallRepository;
+import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
+import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import com.backend.allreva.module.member.domain.value.MemberRole;
 import com.backend.allreva.rent.command.domain.Rent;
 import com.backend.allreva.rent.command.domain.RentBoardingInfo;

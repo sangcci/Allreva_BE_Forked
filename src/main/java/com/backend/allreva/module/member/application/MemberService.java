@@ -1,8 +1,8 @@
 package com.backend.allreva.module.member.application;
 
 import com.backend.allreva.common.event.Events;
-import com.backend.allreva.module.artist.application.ArtistService;
-import com.backend.allreva.module.artist.application.dto.ArtistCreateRequest;
+import com.backend.allreva.module.concert.artist.application.ArtistService;
+import com.backend.allreva.module.concert.artist.application.dto.ArtistCreateRequest;
 import com.backend.allreva.module.member.application.dto.MemberArtistRequest;
 import com.backend.allreva.module.member.application.dto.MemberDetailResponse;
 import com.backend.allreva.module.member.application.dto.MemberRegisterRequest;
