@@ -20,10 +20,10 @@ import java.util.List;
 public class CacheConfig {
     @Bean
     @Primary
-    public CacheManager concertHallMainCacheManager() {
+    public CacheManager placeMainCacheManager() {
         ConcurrentMapCacheManager cacheManager =
-                new ConcurrentMapCacheManager("concertHallMainCacheManager");
-        cacheManager.setCacheNames(List.of("concertHallMain"));
+                new ConcurrentMapCacheManager("placeMainCacheManager");
+        cacheManager.setCacheNames(List.of("placeMain"));
         return cacheManager;
     }
 
