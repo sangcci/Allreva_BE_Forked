@@ -1,37 +1,18 @@
 package com.backend.allreva.module.search.domain;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.SearchHits;
+import com.backend.allreva.module.search.application.dto.ConcertMainResponse;
+import com.backend.allreva.module.search.application.dto.ConcertSearchListResponse;
+import com.backend.allreva.module.search.application.dto.ConcertThumbnail;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface ConcertSearchRepository {
-    Page<ConcertDocument> findByTitleMixed(String title, Pageable pageable);
 
-    Optional<ConcertDocument> findByConcertCode(String concertCode);
+    List<ConcertThumbnail> findThumbnailsByTitle(String title, int limit);
 
-    SearchHits<ConcertDocument> searchMainConcerts(
-            String address,
-            List<Object> searchAfter,
-            int size,
-            SortDirection sortDirection
-    );
+    ConcertSearchListResponse searchByTitle(String query, Long cursorId, int pageSize);
 
-    SearchHits<ConcertDocument> searchByTitleList(
-            String query,
-            List<Object> searchAfter,
-            int size
-    );
+    ConcertSearchListResponse searchByTitleAll(String query, Long cursorId, int pageSize);
 
-    SearchHits<ConcertDocument> searchByTitleListAll(
-            String query,
-            List<Object> searchAfter,
-            int size
-    );
-
-    ConcertDocument save(ConcertDocument document);
-
-    void deleteById(String id);
+    ConcertMainResponse searchMain(String address, Long cursorId, int pageSize, SortDirection sortDirection);
 }

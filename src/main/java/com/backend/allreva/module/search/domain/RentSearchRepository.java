@@ -1,21 +1,13 @@
 package com.backend.allreva.module.search.domain;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.SearchHits;
+import com.backend.allreva.module.search.application.dto.RentSearchListResponse;
+import com.backend.allreva.module.search.application.dto.RentThumbnail;
 
 import java.util.List;
 
 public interface RentSearchRepository {
-    Page<RentDocument> findByTitleMixed(String title, Pageable pageable);
 
-    SearchHits<RentDocument> searchByTitleList(
-            String query,
-            List<Object> searchAfter,
-            int size
-    );
+    List<RentThumbnail> findThumbnailsByTitle(String title, int limit);
 
-    RentDocument save(RentDocument document);
-
-    void deleteById(String id);
+    RentSearchListResponse searchByTitle(String query, Long cursorId, int pageSize);
 }
