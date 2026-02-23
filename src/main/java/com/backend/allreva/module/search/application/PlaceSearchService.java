@@ -1,9 +1,9 @@
 package com.backend.allreva.module.search.application;
 
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.module.concert.hall.application.dto.ConcertHallMainResponse;
-import com.backend.allreva.module.concert.hall.exception.ConcertHallErrorCode;
-import com.backend.allreva.module.search.domain.ConcertHallSearchRepository;
+import com.backend.allreva.module.concert.place.application.dto.ConcertHallMainResponse;
+import com.backend.allreva.module.concert.place.exception.ConcertHallErrorCode;
+import com.backend.allreva.module.search.domain.PlaceSearchRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
@@ -14,22 +14,22 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 @Slf4j
-public class ConcertHallSearchService {
+public class PlaceSearchService {
 
-    private final ConcertHallSearchRepository concertHallSearchRepository;
+    private final PlaceSearchRepository placeSearchRepository;
 
     @Cacheable(
-        cacheNames = "concertHallMain",
+        cacheNames = "placeMain",
         key = "#address + '_' + #seatScale + '_' + #size + '_' + #cursorId",
         unless = "#result == null",
-        cacheManager = "concertHallMainCacheManager"
+        cacheManager = "placeMainCacheManager"
     )
-    public ConcertHallMainResponse searchMainConcertHalls(
+    public ConcertHallMainResponse searchMainPlaces(
             final String address,
             final int seatScale,
             final String cursorId,
             final int size) {
-        ConcertHallMainResponse response = concertHallSearchRepository.searchMain(address, seatScale, cursorId, size);
+        ConcertHallMainResponse response = placeSearchRepository.searchMain(address, seatScale, cursorId, size);
         if (response.concertHallThumbnails().isEmpty()) {
             throw new CustomException(ConcertHallErrorCode.CONCERT_HALL_SEARCH_NOTFOUND);
         }

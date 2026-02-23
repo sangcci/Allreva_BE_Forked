@@ -1,7 +1,7 @@
 package com.backend.allreva.module.search.presentation;
 
 import com.backend.allreva.common.web.response.Response;
-import com.backend.allreva.module.concert.hall.application.dto.ConcertHallMainResponse;
+import com.backend.allreva.module.concert.place.application.dto.ConcertHallMainResponse;
 import com.backend.allreva.module.search.application.*;
 import com.backend.allreva.module.search.application.dto.*;
 import com.backend.allreva.module.search.domain.SortDirection;
@@ -24,7 +24,7 @@ public class SearchController {
 
     private final PopularKeywordService popularKeywordService;
     private final ConcertSearchService concertSearchService;
-    private final ConcertHallSearchService concertHallSearchService;
+    private final PlaceSearchService placeSearchService;
     private final RentSearchService rentSearchService;
     private final SurveySearchService surveySearchService;
 
@@ -105,12 +105,12 @@ public class SearchController {
     }
 
     @Operation(summary = "메인 화면 공연장 API", description = "주소/좌석 기준으로 공연장 목록 조회")
-    @GetMapping("/concert-hall/main")
-    public Response<ConcertHallMainResponse> getConcertHallMainList(
+    @GetMapping("/place/main")
+    public Response<ConcertHallMainResponse> getPlaceMainList(
             @RequestParam(defaultValue = "") final String address,
             @RequestParam(defaultValue = "0") final int seatScale,
             @RequestParam(defaultValue = "7") final int pageSize,
             @RequestParam(required = false) final String cursorId) {
-        return Response.onSuccess(concertHallSearchService.searchMainConcertHalls(address, seatScale, cursorId, pageSize));
+        return Response.onSuccess(placeSearchService.searchMainPlaces(address, seatScale, cursorId, pageSize));
     }
 }

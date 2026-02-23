@@ -1,10 +1,10 @@
 package com.backend.allreva.module.search.infra.postgresql;
 
-import com.backend.allreva.module.concert.hall.application.dto.ConcertHallMainResponse;
-import com.backend.allreva.module.concert.hall.application.dto.ConcertHallThumbnail;
-import com.backend.allreva.module.concert.hall.domain.ConcertHall;
-import com.backend.allreva.module.concert.hall.domain.QConcertHall;
-import com.backend.allreva.module.search.domain.ConcertHallSearchRepository;
+import com.backend.allreva.module.concert.place.application.dto.ConcertHallMainResponse;
+import com.backend.allreva.module.concert.place.application.dto.ConcertHallThumbnail;
+import com.backend.allreva.module.concert.place.domain.ConcertHall;
+import com.backend.allreva.module.concert.place.domain.QConcertHall;
+import com.backend.allreva.module.search.domain.PlaceSearchRepository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -17,7 +17,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class ConcertHallSearchRepositoryImpl implements ConcertHallSearchRepository {
+public class PlaceSearchRepositoryImpl implements PlaceSearchRepository {
 
     private final JPAQueryFactory queryFactory;
     private final QConcertHall hall = QConcertHall.concertHall;

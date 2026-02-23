@@ -1,11 +1,11 @@
 package com.backend.allreva.module.search.integration;
 
-import static com.backend.allreva.module.concert.hall.fixture.ConcertHallFixture.createConcertHall;
-import static com.backend.allreva.module.concert.hall.fixture.ConcertHallFixture.createTestConcertHall;
+import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createConcertHall;
+import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createTestConcertHall;
 
-import com.backend.allreva.module.concert.hall.application.dto.ConcertHallMainResponse;
-import com.backend.allreva.module.concert.hall.domain.ConcertHallRepository;
-import com.backend.allreva.module.search.application.ConcertHallSearchService;
+import com.backend.allreva.module.concert.place.application.dto.ConcertHallMainResponse;
+import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
+import com.backend.allreva.module.search.application.PlaceSearchService;
 import com.backend.allreva.support.IntegrationTestSupport;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -18,11 +18,11 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @Slf4j
 @SuppressWarnings("NonAsciiCharacters")
-@DisplayName("ConcertHall 검색 통합 테스트")
-class ConcertHallSearchServiceTest extends IntegrationTestSupport {
+@DisplayName("Place 검색 통합 테스트")
+class PlaceSearchServiceTest extends IntegrationTestSupport {
 
     @Autowired
-    ConcertHallSearchService concertHallSearchService;
+    PlaceSearchService placeSearchService;
 
     @Autowired
     ConcertHallRepository concertHallRepository;
@@ -50,7 +50,7 @@ class ConcertHallSearchServiceTest extends IntegrationTestSupport {
                 int size = 10;
 
                 // when
-                ConcertHallMainResponse result = concertHallSearchService.searchMainConcertHalls(
+                ConcertHallMainResponse result = placeSearchService.searchMainPlaces(
                         address, seatScale, null, size);
 
                 // then
@@ -75,7 +75,7 @@ class ConcertHallSearchServiceTest extends IntegrationTestSupport {
                 int size = 10;
 
                 // when
-                ConcertHallMainResponse result = concertHallSearchService.searchMainConcertHalls(
+                ConcertHallMainResponse result = placeSearchService.searchMainPlaces(
                         address, seatScale, null, size);
 
                 // then
@@ -104,7 +104,7 @@ class ConcertHallSearchServiceTest extends IntegrationTestSupport {
                 int pageSize = 2;
 
                 // when - 첫 페이지 조회
-                ConcertHallMainResponse page1 = concertHallSearchService.searchMainConcertHalls(
+                ConcertHallMainResponse page1 = placeSearchService.searchMainPlaces(
                         address, seatScale, null, pageSize);
 
                 // then
@@ -114,7 +114,7 @@ class ConcertHallSearchServiceTest extends IntegrationTestSupport {
                 });
 
                 // when - 두 번째 페이지 조회
-                ConcertHallMainResponse page2 = concertHallSearchService.searchMainConcertHalls(
+                ConcertHallMainResponse page2 = placeSearchService.searchMainPlaces(
                         address, seatScale, page1.nextCursorId(), pageSize);
 
                 // then

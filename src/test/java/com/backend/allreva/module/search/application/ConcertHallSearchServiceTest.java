@@ -1,11 +1,11 @@
 package com.backend.allreva.module.search.application;
 
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.module.concert.hall.application.dto.ConcertHallMainResponse;
-import com.backend.allreva.module.concert.hall.application.dto.ConcertHallThumbnail;
-import com.backend.allreva.module.concert.hall.domain.ConvenienceInfo;
-import com.backend.allreva.module.concert.hall.exception.ConcertHallErrorCode;
-import com.backend.allreva.module.search.domain.ConcertHallSearchRepository;
+import com.backend.allreva.module.concert.place.application.dto.ConcertHallMainResponse;
+import com.backend.allreva.module.concert.place.application.dto.ConcertHallThumbnail;
+import com.backend.allreva.module.concert.place.domain.ConvenienceInfo;
+import com.backend.allreva.module.concert.place.exception.ConcertHallErrorCode;
+import com.backend.allreva.module.search.domain.PlaceSearchRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -23,14 +23,14 @@ import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("NonAsciiCharacters")
-@DisplayName("ConcertHallSearchService 단위 테스트")
-class ConcertHallSearchServiceTest {
+@DisplayName("PlaceSearchService 단위 테스트")
+class PlaceSearchServiceTest {
 
     @InjectMocks
-    private ConcertHallSearchService concertHallSearchService;
+    private PlaceSearchService placeSearchService;
 
     @Mock
-    private ConcertHallSearchRepository concertHallSearchRepository;
+    private PlaceSearchRepository placeSearchRepository;
 
     private ConcertHallThumbnail createThumbnail(String id, String name, int seatScale) {
         return new ConcertHallThumbnail(id, name, "서울특별시", seatScale,
@@ -62,11 +62,11 @@ class ConcertHallSearchServiceTest {
                 ConcertHallMainResponse mockResponse = ConcertHallMainResponse.from(
                         List.of(thumb1, thumb2), null);
 
-                given(concertHallSearchRepository.searchMain(address, seatScale, cursorId, size))
+                given(placeSearchRepository.searchMain(address, seatScale, cursorId, size))
                         .willReturn(mockResponse);
 
                 // when
-                ConcertHallMainResponse result = concertHallSearchService.searchMainConcertHalls(
+                ConcertHallMainResponse result = placeSearchService.searchMainPlaces(
                         address, seatScale, cursorId, size);
 
                 // then
@@ -88,12 +88,12 @@ class ConcertHallSearchServiceTest {
                 int size = 7;
 
                 ConcertHallMainResponse mockResponse = ConcertHallMainResponse.from(List.of(), null);
-                given(concertHallSearchRepository.searchMain(address, seatScale, cursorId, size))
+                given(placeSearchRepository.searchMain(address, seatScale, cursorId, size))
                         .willReturn(mockResponse);
 
                 // when & then
                 assertThatThrownBy(() ->
-                        concertHallSearchService.searchMainConcertHalls(address, seatScale, cursorId, size))
+                        placeSearchService.searchMainPlaces(address, seatScale, cursorId, size))
                         .isInstanceOf(CustomException.class)
                         .hasFieldOrPropertyWithValue("errorCode", ConcertHallErrorCode.CONCERT_HALL_SEARCH_NOTFOUND);
             }
@@ -112,11 +112,11 @@ class ConcertHallSearchServiceTest {
                 ConcertHallMainResponse mockResponse = ConcertHallMainResponse.from(
                         List.of(thumb1, thumb2), "hall2");
 
-                given(concertHallSearchRepository.searchMain(address, seatScale, cursorId, size))
+                given(placeSearchRepository.searchMain(address, seatScale, cursorId, size))
                         .willReturn(mockResponse);
 
                 // when
-                ConcertHallMainResponse result = concertHallSearchService.searchMainConcertHalls(
+                ConcertHallMainResponse result = placeSearchService.searchMainPlaces(
                         address, seatScale, cursorId, size);
 
                 // then
