@@ -31,7 +31,8 @@ public abstract class IntegrationTestSupport {
 
     @Container
     @ServiceConnection
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16");
+    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16")
+            .withInitScript("db/trgm-indexes.sql");
 
     @Container
     @ServiceConnection
