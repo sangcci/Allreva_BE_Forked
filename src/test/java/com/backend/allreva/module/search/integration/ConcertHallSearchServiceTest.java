@@ -1,5 +1,6 @@
 package com.backend.allreva.module.search.integration;
 
+import static com.backend.allreva.module.concert.hall.fixture.ConcertHallFixture.createConcertHall;
 import static com.backend.allreva.module.concert.hall.fixture.ConcertHallFixture.createTestConcertHall;
 
 import com.backend.allreva.module.concert.hall.application.dto.ConcertHallMainResponse;
@@ -13,10 +14,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @Slf4j
@@ -50,12 +47,11 @@ class ConcertHallSearchServiceTest extends IntegrationTestSupport {
                 concertHallRepository.save(createTestConcertHall());
                 String address = "서울";
                 int seatScale = 0;
-                List<Object> searchAfter = new ArrayList<>();
                 int size = 10;
 
                 // when
                 ConcertHallMainResponse result = concertHallSearchService.searchMainConcertHalls(
-                        address, seatScale, searchAfter, size);
+                        address, seatScale, null, size);
 
                 // then
                 assertSoftly(softly -> {
@@ -76,18 +72,16 @@ class ConcertHallSearchServiceTest extends IntegrationTestSupport {
                 concertHallRepository.save(createTestConcertHall());
                 String address = "";
                 int seatScale = 2000;
-                List<Object> searchAfter = new ArrayList<>();
                 int size = 10;
 
                 // when
                 ConcertHallMainResponse result = concertHallSearchService.searchMainConcertHalls(
-                        address, seatScale, searchAfter, size);
+                        address, seatScale, null, size);
 
                 // then
                 assertSoftly(softly -> {
                     softly.assertThat(result).isNotNull();
                     softly.assertThat(result.concertHallThumbnails()).isNotEmpty();
-                    // 모든 공연장의 좌석 규모가 2000 이상인지 확인
                     softly.assertThat(result.concertHallThumbnails())
                             .allMatch(hall -> hall.seatScale() >= seatScale);
                 });
@@ -99,35 +93,33 @@ class ConcertHallSearchServiceTest extends IntegrationTestSupport {
         class Context_페이지네이션_조회 {
 
             @Test
-            @DisplayName("searchAfter를 사용하여 다음 페이지를 조회할 수 있다")
-            void searchAfter를_사용하여_다음_페이지를_조회할_수_있다() {
-                // given
-                for (int i = 0; i < 5; i++) {
-                    concertHallRepository.save(createTestConcertHall());
+            @DisplayName("nextCursorId를 사용하여 다음 페이지를 조회할 수 있다")
+            void nextCursorId를_사용하여_다음_페이지를_조회할_수_있다() {
+                // given - 각각 다른 ID로 5개 저장
+                for (int i = 1; i <= 5; i++) {
+                    concertHallRepository.save(createConcertHall(String.format("hall-%03d", i)));
                 }
                 String address = "";
                 int seatScale = 0;
-                List<Object> searchAfter = new ArrayList<>();
                 int pageSize = 2;
 
                 // when - 첫 페이지 조회
                 ConcertHallMainResponse page1 = concertHallSearchService.searchMainConcertHalls(
-                        address, seatScale, searchAfter, pageSize);
+                        address, seatScale, null, pageSize);
 
                 // then
                 assertSoftly(softly -> {
                     softly.assertThat(page1.concertHallThumbnails()).hasSize(2);
-                    softly.assertThat(page1.searchAfter()).isNotNull();
+                    softly.assertThat(page1.nextCursorId()).isNotNull();
                 });
 
                 // when - 두 번째 페이지 조회
                 ConcertHallMainResponse page2 = concertHallSearchService.searchMainConcertHalls(
-                        address, seatScale, page1.searchAfter(), pageSize);
+                        address, seatScale, page1.nextCursorId(), pageSize);
 
                 // then
                 assertSoftly(softly -> {
                     softly.assertThat(page2.concertHallThumbnails()).hasSize(2);
-                    // 첫 페이지와 두 번째 페이지의 결과가 다름
                     softly.assertThat(page2.concertHallThumbnails())
                             .isNotEqualTo(page1.concertHallThumbnails());
                 });

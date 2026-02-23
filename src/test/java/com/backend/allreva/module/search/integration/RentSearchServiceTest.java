@@ -2,8 +2,6 @@ package com.backend.allreva.module.search.integration;
 
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.search.application.RentSearchService;
-import com.backend.allreva.module.search.application.dto.RentSearchListResponse;
-import com.backend.allreva.module.search.application.dto.RentThumbnail;
 import com.backend.allreva.support.IntegrationTestSupport;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
@@ -11,11 +9,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
@@ -57,12 +50,11 @@ class RentSearchServiceTest extends IntegrationTestSupport {
             @DisplayName("검색 결과가 없는 경우 예외가 발생한다")
             void 검색_결과가_없는_경우_예외가_발생한다() {
                 // given
-                List<Object> searchAfter = new ArrayList<>();
                 String query = "존재하지않는검색어12345";
 
                 // when & then
                 assertThrows(CustomException.class, () -> {
-                    rentSearchService.searchRentSearchList(query, searchAfter, 2);
+                    rentSearchService.searchRentSearchList(query, null, 2);
                 });
             }
         }
