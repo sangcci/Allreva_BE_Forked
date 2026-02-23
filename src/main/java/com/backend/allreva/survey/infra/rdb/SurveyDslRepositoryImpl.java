@@ -41,7 +41,7 @@ public class SurveyDslRepositoryImpl implements SurveyDslRepository {
                 .join(surveyBoardingDate).on(survey.id.eq(surveyBoardingDate.survey.id))
                 .leftJoin(surveyJoin).on(surveyBoardingDate.date.eq(surveyJoin.boardingDate))
                 .where(survey.id.eq(surveyId))
-                .groupBy(surveyBoardingDate.date)
+                .groupBy(survey.id, surveyBoardingDate.date)
                 .transform(
                         GroupBy.groupBy(survey.id).as(
                                 surveyDetailProjections()))
