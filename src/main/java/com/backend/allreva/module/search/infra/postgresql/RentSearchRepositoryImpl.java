@@ -1,0 +1,74 @@
+package com.backend.allreva.module.search.infra.postgresql;
+
+import com.backend.allreva.module.search.application.dto.RentSearchListResponse;
+import com.backend.allreva.module.search.application.dto.RentThumbnail;
+import com.backend.allreva.module.search.domain.RentSearchRepository;
+import com.backend.allreva.rent.command.domain.QRent;
+import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberTemplate;
+import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+
+import java.time.LocalDate;
+import java.util.List;
+
+@Repository
+@RequiredArgsConstructor
+public class RentSearchRepositoryImpl implements RentSearchRepository {
+
+    private static final double SIMILARITY_THRESHOLD = 0.1;
+    private final JPAQueryFactory queryFactory;
+    private final QRent rent = QRent.rent;
+
+    @Override
+    public List<RentThumbnail> findThumbnailsByTitle(final String title, final int limit) {
+        return fetchRents(titleMatchCondition(title), null, limit);
+    }
+
+    @Override
+    public RentSearchListResponse searchByTitle(
+            final String query, final Long cursorId, final int pageSize) {
+        BooleanExpression notExpired = rent.additionalInfo.endDate.goe(LocalDate.now());
+        BooleanExpression titleMatch = titleMatchCondition(query);
+        BooleanExpression cursor = cursorId != null ? rent.id.lt(cursorId) : null;
+
+        List<RentThumbnail> results = fetchRents(
+                titleMatch != null ? titleMatch.and(notExpired) : notExpired,
+                cursor,
+                pageSize + 1);
+
+        Long nextCursorId = results.size() > pageSize
+                ? results.get(pageSize - 1).id()
+                : null;
+        return RentSearchListResponse.from(results.stream().limit(pageSize).toList(), nextCursorId);
+    }
+
+    private List<RentThumbnail> fetchRents(
+            BooleanExpression condition, BooleanExpression cursor, int fetchSize) {
+        return queryFactory
+                .select(Projections.constructor(RentThumbnail.class,
+                        rent.id,
+                        rent.detailInfo.title,
+                        rent.operationInfo.boardingArea,
+                        rent.detailInfo.image.url,
+                        rent.additionalInfo.endDate))
+                .from(rent)
+                .where(condition, cursor)
+                .orderBy(rent.id.desc())
+                .limit(fetchSize)
+                .fetch();
+    }
+
+    private BooleanExpression titleMatchCondition(final String query) {
+        if (!StringUtils.hasText(query)) return null;
+        NumberTemplate<Double> sim = Expressions.numberTemplate(Double.class,
+                "similarity({0}, {1})", rent.detailInfo.title, query);
+        BooleanExpression ilike = Expressions.booleanTemplate("({0} ilike {1})",
+                rent.detailInfo.title, "%" + query + "%");
+        return sim.gt(SIMILARITY_THRESHOLD).or(ilike);
+    }
+}
