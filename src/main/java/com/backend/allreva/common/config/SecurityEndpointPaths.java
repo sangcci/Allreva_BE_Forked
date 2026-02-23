@@ -27,9 +27,7 @@ public final class SecurityEndpointPaths {
             // rent
             "/api/v1/rents/**",
             // survey
-            "/api/v1/surveys/**",
-            // diary
-            "/api/v1/diaries/**"
+            "/api/v1/surveys/**"
     };
 
     public static final String[] ANONYMOUS_LIST = {
