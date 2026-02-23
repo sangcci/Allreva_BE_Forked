@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionalEventListener;
 
-import com.backend.allreva.common.event.Events;
 import com.backend.allreva.common.storage.upload.StorageUploadService;
 import com.backend.allreva.rent.command.application.request.RentIdRequest;
 import com.backend.allreva.rent.command.application.request.RentRegisterRequest;
@@ -13,7 +12,6 @@ import com.backend.allreva.rent.command.application.request.RentUpdateRequest;
 import com.backend.allreva.rent.command.domain.Rent;
 import com.backend.allreva.rent.command.domain.RentClosedEvent;
 import com.backend.allreva.rent.command.domain.RentRepository;
-import com.backend.allreva.rent.command.domain.RentSaveEvent;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.rent.exception.RentErrorCode;
 
@@ -34,7 +32,6 @@ public class RentCommandService {
             final Long memberId) {
         Rent rent = rentRegisterRequest.toEntity(memberId);
         Rent savedRent = rentRepository.save(rent);
-        Events.raise(new RentSaveEvent(savedRent));
         return savedRent.getId();
     }
 

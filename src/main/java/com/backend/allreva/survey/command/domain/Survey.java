@@ -7,7 +7,6 @@ import java.util.List;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-import com.backend.allreva.common.event.Events;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.BaseEntity;
 import com.backend.allreva.survey.command.domain.value.Region;
@@ -95,8 +94,6 @@ public class Survey extends BaseEntity {
         this.endDate = endDate;
         this.maxPassenger = maxPassenger;
         this.information = information;
-
-        Events.raise(new SurveySavedEvent(this));
     }
 
     public void isWriter(final Long loginMemberId) {

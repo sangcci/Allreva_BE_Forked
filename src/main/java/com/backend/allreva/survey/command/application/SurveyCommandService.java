@@ -19,9 +19,7 @@ import com.backend.allreva.survey.command.application.request.UpdateSurveyReques
 import com.backend.allreva.survey.command.domain.Survey;
 import com.backend.allreva.survey.command.domain.SurveyBoardingDate;
 import com.backend.allreva.survey.command.domain.SurveyBoardingDateCommandRepository;
-import com.backend.allreva.survey.command.domain.SurveyDeletedEvent;
 import com.backend.allreva.survey.command.domain.SurveyRepository;
-import com.backend.allreva.survey.command.domain.SurveySavedEvent;
 import com.backend.allreva.survey.exception.SurveyErrorCode;
 
 import lombok.RequiredArgsConstructor;
@@ -47,8 +45,6 @@ public class SurveyCommandService {
 
         Survey survey = surveyRepository.save(surveyConverter.toSurvey(memberId, request));
         saveBoardingDates(survey, request.boardingDates());
-
-        Events.raise(new SurveySavedEvent(survey));
 
         // push notification
         Events.raise(NotificationEvent.builder()
@@ -95,7 +91,6 @@ public class SurveyCommandService {
 
         surveyRepository.delete(survey);
         surveyBoardingDateCommandRepository.deleteAllBySurvey(survey);
-        Events.raise(new SurveyDeletedEvent(survey.getId()));
     }
 
     /**

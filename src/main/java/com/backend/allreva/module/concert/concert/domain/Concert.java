@@ -1,6 +1,5 @@
 package com.backend.allreva.module.concert.concert.domain;
 
-import com.backend.allreva.common.event.Events;
 import com.backend.allreva.common.model.BaseEntity;
 import com.backend.allreva.common.model.Image;
 import jakarta.persistence.*;
@@ -95,6 +94,5 @@ public class Concert extends BaseEntity {
 
     public void addViewCount(final int count) {
         this.viewCount += count;
-        Events.raise(new ViewAddedEvent(this));
     }
 }

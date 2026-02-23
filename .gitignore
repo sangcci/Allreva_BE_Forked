@@ -45,3 +45,8 @@ out/
 ### VS Code ###
 .vscode/
 /src/main/resources/CD.yml
+
+### Claude Code ###
+.claude/
+docs/
+CLAUDE.md

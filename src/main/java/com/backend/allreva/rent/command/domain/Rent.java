@@ -1,6 +1,5 @@
 package com.backend.allreva.rent.command.domain;
 
-import com.backend.allreva.common.event.Events;
 import com.backend.allreva.common.model.BaseEntity;
 import com.backend.allreva.rent.command.application.request.RentUpdateRequest;
 import com.backend.allreva.rent.command.domain.value.AdditionalInfo;
@@ -111,7 +110,6 @@ public class Rent extends BaseEntity {
         assignBoardingInfos(rentBoardingInfos);
         isClosed = false;
 
-        Events.raise(new RentSaveEvent(this));
     }
 
     public void validateMine(Long memberId) {
@@ -122,6 +120,5 @@ public class Rent extends BaseEntity {
 
     public void close() {
         isClosed = true;
-        Events.raise(new RentDeletedEvent(id));
     }
 }
