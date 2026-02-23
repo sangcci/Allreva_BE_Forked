@@ -17,20 +17,12 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import com.backend.allreva.common.config.FcmInitializer;
 import com.backend.allreva.common.config.JpaAuditingConfig;
-import com.backend.allreva.module.search.infra.elasticsearch.ConcertElasticsearchRepository;
-import com.backend.allreva.module.search.infra.elasticsearch.ConcertHallElasticsearchRepository;
-import com.backend.allreva.module.search.infra.elasticsearch.RentElasticsearchRepository;
-import com.backend.allreva.module.search.infra.elasticsearch.SurveyElasticsearchRepository;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @MockBean({
         JpaAuditingConfig.class,
-        FcmInitializer.class,
-        ConcertElasticsearchRepository.class,
-        ConcertHallElasticsearchRepository.class,
-        SurveyElasticsearchRepository.class,
-        RentElasticsearchRepository.class
+        FcmInitializer.class
 })
 @AutoConfigureMockMvc(addFilters = false)
 @Testcontainers
