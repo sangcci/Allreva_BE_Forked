@@ -1,6 +1,6 @@
 package com.backend.allreva.module.concert.concert.integration;
 
-import static com.backend.allreva.module.concert.hall.fixture.ConcertHallFixture.createTestConcertHall;
+import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createTestConcertHall;
 
 import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createTestConcert;
 
@@ -8,9 +8,9 @@ import com.backend.allreva.module.concert.concert.application.ConcertService;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailResponse;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertInfo;
-import com.backend.allreva.module.concert.concert.infra.ConcertRepository;
-import com.backend.allreva.module.concert.hall.domain.ConcertHall;
-import com.backend.allreva.module.concert.hall.domain.ConcertHallRepository;
+import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
+import com.backend.allreva.module.concert.place.domain.ConcertHall;
+import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import com.backend.allreva.support.IntegrationTestSupport;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;

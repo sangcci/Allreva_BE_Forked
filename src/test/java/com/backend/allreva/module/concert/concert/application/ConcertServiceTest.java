@@ -3,7 +3,7 @@ package com.backend.allreva.module.concert.concert.application;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailResponse;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
-import com.backend.allreva.module.concert.concert.infra.ConcertRepository;
+import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

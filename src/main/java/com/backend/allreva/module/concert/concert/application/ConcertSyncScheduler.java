@@ -4,7 +4,7 @@ import com.backend.allreva.common.util.CsvUtil;
 import com.backend.allreva.common.util.DateConverter;
 import com.backend.allreva.module.concert.concert.application.port.ConcertDataSyncPort;
 import com.backend.allreva.module.concert.concert.domain.Concert;
-import com.backend.allreva.module.concert.concert.infra.ConcertRepository;
+import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

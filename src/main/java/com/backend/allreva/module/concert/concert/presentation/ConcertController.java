@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/concerts")
 @RestController
 @Validated
-public class ConcertController {
+public class ConcertController implements ConcertControllerSwagger {
 
     private final ConcertService concertService;
 

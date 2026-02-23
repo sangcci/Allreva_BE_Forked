@@ -4,7 +4,7 @@ package com.backend.allreva.module.concert.concert.application.dto;
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.module.concert.concert.domain.ConcertInfo;
 import com.backend.allreva.module.concert.concert.domain.Seller;
-import com.backend.allreva.module.concert.hall.domain.ConvenienceInfo;
+import com.backend.allreva.module.concert.place.domain.ConvenienceInfo;
 import lombok.AccessLevel;
 import lombok.Builder;
 

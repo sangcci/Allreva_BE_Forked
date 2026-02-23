@@ -3,7 +3,7 @@ package com.backend.allreva.module.concert.concert.application;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.backend.allreva.module.concert.concert.infra.ConcertRepository;
+import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailResponse;
 
 import lombok.RequiredArgsConstructor;
