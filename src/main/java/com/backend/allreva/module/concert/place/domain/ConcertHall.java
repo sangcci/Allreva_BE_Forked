@@ -46,6 +46,6 @@ public class ConcertHall {
     public void updateStar(int starDelta, int countDelta) {
         this.totalStars += starDelta;
         this.reviewCount += countDelta;
-        this.star = (double) totalStars / reviewCount;
+        this.star = reviewCount == 0 ? 0.0 : (double) totalStars / reviewCount;
     }
 }
