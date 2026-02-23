@@ -15,9 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Tag(name = "검색 API", description = "통합 검색 관련 API")
 @RestController
@@ -45,40 +42,22 @@ public class SearchController {
                 concertSearchService.searchConcertThumbnails(query));
     }
 
-    @Operation(summary = "콘서트 검색 더보기 API", description = """
-            콘서트 검색어에 따라 관련도 순으로 무한 스크롤\s
-            searchAfter1, searchAfter2에 이전 SearchAfter에 있는 값들을 순서대로 넣어주어야 합니다.
-            """)
+    @Operation(summary = "콘서트 검색 더보기 API", description = "콘서트 검색어에 따라 관련도 순으로 무한 스크롤")
     @GetMapping("/concert/list")
     public Response<ConcertSearchListResponse> searchConcertList(
             @RequestParam @NotEmpty(message = "검색어를 입력해야 합니다.") final String query,
             @RequestParam(defaultValue = "7") final int pageSize,
-            @RequestParam(required = false) final String searchAfter1,
-            @RequestParam(required = false) final String searchAfter2) {
-        List<Object> searchAfter = Stream.of(searchAfter1, searchAfter2)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        ConcertSearchListResponse response = concertSearchService.searchConcertList(query, searchAfter, pageSize);
-        return Response.onSuccess(response);
+            @RequestParam(required = false) final Long cursorId) {
+        return Response.onSuccess(concertSearchService.searchConcertList(query, cursorId, pageSize));
     }
 
-    @Operation(summary = "전체 기간 콘서트 검색 API", description = """
-            과거와 현재 모든 콘서트를 검색하는 API입니다.
-            searchAfter1, searchAfter2에 이전 SearchAfter에 있는 값들을 순서대로 넣어주어야 합니다.
-            """)
+    @Operation(summary = "전체 기간 콘서트 검색 API", description = "과거와 현재 모든 콘서트를 검색하는 API입니다.")
     @GetMapping("/concert/list/all")
     public Response<ConcertSearchListResponse> searchAllConcertList(
             @RequestParam @NotEmpty(message = "검색어를 입력해야 합니다.") final String query,
             @RequestParam(defaultValue = "7") final int pageSize,
-            @RequestParam(required = false) final String searchAfter1,
-            @RequestParam(required = false) final String searchAfter2) {
-        List<Object> searchAfter = Stream.of(searchAfter1, searchAfter2)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
-        ConcertSearchListResponse response = concertSearchService.searchAllConcertList(query, searchAfter, pageSize);
-        return Response.onSuccess(response);
+            @RequestParam(required = false) final Long cursorId) {
+        return Response.onSuccess(concertSearchService.searchAllConcertList(query, cursorId, pageSize));
     }
 
     @Operation(summary = "전체 검색시 렌트 상위 2개 썸네일 API", description = "검색어에 따라 관련도 상위 2개의 썸네일에 필요한 정보를 출력")
@@ -88,19 +67,14 @@ public class SearchController {
                 rentSearchService.searchRentThumbnails(query));
     }
 
-    @Operation(summary = "렌트 검색 더보기 API", description = "검색어에 따라 관련도 순으로 무한 스크롤 searchAfter1, searchAfter2에 이전 SearchAfter에 있는 값들을 순서대로 넣어주어야 합니다.")
+    @Operation(summary = "렌트 검색 더보기 API", description = "검색어에 따라 관련도 순으로 무한 스크롤")
     @GetMapping("/rents/list")
     public Response<RentSearchListResponse> searchRentList(
             @RequestParam @NotEmpty(message = "검색어를 입력해야 합니다.") final String query,
             @RequestParam(defaultValue = "7") final int pageSize,
-            @RequestParam(required = false) final String searchAfter1,
-            @RequestParam(required = false) final String searchAfter2) {
-        List<Object> searchAfter = Stream.of(searchAfter1, searchAfter2)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
+            @RequestParam(required = false) final Long cursorId) {
         return Response.onSuccess(
-                rentSearchService.searchRentSearchList(query, searchAfter, pageSize));
+                rentSearchService.searchRentSearchList(query, cursorId, pageSize));
     }
 
     @Operation(summary = "전체 검색시 수요조사 상위 2개 썸네일 API", description = "검색어에 따라 관련도 상위 2개의 썸네일에 필요한 정보를 출력")
@@ -110,50 +84,33 @@ public class SearchController {
                 surveySearchService.searchSurveyThumbnails(query));
     }
 
-    @Operation(summary = "수요조사 검색 더보기 API", description = "검색어에 따라 관련도 순으로 무한 스크롤 searchAfter1, searchAfter2에 이전 SearchAfter에 있는 값들을 순서대로 넣어주어야 합니다.")
+    @Operation(summary = "수요조사 검색 더보기 API", description = "검색어에 따라 관련도 순으로 무한 스크롤")
     @GetMapping("/surveys/list")
     public Response<SurveySearchListResponse> searchSurveyList(
             @RequestParam @NotEmpty(message = "검색어를 입력해야 합니다.") final String query,
             @RequestParam(defaultValue = "7") final int pageSize,
-            @RequestParam(required = false) final String searchAfter1,
-            @RequestParam(required = false) final String searchAfter2) {
-        List<Object> searchAfter = Stream.of(searchAfter1, searchAfter2)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-
+            @RequestParam(required = false) final Long cursorId) {
         return Response.onSuccess(
-                surveySearchService.searchSurveyList(query, searchAfter, pageSize));
+                surveySearchService.searchSurveyList(query, cursorId, pageSize));
     }
 
-    @Operation(summary = "메인 화면 콘서트 API", description = "searchAfter1, searchAfter2에 이전 SearchAfter에 있는 값들을 순서대로 넣어주어야 합니다.")
+    @Operation(summary = "메인 화면 콘서트 API", description = "지역별/정렬 기준으로 콘서트 목록 조회")
     @GetMapping("/concert/main")
     public Response<ConcertMainResponse> getConcertMainList(
             @RequestParam(defaultValue = "") final String region,
             @RequestParam(defaultValue = "DATE") final SortDirection sortDirection,
             @RequestParam(defaultValue = "7") final int pageSize,
-            @RequestParam(required = false) final String searchAfter1,
-            @RequestParam(required = false) final String searchAfter2) {
-        List<Object> searchAfter = Stream.of(searchAfter1, searchAfter2)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-        ConcertMainResponse concertMain = concertSearchService.searchMainConcerts(region, searchAfter, pageSize, sortDirection);
-        return Response.onSuccess(concertMain);
+            @RequestParam(required = false) final Long cursorId) {
+        return Response.onSuccess(concertSearchService.searchMainConcerts(region, cursorId, pageSize, sortDirection));
     }
 
-    @Operation(summary = "메인 화면 공연장 API", description = "searchAfter1, searchAfter2, searchAfter3에 이전 SearchAfter에 있는 값들을 순서대로 넣어주어야 합니다.")
+    @Operation(summary = "메인 화면 공연장 API", description = "주소/좌석 기준으로 공연장 목록 조회")
     @GetMapping("/concert-hall/main")
     public Response<ConcertHallMainResponse> getConcertHallMainList(
             @RequestParam(defaultValue = "") final String address,
             @RequestParam(defaultValue = "0") final int seatScale,
             @RequestParam(defaultValue = "7") final int pageSize,
-            @RequestParam(required = false) final String searchAfter1,
-            @RequestParam(required = false) final String searchAfter2,
-            @RequestParam(required = false) final String searchAfter3) {
-        List<Object> searchAfter = Stream.of(searchAfter1, searchAfter2, searchAfter3)
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
-        ConcertHallMainResponse concertHallMain = concertHallSearchService.searchMainConcertHalls(
-                address, seatScale, searchAfter, pageSize);
-        return Response.onSuccess(concertHallMain);
+            @RequestParam(required = false) final String cursorId) {
+        return Response.onSuccess(concertHallSearchService.searchMainConcertHalls(address, seatScale, cursorId, pageSize));
     }
 }
