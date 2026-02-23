@@ -4,9 +4,11 @@ import java.util.List;
 
 public record ConcertHallMainResponse(
         List<ConcertHallThumbnail> concertHallThumbnails,
-        List<Object> searchAfter
+        String nextCursorId
 ) {
-    public static ConcertHallMainResponse from(final List<ConcertHallThumbnail> thumbnails, final List<Object> searchAfter) {
-        return new ConcertHallMainResponse(thumbnails, searchAfter);
+    public static ConcertHallMainResponse from(
+            final List<ConcertHallThumbnail> thumbnails,
+            final String nextCursorId) {
+        return new ConcertHallMainResponse(thumbnails, nextCursorId);
     }
 }

@@ -4,11 +4,11 @@ import java.util.List;
 
 public record ConcertSearchListResponse(
         List<ConcertThumbnail> concertThumbnails,
-        List<Object> searchAfter
+        Long nextCursorId
 ) {
-        public static ConcertSearchListResponse from(
-                final List<ConcertThumbnail> concertThumbnails,
-                final List<Object> searchAfter) {
-            return new ConcertSearchListResponse(concertThumbnails, searchAfter);
-        }
+    public static ConcertSearchListResponse from(
+            final List<ConcertThumbnail> concertThumbnails,
+            final Long nextCursorId) {
+        return new ConcertSearchListResponse(concertThumbnails, nextCursorId);
+    }
 }

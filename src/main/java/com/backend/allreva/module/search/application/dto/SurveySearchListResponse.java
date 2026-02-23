@@ -4,12 +4,11 @@ import java.util.List;
 
 public record SurveySearchListResponse(
         List<SurveyThumbnail> surveyThumbnails,
-        List<Object> searchAfter
+        Long nextCursorId
 ) {
-        public static SurveySearchListResponse from(
-                final List<SurveyThumbnail> surveyThumbnails,
-                final List<Object> searchAfter
-        ){
-            return new SurveySearchListResponse(surveyThumbnails, searchAfter);
-        }
+    public static SurveySearchListResponse from(
+            final List<SurveyThumbnail> surveyThumbnails,
+            final Long nextCursorId) {
+        return new SurveySearchListResponse(surveyThumbnails, nextCursorId);
+    }
 }
