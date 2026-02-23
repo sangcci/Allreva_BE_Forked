@@ -3,6 +3,7 @@ package com.backend.allreva.module.concert.concert.integration;
 import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createTestConcertHall;
 
 import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createTestConcert;
+import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createConcertWithHallCode;
 
 import com.backend.allreva.module.concert.concert.application.ConcertService;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailResponse;
@@ -52,7 +53,8 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
             @DisplayName("조회수가 1 증가하고 상세 정보가 반환된다")
             void 조회수가_증가하고_상세정보가_반환된다() {
                 // given
-                Concert concert = concertRepository.save(createTestConcert());
+                ConcertHall hall = concertHallRepository.save(createTestConcertHall());
+                Concert concert = concertRepository.save(createConcertWithHallCode(hall.getId()));
                 Long concertId = concert.getId();
                 long initialViewCount = concert.getViewCount();
 
@@ -164,8 +166,7 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
             void 공연_상세_정보와_공연장_정보가_반환된다() {
                 // given
                 ConcertHall hall = concertHallRepository.save(createTestConcertHall());
-                Concert concert = createTestConcert();
-                concertRepository.save(concert);
+                Concert concert = concertRepository.save(createConcertWithHallCode(hall.getId()));
 
                 // when
                 ConcertDetailResponse response = concertService.findDetailById(concert.getId());
