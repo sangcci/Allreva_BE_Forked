@@ -1,7 +1,7 @@
 package com.backend.allreva.module.concert.place.application.dto;
 
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
-import com.backend.allreva.module.concert.place.domain.ConvenienceInfo;
+import com.backend.allreva.module.concert.place.domain.value.ConvenienceInfo;
 
 public record ConcertHallThumbnail(
         String id,

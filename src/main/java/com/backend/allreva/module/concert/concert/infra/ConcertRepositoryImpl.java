@@ -2,7 +2,7 @@ package com.backend.allreva.module.concert.concert.infra;
 
 import static com.backend.allreva.common.model.QImage.image;
 import static com.backend.allreva.module.concert.concert.domain.QConcert.concert;
-import static com.backend.allreva.module.concert.concert.domain.QSeller.seller;
+import static com.backend.allreva.module.concert.concert.domain.value.QSeller.seller;
 import static com.backend.allreva.module.concert.place.domain.QConcertHall.concertHall;
 
 import java.time.LocalDate;

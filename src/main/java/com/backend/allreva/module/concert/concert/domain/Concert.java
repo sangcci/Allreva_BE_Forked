@@ -2,6 +2,9 @@ package com.backend.allreva.module.concert.concert.domain;
 
 import com.backend.allreva.common.model.BaseEntity;
 import com.backend.allreva.common.model.Image;
+import com.backend.allreva.module.concert.concert.domain.value.Code;
+import com.backend.allreva.module.concert.concert.domain.value.ConcertInfo;
+import com.backend.allreva.module.concert.concert.domain.value.Seller;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;

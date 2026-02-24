@@ -1,4 +1,4 @@
-package com.backend.allreva.module.concert.concert.domain;
+package com.backend.allreva.module.concert.concert.domain.value;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

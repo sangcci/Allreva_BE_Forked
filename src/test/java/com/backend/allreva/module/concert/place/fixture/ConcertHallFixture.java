@@ -1,8 +1,8 @@
 package com.backend.allreva.module.concert.place.fixture;
 
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
-import com.backend.allreva.module.concert.place.domain.ConvenienceInfo;
-import com.backend.allreva.module.concert.place.domain.Location;
+import com.backend.allreva.module.concert.place.domain.value.ConvenienceInfo;
+import com.backend.allreva.module.concert.place.domain.value.Location;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.test.util.ReflectionTestUtils;

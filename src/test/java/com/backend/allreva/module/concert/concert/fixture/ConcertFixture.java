@@ -2,11 +2,11 @@ package com.backend.allreva.module.concert.concert.fixture;
 
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.module.concert.concert.domain.Concert;
-import com.backend.allreva.module.concert.concert.domain.Code;
-import com.backend.allreva.module.concert.concert.domain.ConcertInfo;
-import com.backend.allreva.module.concert.concert.domain.ConcertStatus;
-import com.backend.allreva.module.concert.concert.domain.DateInfo;
-import com.backend.allreva.module.concert.concert.domain.Seller;
+import com.backend.allreva.module.concert.concert.domain.value.Code;
+import com.backend.allreva.module.concert.concert.domain.value.ConcertInfo;
+import com.backend.allreva.module.concert.concert.domain.value.ConcertStatus;
+import com.backend.allreva.module.concert.concert.domain.value.DateInfo;
+import com.backend.allreva.module.concert.concert.domain.value.Seller;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.test.util.ReflectionTestUtils;

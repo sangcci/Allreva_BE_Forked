@@ -1,4 +1,6 @@
 package com.backend.allreva.module.concert.place.domain;
+import com.backend.allreva.module.concert.place.domain.value.ConvenienceInfo;
+import com.backend.allreva.module.concert.place.domain.value.Location;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;

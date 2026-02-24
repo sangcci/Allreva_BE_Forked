@@ -6,8 +6,8 @@ import com.backend.allreva.module.concert.place.application.dto.ConcertHallDetai
 import com.backend.allreva.module.concert.place.application.dto.RelatedConcertResponse;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
-import com.backend.allreva.module.concert.place.domain.ConvenienceInfo;
-import com.backend.allreva.module.concert.place.domain.Location;
+import com.backend.allreva.module.concert.place.domain.value.ConvenienceInfo;
+import com.backend.allreva.module.concert.place.domain.value.Location;
 import com.backend.allreva.module.concert.place.exception.ConcertHallErrorCode;
 import com.backend.allreva.module.concert.place.fixture.ConcertHallFixture;
 import org.junit.jupiter.api.DisplayName;

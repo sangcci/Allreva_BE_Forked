@@ -3,7 +3,7 @@ package com.backend.allreva.module.search.application;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.concert.place.application.dto.ConcertHallMainResponse;
 import com.backend.allreva.module.concert.place.application.dto.ConcertHallThumbnail;
-import com.backend.allreva.module.concert.place.domain.ConvenienceInfo;
+import com.backend.allreva.module.concert.place.domain.value.ConvenienceInfo;
 import com.backend.allreva.module.concert.place.exception.ConcertHallErrorCode;
 import com.backend.allreva.module.search.domain.PlaceSearchRepository;
 import org.junit.jupiter.api.DisplayName;
