@@ -105,7 +105,6 @@ public class RentParticipantRepositoryImpl implements RentParticipantRepository 
                         rentParticipant.rentId.eq(rentId),
                         rentParticipant.boardingDate.eq(boardingDate),
                         rent.memberId.eq(memberId))
-                .groupBy(rentParticipant.boardingType, rentParticipant.refundType)
                 .fetchFirst();
         return Optional.ofNullable(result);
     }

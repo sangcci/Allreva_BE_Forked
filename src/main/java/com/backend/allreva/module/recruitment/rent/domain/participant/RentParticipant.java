@@ -98,7 +98,7 @@ public class RentParticipant extends BaseEntity {
 
     public void validateMine(Long memberId) {
         if (!this.memberId.equals(memberId)) {
-            throw new CustomException(RentErrorCode.RENT_JOIN_ACCESS_DENIED);
+            throw new CustomException(RentErrorCode.RENT_PARTICIPANT_ACCESS_DENIED);
         }
     }
 }

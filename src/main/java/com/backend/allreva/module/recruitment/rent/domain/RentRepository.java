@@ -2,7 +2,6 @@ package com.backend.allreva.module.recruitment.rent.domain;
 
 import com.backend.allreva.module.recruitment.rent.application.dto.RentAdminSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinCountResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
 import com.backend.allreva.module.recruitment.rent.domain.value.Region;
@@ -24,5 +23,4 @@ public interface RentRepository {
     List<RentSummaryResponse> findRentSummaries(Region region, SortType sortType, LocalDate lastEndDate, Long lastId, int pageSize);
     Optional<RentDetailResponse> findRentDetail(Long rentId);
     List<RentAdminSummaryResponse> findRentAdminSummaries(Long memberId, Long lastId, int pageSize);
-    Optional<RentJoinCountResponse> findRentJoinCount(Long memberId, LocalDate boardingDate, Long rentId);
 }
