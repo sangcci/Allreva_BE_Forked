@@ -30,11 +30,14 @@ import com.backend.allreva.rent_join.query.response.RentJoinCountResponse;
 import com.backend.allreva.rent_join.query.response.RentJoinDetailResponse;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 @Slf4j
@@ -129,7 +132,8 @@ public class RentService {
     }
 
     @Async
-    @TransactionalEventListener
+    @Transactional
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void closeRent(RentClosedEvent event) {
         Rent rent = rentRepository.findById(event.getRentId())
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
@@ -181,8 +185,12 @@ public class RentService {
         RentDetailResponse rentDetailResponse = rentRepository.findRentDetail(id)
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
         if (member != null) {
-            rentDetailResponse.getBoardingDates().forEach(response -> response.setIsApplied(
-                    rentJoinRepository.exists(member.getId(), id, response.getDate())));
+            Set<LocalDate> appliedDates = rentJoinRepository
+                    .findAppliedBoardingDates(member.getId(), id)
+                    .stream()
+                    .collect(Collectors.toSet());
+            rentDetailResponse.getBoardingDates().forEach(
+                    response -> response.setIsApplied(appliedDates.contains(response.getDate())));
             rentDetailResponse.setRefundAccount(member.getRefundAccount());
         }
         return rentDetailResponse;

@@ -10,6 +10,7 @@ public interface RentJoinRepository {
     Optional<RentJoin> findById(Long id);
     List<RentJoin> findByRentIdAndBoardingDate(Long rentId, LocalDate boardingDate);
     boolean exists(Long memberId, Long rentId, LocalDate boardingDate);
+    List<LocalDate> findAppliedBoardingDates(Long memberId, Long rentId);
     RentJoin save(RentJoin rentJoin);
     void delete(RentJoin rentJoin);
 

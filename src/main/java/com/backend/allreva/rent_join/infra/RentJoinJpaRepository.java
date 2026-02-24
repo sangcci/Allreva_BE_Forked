@@ -10,4 +10,6 @@ public interface RentJoinJpaRepository extends JpaRepository<RentJoin, Long> {
     List<RentJoin> findByRentIdAndBoardingDate(Long rentId, LocalDate boardingDate);
 
     boolean existsByMemberIdAndRentIdAndBoardingDate(Long memberId, Long rentId, LocalDate boardingDate);
+
+    List<LocalDate> findBoardingDateByMemberIdAndRentId(Long memberId, Long rentId);
 }
