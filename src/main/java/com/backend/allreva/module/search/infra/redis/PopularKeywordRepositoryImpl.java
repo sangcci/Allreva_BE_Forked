@@ -1,7 +1,7 @@
 package com.backend.allreva.module.search.infra.redis;
 
 import com.backend.allreva.module.search.application.dto.PopularKeywordResponses;
-import com.backend.allreva.module.search.domain.PopularKeywordRepository;
+import com.backend.allreva.module.search.application.port.PopularKeywordRepository;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.ValueOperations;

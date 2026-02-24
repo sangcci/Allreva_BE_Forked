@@ -1,4 +1,4 @@
-package com.backend.allreva.module.search.domain;
+package com.backend.allreva.module.search.application.port;
 
 import com.backend.allreva.module.search.application.dto.RentSearchListResponse;
 import com.backend.allreva.module.search.application.dto.RentThumbnail;

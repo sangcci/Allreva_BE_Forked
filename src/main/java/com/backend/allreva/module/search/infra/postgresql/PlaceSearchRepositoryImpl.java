@@ -4,7 +4,7 @@ import com.backend.allreva.module.concert.place.application.dto.ConcertHallMainR
 import com.backend.allreva.module.concert.place.application.dto.ConcertHallThumbnail;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.QConcertHall;
-import com.backend.allreva.module.search.domain.PlaceSearchRepository;
+import com.backend.allreva.module.search.application.port.PlaceSearchRepository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;

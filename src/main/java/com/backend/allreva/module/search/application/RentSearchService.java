@@ -3,7 +3,7 @@ package com.backend.allreva.module.search.application;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.search.application.dto.RentSearchListResponse;
 import com.backend.allreva.module.search.application.dto.RentThumbnail;
-import com.backend.allreva.module.search.domain.RentSearchRepository;
+import com.backend.allreva.module.search.application.port.RentSearchRepository;
 import com.backend.allreva.module.search.exception.SearchErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

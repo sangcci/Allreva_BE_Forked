@@ -3,7 +3,7 @@ package com.backend.allreva.module.search.application;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.search.application.dto.SurveySearchListResponse;
 import com.backend.allreva.module.search.application.dto.SurveyThumbnail;
-import com.backend.allreva.module.search.domain.SurveySearchRepository;
+import com.backend.allreva.module.search.application.port.SurveySearchRepository;
 import com.backend.allreva.module.search.exception.SearchErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

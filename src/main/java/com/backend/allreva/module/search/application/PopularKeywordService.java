@@ -3,7 +3,7 @@ package com.backend.allreva.module.search.application;
 import com.backend.allreva.module.search.application.dto.ChangeStatus;
 import com.backend.allreva.module.search.application.dto.PopularKeywordResponse;
 import com.backend.allreva.module.search.application.dto.PopularKeywordResponses;
-import com.backend.allreva.module.search.domain.PopularKeywordRepository;
+import com.backend.allreva.module.search.application.port.PopularKeywordRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

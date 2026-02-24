@@ -4,7 +4,6 @@ import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.module.concert.place.application.dto.ConcertHallMainResponse;
 import com.backend.allreva.module.search.application.*;
 import com.backend.allreva.module.search.application.dto.*;
-import com.backend.allreva.module.search.domain.SortDirection;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.NotEmpty;

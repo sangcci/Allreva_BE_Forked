@@ -3,7 +3,7 @@ package com.backend.allreva.module.search.application;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.concert.place.application.dto.ConcertHallMainResponse;
 import com.backend.allreva.module.concert.place.exception.ConcertHallErrorCode;
-import com.backend.allreva.module.search.domain.PlaceSearchRepository;
+import com.backend.allreva.module.search.application.port.PlaceSearchRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;

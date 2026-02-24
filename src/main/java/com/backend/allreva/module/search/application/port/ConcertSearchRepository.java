@@ -1,8 +1,9 @@
-package com.backend.allreva.module.search.domain;
+package com.backend.allreva.module.search.application.port;
 
 import com.backend.allreva.module.search.application.dto.ConcertMainResponse;
 import com.backend.allreva.module.search.application.dto.ConcertSearchListResponse;
 import com.backend.allreva.module.search.application.dto.ConcertThumbnail;
+import com.backend.allreva.module.search.application.dto.SortDirection;
 
 import java.util.List;
 

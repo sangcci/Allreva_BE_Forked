@@ -2,7 +2,7 @@ package com.backend.allreva.module.search.infra.postgresql;
 
 import com.backend.allreva.module.search.application.dto.SurveySearchListResponse;
 import com.backend.allreva.module.search.application.dto.SurveyThumbnail;
-import com.backend.allreva.module.search.domain.SurveySearchRepository;
+import com.backend.allreva.module.search.application.port.SurveySearchRepository;
 import com.backend.allreva.survey.command.domain.QSurvey;
 import com.backend.allreva.survey_join.command.domain.QSurveyJoin;
 import com.querydsl.core.types.Projections;
