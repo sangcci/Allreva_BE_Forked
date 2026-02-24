@@ -122,7 +122,7 @@ public class SurveyService {
      */
     public void cancelJoin(final Long memberId, final Long participantId) {
         SurveyParticipant participant = surveyParticipantRepository.findById(participantId)
-                .orElseThrow(() -> new CustomException(SurveyErrorCode.SURVEY_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(SurveyErrorCode.SURVEY_PARTICIPANT_NOT_FOUND));
         surveyParticipantRepository.delete(participant);
     }
 
