@@ -1,8 +1,6 @@
 package com.backend.allreva.module.concert.concert.infra;
 
-import static com.backend.allreva.common.model.QImage.image;
 import static com.backend.allreva.module.concert.concert.domain.QConcert.concert;
-import static com.backend.allreva.module.concert.concert.domain.value.QSeller.seller;
 import static com.backend.allreva.module.concert.place.domain.QConcertHall.concertHall;
 
 import java.time.LocalDate;
@@ -16,10 +14,10 @@ import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailR
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.infra.jpa.ConcertJpaRepository;
+import com.backend.allreva.module.concert.place.domain.ConcertHall;
+import com.backend.allreva.module.concert.place.infra.jpa.ConcertHallJpaRepository;
 import com.backend.allreva.module.concert.place.application.dto.RelatedConcertResponse;
 import com.backend.allreva.module.search.application.dto.ConcertThumbnail;
-import com.querydsl.core.group.GroupBy;
-import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -31,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class ConcertRepositoryImpl implements ConcertRepository {
 
     private final ConcertJpaRepository jpa;
+    private final ConcertHallJpaRepository concertHallJpa;
     private final JPAQueryFactory queryFactory;
 
     @Override
@@ -60,20 +59,13 @@ public class ConcertRepositoryImpl implements ConcertRepository {
 
     @Override
     public ConcertDetailResponse findDetailById(final Long concertId) {
-        ConcertDetailResponse response = queryFactory
-                .from(concert)
-                .leftJoin(concert.detailImages, image)
-                .leftJoin(concert.sellers, seller)
-                .join(concertHall).on(concertHall.id.eq(concert.code.hallCode))
-                .where(concert.id.eq(concertId))
-                .transform(GroupBy.groupBy(concert.id)
-                        .as(concertDetailProjection()))
-                .get(concertId);
-
-        if (response == null) {
-            return ConcertDetailResponse.EMPTY;
-        }
-        return response;
+        return jpa.findById(concertId)
+                .map(concertEntity -> {
+                    ConcertHall hall = concertHallJpa.findById(concertEntity.getCode().getHallCode())
+                            .orElse(null);
+                    return ConcertDetailResponse.from(concertEntity, hall);
+                })
+                .orElse(ConcertDetailResponse.EMPTY);
     }
 
     @Override
@@ -115,20 +107,6 @@ public class ConcertRepositoryImpl implements ConcertRepository {
                 .orderBy(concert.viewCount.desc(), concert.id.desc())
                 .limit(pageSize)
                 .fetch();
-    }
-
-    private ConstructorExpression<ConcertDetailResponse> concertDetailProjection() {
-        return Projections.constructor(ConcertDetailResponse.class,
-                concert.poster,
-                GroupBy.list(image),
-                concert.concertInfo,
-                GroupBy.set(seller),
-                concertHall.id,
-                concertHall.name,
-                concertHall.seatScale,
-                concertHall.convenienceInfo,
-                concertHall.location.address
-        );
     }
 
     @Override
