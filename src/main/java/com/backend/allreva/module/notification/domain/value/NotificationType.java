@@ -1,4 +1,4 @@
-package com.backend.allreva.module.notification.domain;
+package com.backend.allreva.module.notification.domain.value;
 
 /**
  * 알림 타입

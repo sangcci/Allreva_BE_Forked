@@ -1,6 +1,7 @@
-package com.backend.allreva.module.notification.domain;
+package com.backend.allreva.module.notification.domain.event;
 
 import com.backend.allreva.common.event.Event;
+import com.backend.allreva.module.notification.domain.value.NotificationType;
 import lombok.Builder;
 import lombok.Getter;
 

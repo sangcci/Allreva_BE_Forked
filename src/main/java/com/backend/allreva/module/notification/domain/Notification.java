@@ -1,6 +1,8 @@
 package com.backend.allreva.module.notification.domain;
 
 import com.backend.allreva.common.model.BaseEntity;
+import com.backend.allreva.module.notification.domain.event.NotificationEvent;
+import com.backend.allreva.module.notification.domain.value.NotificationType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

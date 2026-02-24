@@ -18,9 +18,9 @@ import com.backend.allreva.module.notification.application.dto.NotificationIdReq
 import com.backend.allreva.module.notification.application.port.NotificationSender;
 import com.backend.allreva.module.notification.application.port.NotificationTargetStorage;
 import com.backend.allreva.module.notification.domain.Notification;
-import com.backend.allreva.module.notification.domain.NotificationEvent;
+import com.backend.allreva.module.notification.domain.event.NotificationEvent;
 import com.backend.allreva.module.notification.domain.NotificationRepository;
-import com.backend.allreva.module.notification.domain.NotificationType;
+import com.backend.allreva.module.notification.domain.value.NotificationType;
 import com.backend.allreva.module.notification.exception.NotificationErrorCode;
 
 import lombok.RequiredArgsConstructor;
