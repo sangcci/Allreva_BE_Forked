@@ -4,7 +4,7 @@ import static com.backend.allreva.module.concert.concert.domain.QConcert.concert
 import static com.backend.allreva.module.concert.place.domain.QConcertHall.concertHall;
 import static com.backend.allreva.module.recruitment.rent.domain.QRent.rent;
 import static com.backend.allreva.module.recruitment.rent.domain.QRentBoardingInfo.rentBoardingInfo;
-import static com.backend.allreva.rent_join.command.domain.QRentJoin.rentJoin;
+import static com.backend.allreva.module.recruitment.rent.domain.participant.QRentParticipant.rentParticipant;
 
 import com.backend.allreva.module.recruitment.rent.application.dto.RentAdminSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse;
@@ -17,9 +17,9 @@ import com.backend.allreva.module.recruitment.rent.domain.RentRepository;
 import com.backend.allreva.module.recruitment.rent.domain.value.Region;
 import com.backend.allreva.module.recruitment.rent.infra.jpa.RentBoardingInfoJpaRepository;
 import com.backend.allreva.module.recruitment.rent.infra.jpa.RentJpaRepository;
-import com.backend.allreva.rent_join.command.domain.value.BoardingType;
-import com.backend.allreva.rent_join.command.domain.value.RefundType;
-import com.backend.allreva.rent_join.query.response.RentJoinCountResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinCountResponse;
+import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
+import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -150,18 +150,18 @@ public class RentRepositoryImpl implements RentRepository {
     ) {
         RentJoinCountResponse rentJoinCountResponse = queryFactory.select(
                 Projections.constructor(RentJoinCountResponse.class,
-                        getRentBoardingCount(BoardingType.UP, "RentUpCount"),
-                        getRentBoardingCount(BoardingType.DOWN, "RentDownCount"),
-                        getRentBoardingCount(BoardingType.ROUND, "RentRoundCount"),
+                        getRentBoardingCount(BoardingType.UP, "rentUpCount"),
+                        getRentBoardingCount(BoardingType.DOWN, "rentDownCount"),
+                        getRentBoardingCount(BoardingType.ROUND, "rentRoundCount"),
                         getRefundCount(RefundType.REFUND, "refundCount"),
                         getRefundCount(RefundType.ADDITIONAL_DEPOSIT, "additionalDepositCount")))
-                .from(rentJoin)
-                .join(rent).on(rentJoin.rentId.eq(rent.id))
+                .from(rentParticipant)
+                .join(rent).on(rentParticipant.rentId.eq(rent.id))
                 .where(
-                        rentJoin.rentId.eq(rentId),
-                        rentJoin.boardingDate.eq(boardingDate),
+                        rentParticipant.rentId.eq(rentId),
+                        rentParticipant.boardingDate.eq(boardingDate),
                         rent.memberId.eq(memberId))
-                .groupBy(rentJoin.boardingType, rentJoin.refundType)
+                .groupBy(rentParticipant.boardingType, rentParticipant.refundType)
                 .fetchFirst();
         return Optional.ofNullable(rentJoinCountResponse);
     }
@@ -243,21 +243,21 @@ public class RentRepositoryImpl implements RentRepository {
     }
 
     private NumberExpression<Integer> getRentBoardingCount(final BoardingType boardingType, final String alias) {
-        return rentJoin.boardingType
+        return rentParticipant.boardingType
                 .when(boardingType)
-                .then(rentJoin.passengerNum.sumAggregate().intValue())
+                .then(rentParticipant.passengerNum.sumAggregate().intValue())
                 .otherwise(0)
                 .as(alias);
     }
 
     private NumberExpression<Integer> getRefundCount(final RefundType refundType, final String alias) {
-        return rentJoin.refundType
+        return rentParticipant.refundType
                 .when(refundType)
-                .then(rentJoin.passengerNum.sumAggregate().intValue())
+                .then(rentParticipant.passengerNum.sumAggregate().intValue())
                 .otherwise(0)
-                .add(rentJoin.refundType
+                .add(rentParticipant.refundType
                         .when(RefundType.BOTH)
-                        .then(rentJoin.passengerNum.sumAggregate().intValue())
+                        .then(rentParticipant.passengerNum.sumAggregate().intValue())
                         .otherwise(0))
                 .as(alias);
     }

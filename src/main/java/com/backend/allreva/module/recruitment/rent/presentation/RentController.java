@@ -9,6 +9,10 @@ import com.backend.allreva.module.recruitment.rent.application.dto.RentAdminDeta
 import com.backend.allreva.module.recruitment.rent.application.dto.RentAdminSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentIdRequest;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinIdRequest;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinRequest;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
@@ -111,5 +115,39 @@ public class RentController {
             @RequestParam final LocalDate boardingDate,
             @AuthMember Member member) {
         return Response.onSuccess(rentService.getRentAdminDetail(member.getId(), boardingDate, rentId));
+    }
+
+    // -------------------------
+    // Participant Endpoints
+    // -------------------------
+
+    @PostMapping("/apply")
+    public Response<Long> applyRent(
+            @RequestBody final RentJoinRequest rentJoinRequest,
+            @AuthMember final Member member) {
+        Long participantId = rentService.applyRent(rentJoinRequest, member.getId());
+        return Response.onSuccess(participantId);
+    }
+
+    @PatchMapping("/apply")
+    public Response<Void> updateRentJoin(
+            @RequestBody final RentJoinUpdateRequest rentJoinUpdateRequest,
+            @AuthMember final Member member) {
+        rentService.updateRentJoin(rentJoinUpdateRequest, member.getId());
+        return Response.onSuccess();
+    }
+
+    @DeleteMapping("/apply")
+    public Response<Void> cancelRentJoin(
+            @RequestBody final RentJoinIdRequest rentJoinIdRequest,
+            @AuthMember final Member member) {
+        rentService.cancelRentJoin(rentJoinIdRequest, member.getId());
+        return Response.onSuccess();
+    }
+
+    @GetMapping("/join/list")
+    public Response<List<RentJoinResponse>> getRentJoinList(
+            @AuthMember final Member member) {
+        return Response.onSuccess(rentService.getRentJoinList(member.getId()));
     }
 }

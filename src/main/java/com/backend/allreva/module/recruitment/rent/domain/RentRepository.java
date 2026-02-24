@@ -2,10 +2,10 @@ package com.backend.allreva.module.recruitment.rent.domain;
 
 import com.backend.allreva.module.recruitment.rent.application.dto.RentAdminSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinCountResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
 import com.backend.allreva.module.recruitment.rent.domain.value.Region;
-import com.backend.allreva.rent_join.query.response.RentJoinCountResponse;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
