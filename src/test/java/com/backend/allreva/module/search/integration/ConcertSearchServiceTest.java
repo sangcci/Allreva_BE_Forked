@@ -10,7 +10,7 @@ import com.backend.allreva.module.search.application.ConcertSearchService;
 import com.backend.allreva.module.search.application.dto.ConcertMainResponse;
 import com.backend.allreva.module.search.application.dto.ConcertSearchListResponse;
 import com.backend.allreva.module.search.application.dto.ConcertThumbnail;
-import com.backend.allreva.module.search.domain.SortDirection;
+import com.backend.allreva.module.search.application.dto.SortDirection;
 import com.backend.allreva.support.IntegrationTestSupport;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;

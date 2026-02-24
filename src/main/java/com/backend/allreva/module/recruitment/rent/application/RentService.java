@@ -6,8 +6,6 @@ import com.backend.allreva.common.storage.upload.StorageUploadService;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.notification.domain.event.NotificationEvent;
 import com.backend.allreva.module.notification.domain.value.NotificationType;
-import com.backend.allreva.module.recruitment.chat.application.GroupChatService;
-import com.backend.allreva.module.recruitment.chat.application.dto.AddGroupChatRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.DepositAccountResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentAdminDetailResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentAdminSummaryResponse;
@@ -58,7 +56,6 @@ public class RentService {
     private final RentBoardingSlotRepository rentBoardingSlotRepository;
     private final RentParticipantRepository rentParticipantRepository;
     private final StorageUploadService storageUploadService;
-    private final GroupChatService groupChatService;
 
     // -------------------------
     // Command
@@ -69,13 +66,6 @@ public class RentService {
             final Long memberId) {
         Rent rent = request.toEntity(memberId);
         Rent savedRent = rentRepository.save(rent);
-
-        groupChatService.add(
-                new AddGroupChatRequest(
-                        request.title(),
-                        request.maxPassenger()),
-                request.image(),
-                memberId);
 
         Events.raise(NotificationEvent.builder()
                 .type(NotificationType.RENT_REGISTERED)

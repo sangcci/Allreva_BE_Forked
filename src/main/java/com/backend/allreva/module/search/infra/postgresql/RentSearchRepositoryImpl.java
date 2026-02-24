@@ -3,7 +3,7 @@ package com.backend.allreva.module.search.infra.postgresql;
 import com.backend.allreva.module.search.application.dto.RentSearchListResponse;
 import com.backend.allreva.module.search.application.dto.RentThumbnail;
 import com.backend.allreva.module.search.application.port.RentSearchRepository;
-import com.backend.allreva.rent.command.domain.QRent;
+import com.backend.allreva.module.recruitment.rent.domain.QRent;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -32,7 +32,7 @@ public class RentSearchRepositoryImpl implements RentSearchRepository {
     @Override
     public RentSearchListResponse searchByTitle(
             final String query, final Long cursorId, final int pageSize) {
-        BooleanExpression notExpired = rent.additionalInfo.endDate.goe(LocalDate.now());
+        BooleanExpression notExpired = rent.endDate.goe(LocalDate.now());
         BooleanExpression titleMatch = titleMatchCondition(query);
         BooleanExpression cursor = cursorId != null ? rent.id.lt(cursorId) : null;
 
@@ -52,10 +52,10 @@ public class RentSearchRepositoryImpl implements RentSearchRepository {
         return queryFactory
                 .select(Projections.constructor(RentThumbnail.class,
                         rent.id,
-                        rent.detailInfo.title,
-                        rent.operationInfo.boardingArea,
-                        rent.detailInfo.image.url,
-                        rent.additionalInfo.endDate))
+                        rent.title,
+                        rent.boardingArea,
+                        rent.image.url,
+                        rent.endDate))
                 .from(rent)
                 .where(condition, cursor)
                 .orderBy(rent.id.desc())
@@ -66,9 +66,9 @@ public class RentSearchRepositoryImpl implements RentSearchRepository {
     private BooleanExpression titleMatchCondition(final String query) {
         if (!StringUtils.hasText(query)) return null;
         NumberTemplate<Double> sim = Expressions.numberTemplate(Double.class,
-                "similarity({0}, {1})", rent.detailInfo.title, query);
+                "similarity({0}, {1})", rent.title, query);
         BooleanExpression ilike = Expressions.booleanTemplate("({0} ilike {1})",
-                rent.detailInfo.title, "%" + query + "%");
+                rent.title, "%" + query + "%");
         return sim.gt(SIMILARITY_THRESHOLD).or(ilike);
     }
 }

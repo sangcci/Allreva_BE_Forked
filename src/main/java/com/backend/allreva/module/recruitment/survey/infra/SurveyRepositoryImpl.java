@@ -1,7 +1,7 @@
 package com.backend.allreva.module.recruitment.survey.infra;
 
 import static com.backend.allreva.module.recruitment.survey.domain.QSurvey.survey;
-import static com.backend.allreva.survey_join.command.domain.QSurveyJoin.surveyJoin;
+import static com.backend.allreva.module.recruitment.survey.domain.participant.QSurveyParticipant.surveyParticipant;
 
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.util.DateHolder;
@@ -65,17 +65,17 @@ public class SurveyRepositoryImpl implements SurveyRepository {
         Survey found = surveyJpaRepository.findById(surveyId)
                 .orElseThrow(() -> new CustomException(SurveyErrorCode.SURVEY_NOT_FOUND));
 
-        NumberExpression<Integer> passengerSum = surveyJoin.passengerNum.sumAggregate().intValue();
+        NumberExpression<Integer> passengerSum = surveyParticipant.passengerNum.sumAggregate().intValue();
         Map<LocalDate, Integer> countByDate = queryFactory
-                .select(surveyJoin.boardingDate, passengerSum)
-                .from(surveyJoin)
-                .where(surveyJoin.surveyId.eq(surveyId)
-                        .and(surveyJoin.deletedAt.isNull()))
-                .groupBy(surveyJoin.boardingDate)
+                .select(surveyParticipant.boardingDate, passengerSum)
+                .from(surveyParticipant)
+                .where(surveyParticipant.surveyId.eq(surveyId)
+                        .and(surveyParticipant.deletedAt.isNull()))
+                .groupBy(surveyParticipant.boardingDate)
                 .fetch()
                 .stream()
                 .collect(Collectors.toMap(
-                        tuple -> tuple.get(surveyJoin.boardingDate),
+                        tuple -> tuple.get(surveyParticipant.boardingDate),
                         tuple -> {
                             Integer count = tuple.get(passengerSum);
                             return count != null ? count : 0;
@@ -104,7 +104,7 @@ public class SurveyRepositoryImpl implements SurveyRepository {
         return queryFactory
                 .select(surveySummaryProjections())
                 .from(survey)
-                .leftJoin(surveyJoin).on(survey.id.eq(surveyJoin.surveyId))
+                .leftJoin(surveyParticipant).on(surveyParticipant.surveyId.eq(survey.id).and(surveyParticipant.deletedAt.isNull()))
                 .where(survey.deletedAt.isNull(),
                         survey.endDate.goe(dateHolder.getDate()),
                         getRegionCondition(region),
@@ -120,7 +120,7 @@ public class SurveyRepositoryImpl implements SurveyRepository {
         return queryFactory
                 .select(surveySummaryProjections())
                 .from(survey)
-                .leftJoin(surveyJoin).on(survey.id.eq(surveyJoin.surveyId))
+                .leftJoin(surveyParticipant).on(surveyParticipant.surveyId.eq(survey.id).and(surveyParticipant.deletedAt.isNull()))
                 .where(survey.deletedAt.isNull(),
                         survey.endDate.goe(dateHolder.getDate()))
                 .groupBy(survey.id)
@@ -138,10 +138,10 @@ public class SurveyRepositoryImpl implements SurveyRepository {
                         survey.region,
                         Expressions.as(
                                 JPAExpressions
-                                        .select(surveyJoin.passengerNum.sumAggregate().coalesce(0))
-                                        .from(surveyJoin)
-                                        .where(surveyJoin.surveyId.eq(survey.id)
-                                                .and(surveyJoin.deletedAt.isNull())),
+                                        .select(surveyParticipant.passengerNum.sumAggregate().coalesce(0))
+                                        .from(surveyParticipant)
+                                        .where(surveyParticipant.surveyId.eq(survey.id)
+                                                .and(surveyParticipant.deletedAt.isNull())),
                                 "participationCount"),
                         survey.endDate))
                 .from(survey)
@@ -155,7 +155,7 @@ public class SurveyRepositoryImpl implements SurveyRepository {
                 survey.id,
                 survey.title,
                 survey.region,
-                surveyJoin.passengerNum.sumAggregate(),
+                surveyParticipant.passengerNum.sumAggregate(),
                 survey.endDate);
     }
 

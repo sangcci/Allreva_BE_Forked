@@ -3,8 +3,8 @@ package com.backend.allreva.module.search.infra.postgresql;
 import com.backend.allreva.module.search.application.dto.SurveySearchListResponse;
 import com.backend.allreva.module.search.application.dto.SurveyThumbnail;
 import com.backend.allreva.module.search.application.port.SurveySearchRepository;
-import com.backend.allreva.survey.command.domain.QSurvey;
-import com.backend.allreva.survey_join.command.domain.QSurveyJoin;
+import com.backend.allreva.module.recruitment.survey.domain.QSurvey;
+import com.backend.allreva.module.recruitment.survey.domain.participant.QSurveyParticipant;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -24,7 +24,7 @@ public class SurveySearchRepositoryImpl implements SurveySearchRepository {
     private static final double SIMILARITY_THRESHOLD = 0.1;
     private final JPAQueryFactory queryFactory;
     private final QSurvey survey = QSurvey.survey;
-    private final QSurveyJoin surveyJoin = QSurveyJoin.surveyJoin;
+    private final QSurveyParticipant surveyParticipant = QSurveyParticipant.surveyParticipant;
 
     @Override
     public List<SurveyThumbnail> findThumbnailsByTitle(final String title, final int limit) {
@@ -56,10 +56,10 @@ public class SurveySearchRepositoryImpl implements SurveySearchRepository {
                         survey.id,
                         survey.title,
                         survey.region.stringValue(),
-                        surveyJoin.id.count().intValue(),
+                        surveyParticipant.id.count().intValue(),
                         survey.endDate))
                 .from(survey)
-                .leftJoin(surveyJoin).on(surveyJoin.surveyId.eq(survey.id))
+                .leftJoin(surveyParticipant).on(surveyParticipant.surveyId.eq(survey.id).and(surveyParticipant.deletedAt.isNull()))
                 .where(condition, cursor)
                 .groupBy(survey.id)
                 .orderBy(similarityOrder(null), survey.id.desc())

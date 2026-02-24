@@ -9,7 +9,6 @@ import com.backend.allreva.module.member.application.dto.MemberRegisterRequest;
 import com.backend.allreva.module.member.application.dto.NicknameDuplication;
 import com.backend.allreva.module.member.application.dto.RefundAccountRequest;
 import com.backend.allreva.module.member.application.port.MemberDetailRepository;
-import com.backend.allreva.module.member.domain.event.MemberRegisteredEvent;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.member.domain.artist.MemberArtist;
 import com.backend.allreva.module.member.domain.artist.MemberArtistRepository;
@@ -46,8 +45,6 @@ public class MemberService {
         Member registeredMember = memberRepository.save(member);
 
         updateMemberArtist(memberRegisterRequest.memberArtistRequests(), registeredMember);
-
-        Events.raise(new MemberRegisteredEvent(registeredMember.getId()));
     }
 
     @Transactional
