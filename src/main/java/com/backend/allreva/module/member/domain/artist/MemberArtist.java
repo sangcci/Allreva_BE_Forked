@@ -1,4 +1,4 @@
-package com.backend.allreva.module.member.domain;
+package com.backend.allreva.module.member.domain.artist;
 
 import com.backend.allreva.common.model.BaseEntity;
 import jakarta.persistence.Column;

@@ -31,7 +31,7 @@ import com.backend.allreva.module.recruitment.chat.exception.ChattingErrorCode;
 import com.backend.allreva.module.recruitment.chat.domain.message.GroupMessageRepository;
 import com.backend.allreva.module.notification.infra.sse.event.SseConnectedEvent;
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.module.member.domain.MemberRegisteredEvent;
+import com.backend.allreva.module.member.domain.event.MemberRegisteredEvent;
 
 import lombok.RequiredArgsConstructor;
 

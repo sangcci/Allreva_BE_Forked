@@ -1,4 +1,4 @@
-package com.backend.allreva.module.member.domain;
+package com.backend.allreva.module.member.domain.event;
 
 import com.backend.allreva.common.event.Event;
 import lombok.Getter;
