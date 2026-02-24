@@ -15,15 +15,18 @@ import com.backend.allreva.module.recruitment.survey.domain.SurveyRepository;
 import com.backend.allreva.module.recruitment.survey.domain.value.Region;
 import com.backend.allreva.module.recruitment.survey.exception.SurveyErrorCode;
 import com.backend.allreva.module.recruitment.survey.infra.jpa.SurveyJpaRepository;
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -62,18 +65,26 @@ public class SurveyRepositoryImpl implements SurveyRepository {
         Survey found = surveyJpaRepository.findById(surveyId)
                 .orElseThrow(() -> new CustomException(SurveyErrorCode.SURVEY_NOT_FOUND));
 
+        NumberExpression<Integer> passengerSum = surveyJoin.passengerNum.sumAggregate().intValue();
+        Map<LocalDate, Integer> countByDate = queryFactory
+                .select(surveyJoin.boardingDate, passengerSum)
+                .from(surveyJoin)
+                .where(surveyJoin.surveyId.eq(surveyId)
+                        .and(surveyJoin.deletedAt.isNull()))
+                .groupBy(surveyJoin.boardingDate)
+                .fetch()
+                .stream()
+                .collect(Collectors.toMap(
+                        tuple -> tuple.get(surveyJoin.boardingDate),
+                        tuple -> {
+                            Integer count = tuple.get(passengerSum);
+                            return count != null ? count : 0;
+                        }
+                ));
+
         List<SurveyBoardingDateResponse> boardingDateResponses = found.getBoardingDates().stream()
-                .map(date -> {
-                    Integer count = queryFactory
-                            .select(surveyJoin.passengerNum.sumAggregate())
-                            .from(surveyJoin)
-                            .where(surveyJoin.surveyId.eq(surveyId)
-                                    .and(surveyJoin.boardingDate.eq(date))
-                                    .and(surveyJoin.deletedAt.isNull()))
-                            .fetchOne();
-                    return new SurveyBoardingDateResponse(date, count != null ? count : 0);
-                })
-                .collect(Collectors.toList());
+                .map(date -> new SurveyBoardingDateResponse(date, countByDate.getOrDefault(date, 0)))
+                .toList();
 
         return new SurveyDetailResponse(
                 found.getId(),
@@ -94,7 +105,8 @@ public class SurveyRepositoryImpl implements SurveyRepository {
                 .select(surveySummaryProjections())
                 .from(survey)
                 .leftJoin(surveyJoin).on(survey.id.eq(surveyJoin.surveyId))
-                .where(survey.endDate.goe(dateHolder.getDate()),
+                .where(survey.deletedAt.isNull(),
+                        survey.endDate.goe(dateHolder.getDate()),
                         getRegionCondition(region),
                         getPagingCondition(sortType, lastId, lastEndDate))
                 .groupBy(survey.id)
@@ -109,7 +121,8 @@ public class SurveyRepositoryImpl implements SurveyRepository {
                 .select(surveySummaryProjections())
                 .from(survey)
                 .leftJoin(surveyJoin).on(survey.id.eq(surveyJoin.surveyId))
-                .where(survey.endDate.goe(LocalDate.now()))
+                .where(survey.deletedAt.isNull(),
+                        survey.endDate.goe(dateHolder.getDate()))
                 .groupBy(survey.id)
                 .orderBy(survey.endDate.asc())
                 .limit(3)
