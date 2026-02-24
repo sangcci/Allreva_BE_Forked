@@ -5,6 +5,9 @@ import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.module.auth.security.AuthMember;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.recruitment.survey.application.SurveyService;
+import com.backend.allreva.module.recruitment.survey.application.dto.CreatedSurveyResponse;
+import com.backend.allreva.module.recruitment.survey.application.dto.JoinSurveyRequest;
+import com.backend.allreva.module.recruitment.survey.application.dto.JoinSurveyResponse;
 import com.backend.allreva.module.recruitment.survey.application.dto.OpenSurveyRequest;
 import com.backend.allreva.module.recruitment.survey.application.dto.SortType;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveyDetailResponse;
@@ -102,5 +105,44 @@ public class SurveyController {
     @Operation(summary = "첫 화면 survey API 입니다.", description = "첫 화면 survey API 입니다. 현재 날짜에서 가장 가까운 콘서트 순으로 5개 정렬")
     public Response<List<SurveySummaryResponse>> findSurveyMainList() {
         return Response.onSuccess(surveyService.findSurveyMainList());
+    }
+
+    @Operation(summary = "수요조사 응답 제출 API", description = "수요조사에 대한 응답을 제출합니다.")
+    @PostMapping("/apply")
+    public Response<Long> joinSurvey(
+            @AuthMember Member member,
+            @Valid @RequestBody JoinSurveyRequest joinSurveyRequest) {
+        return Response.onSuccess(surveyService.joinSurvey(member.getId(), joinSurveyRequest));
+    }
+
+    @Operation(summary = "수요조사 참여 취소 API", description = "수요조사 참여를 취소합니다.")
+    @DeleteMapping("/apply/{participantId}")
+    public Response<Void> cancelJoin(
+            @AuthMember Member member,
+            @PathVariable(name = "participantId") Long participantId) {
+        surveyService.cancelJoin(member.getId(), participantId);
+        return Response.onSuccess();
+    }
+
+    @Operation(summary = "내가 개설한 수요조사 목록 조회 API",
+            description = "첫페이지는 lastSurveyId 주지 않으셔도됩니다. 다음페이지부터는 마지막요소의 id 넣어주세요.\ndefault page size는 10입니다.")
+    @GetMapping("/member/list")
+    public Response<List<CreatedSurveyResponse>> findCreatedSurveyList(
+            @AuthMember Member member,
+            @RequestParam(value = "lastSurveyId", required = false) final Long lastId,
+            @RequestParam(name = "lastBoardingDate", required = false) final LocalDate lastBoardingDate,
+            @Min(10) @RequestParam(value = "pageSize", defaultValue = "10") final int pageSize) {
+        return Response.onSuccess(
+                surveyService.findCreatedSurveyList(member.getId(), lastId, lastBoardingDate, pageSize));
+    }
+
+    @Operation(summary = "내가 참여한 수요조사 목록 조회 API",
+            description = "첫페이지는 lastSurveyParticipantId 주지 않으셔도됩니다. 다음페이지부터는 마지막요소의 id 넣어주세요.\ndefault page size는 10입니다.")
+    @GetMapping("/member/apply/list")
+    public Response<List<JoinSurveyResponse>> findJoinSurveyList(
+            @AuthMember Member member,
+            @RequestParam(value = "lastSurveyParticipantId", required = false) final Long lastId,
+            @Min(10) @RequestParam(value = "pageSize", defaultValue = "10") final int pageSize) {
+        return Response.onSuccess(surveyService.findJoinSurveyList(member.getId(), lastId, pageSize));
     }
 }

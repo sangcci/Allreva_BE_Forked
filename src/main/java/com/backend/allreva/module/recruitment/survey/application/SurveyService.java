@@ -7,6 +7,9 @@ import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.exception.ConcertErrorCode;
 import com.backend.allreva.module.notification.domain.event.NotificationEvent;
 import com.backend.allreva.module.notification.domain.value.NotificationType;
+import com.backend.allreva.module.recruitment.survey.application.dto.CreatedSurveyResponse;
+import com.backend.allreva.module.recruitment.survey.application.dto.JoinSurveyRequest;
+import com.backend.allreva.module.recruitment.survey.application.dto.JoinSurveyResponse;
 import com.backend.allreva.module.recruitment.survey.application.dto.OpenSurveyRequest;
 import com.backend.allreva.module.recruitment.survey.application.dto.SortType;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveyDetailResponse;
@@ -16,6 +19,8 @@ import com.backend.allreva.module.recruitment.survey.application.dto.SurveySumma
 import com.backend.allreva.module.recruitment.survey.application.dto.UpdateSurveyRequest;
 import com.backend.allreva.module.recruitment.survey.domain.Survey;
 import com.backend.allreva.module.recruitment.survey.domain.SurveyRepository;
+import com.backend.allreva.module.recruitment.survey.domain.participant.SurveyParticipant;
+import com.backend.allreva.module.recruitment.survey.domain.participant.SurveyParticipantRepository;
 import com.backend.allreva.module.recruitment.survey.domain.value.Region;
 import com.backend.allreva.module.recruitment.survey.exception.SurveyErrorCode;
 import java.time.LocalDate;
@@ -33,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class SurveyService {
 
     private final SurveyRepository surveyRepository;
+    private final SurveyParticipantRepository surveyParticipantRepository;
     private final ConcertRepository concertRepository;
 
     /**
@@ -90,6 +96,57 @@ public class SurveyService {
         Survey survey = findSurvey(surveyIdRequest.surveyId());
         survey.isWriter(memberId);
         surveyRepository.delete(survey);
+    }
+
+    /**
+     * 수요조사 참여 (응답 제출)
+     */
+    public Long joinSurvey(final Long memberId, final JoinSurveyRequest request) {
+        Survey survey = findSurvey(request.surveyId());
+        survey.containsBoardingDate(request.boardingDate());
+
+        SurveyParticipant participant = SurveyParticipant.builder()
+                .memberId(memberId)
+                .surveyId(request.surveyId())
+                .boardingDate(request.boardingDate())
+                .boardingType(request.boardingType())
+                .passengerNum(request.passengerNum())
+                .notified(request.notified())
+                .build();
+
+        return surveyParticipantRepository.save(participant).getId();
+    }
+
+    /**
+     * 수요조사 참여 취소
+     */
+    public void cancelJoin(final Long memberId, final Long participantId) {
+        SurveyParticipant participant = surveyParticipantRepository.findById(participantId)
+                .orElseThrow(() -> new CustomException(SurveyErrorCode.SURVEY_NOT_FOUND));
+        surveyParticipantRepository.delete(participant);
+    }
+
+    /**
+     * 내가 개설한 수요조사 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public List<CreatedSurveyResponse> findCreatedSurveyList(
+            final Long memberId,
+            final Long lastId,
+            final LocalDate lastBoardingDate,
+            final int pageSize) {
+        return surveyParticipantRepository.findCreatedSurveyList(memberId, lastId, lastBoardingDate, pageSize);
+    }
+
+    /**
+     * 내가 참여한 수요조사 목록 조회
+     */
+    @Transactional(readOnly = true)
+    public List<JoinSurveyResponse> findJoinSurveyList(
+            final Long memberId,
+            final Long lastId,
+            final int pageSize) {
+        return surveyParticipantRepository.findJoinSurveyList(memberId, lastId, pageSize);
     }
 
     /**
