@@ -5,8 +5,11 @@ import com.backend.allreva.common.model.Image;
 import com.backend.allreva.module.concert.concert.domain.value.Code;
 import com.backend.allreva.module.concert.concert.domain.value.ConcertInfo;
 import com.backend.allreva.module.concert.concert.domain.value.Seller;
+import com.backend.allreva.common.converter.ImageListConverter;
+import com.backend.allreva.module.concert.concert.infra.jpa.SellerSetConverter;
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -52,11 +55,13 @@ public class Concert extends BaseEntity {
     @AttributeOverride(name = "url", column = @Column(name = "poster"))
     private Image poster;
 
+    @Convert(converter = ImageListConverter.class)
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "detail_images", columnDefinition = "jsonb", nullable = false)
     private List<Image> detailImages = new ArrayList<>();
 
 
+    @Convert(converter = SellerSetConverter.class)
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb", nullable = false)
     private Set<Seller> sellers = new HashSet<>();
@@ -90,10 +95,10 @@ public class Concert extends BaseEntity {
     ) {
         this.code = code;
         this.concertInfo = concertInfo;
-        this.episodes = episodes;
+        this.episodes = episodes != null ? episodes : this.episodes;
         this.poster = poster;
-        this.detailImages = detailImages;
-        this.sellers = sellers;
+        this.detailImages = detailImages != null ? detailImages : this.detailImages;
+        this.sellers = sellers != null ? sellers : this.sellers;
         this.viewCount = 0L;
     }
 

@@ -5,11 +5,11 @@ import static org.springframework.boot.test.context.SpringBootTest.WebEnvironmen
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -19,10 +19,6 @@ import com.backend.allreva.common.config.JpaAuditingConfig;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@MockBean({
-        JpaAuditingConfig.class,
-        FcmInitializer.class
-})
 @AutoConfigureMockMvc(addFilters = false)
 @Import(AsyncAspect.class)
 public abstract class IntegrationTestSupport {
@@ -44,7 +40,7 @@ public abstract class IntegrationTestSupport {
 
     @DynamicPropertySource
     static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
+        registry.add("spring.datasource.url", () -> postgres.getJdbcUrl() + "?stringtype=unspecified");
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
         registry.add("spring.data.mongodb.uri", () -> mongo.getConnectionString() + "/test");
@@ -54,4 +50,10 @@ public abstract class IntegrationTestSupport {
 
     @Autowired
     protected AsyncAspect asyncAspect;
+
+    @MockBean
+    protected FcmInitializer fcmInitializer;
+
+    @MockBean
+    protected JpaAuditingConfig jpaAuditingConfig;
 }
