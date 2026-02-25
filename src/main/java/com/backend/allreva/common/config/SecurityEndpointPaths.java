@@ -3,8 +3,6 @@ package com.backend.allreva.common.config;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
-import static com.backend.allreva.common.config.WebSocketConfig.*;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SecurityEndpointPaths {
 
@@ -43,14 +41,11 @@ public final class SecurityEndpointPaths {
             "/api/v1/surveys/list",
             // concert
             "/api/v1/concerts/**",
-            // concert-hall
-            "/api/v1/concert-halls/**",
+            // place
+            "/api/v1/places/**",
             // search
             "/api/v1/search/**",
             "/api/v1/artists/search",
             "/api/v1/file/**",
-            "/ws-chat/**",
-            "/room/**",
-            "/chat/**"
     };
 }
