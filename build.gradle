@@ -101,6 +101,16 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-clean {
-    delete file('src/main/generated')
+def querydslDir = "build/generated/sources/annotationProcessor/java/main"
+
+sourceSets {
+    main.java.srcDirs += [ querydslDir ]
+}
+
+tasks.withType(JavaCompile) {
+    options.generatedSourceOutputDirectory = file(querydslDir)
+}
+
+clean.doLast {
+    file(querydslDir).deleteDir()
 }
