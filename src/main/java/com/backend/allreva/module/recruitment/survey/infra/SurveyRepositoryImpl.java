@@ -1,21 +1,12 @@
 package com.backend.allreva.module.recruitment.survey.infra;
 
-import static com.backend.allreva.module.recruitment.survey.domain.QSurvey.survey;
-import static com.backend.allreva.module.recruitment.survey.domain.participant.QSurveyParticipant.surveyParticipant;
-
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.common.util.DateHolder;
-import com.backend.allreva.module.recruitment.survey.application.dto.SortType;
-import com.backend.allreva.module.recruitment.survey.application.dto.SurveyBoardingDateResponse;
-import com.backend.allreva.module.recruitment.survey.application.dto.SurveyDetailResponse;
-import com.backend.allreva.module.recruitment.survey.application.dto.SurveyMainResponse;
-import com.backend.allreva.module.recruitment.survey.application.dto.SurveySummaryResponse;
+import com.backend.allreva.module.recruitment.survey.application.dto.*;
 import com.backend.allreva.module.recruitment.survey.domain.Survey;
 import com.backend.allreva.module.recruitment.survey.domain.SurveyRepository;
 import com.backend.allreva.module.recruitment.survey.domain.value.Region;
 import com.backend.allreva.module.recruitment.survey.exception.SurveyErrorCode;
 import com.backend.allreva.module.recruitment.survey.infra.jpa.SurveyJpaRepository;
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -24,13 +15,18 @@ import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
+
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
+
+import static com.backend.allreva.module.recruitment.survey.domain.QSurvey.survey;
+import static com.backend.allreva.module.recruitment.survey.domain.participant.QSurveyParticipant.surveyParticipant;
 
 @Repository
 @RequiredArgsConstructor
@@ -38,7 +34,7 @@ public class SurveyRepositoryImpl implements SurveyRepository {
 
     private final SurveyJpaRepository surveyJpaRepository;
     private final JPAQueryFactory queryFactory;
-    private final DateHolder dateHolder;
+    private final Clock clock;
 
     @Override
     public Survey save(final Survey surveyEntity) {
@@ -106,7 +102,7 @@ public class SurveyRepositoryImpl implements SurveyRepository {
                 .from(survey)
                 .leftJoin(surveyParticipant).on(surveyParticipant.surveyId.eq(survey.id).and(surveyParticipant.deletedAt.isNull()))
                 .where(survey.deletedAt.isNull(),
-                        survey.endDate.goe(dateHolder.getDate()),
+                        survey.endDate.goe(LocalDate.now(clock)),
                         getRegionCondition(region),
                         getPagingCondition(sortType, lastId, lastEndDate))
                 .groupBy(survey.id)
@@ -122,7 +118,7 @@ public class SurveyRepositoryImpl implements SurveyRepository {
                 .from(survey)
                 .leftJoin(surveyParticipant).on(surveyParticipant.surveyId.eq(survey.id).and(surveyParticipant.deletedAt.isNull()))
                 .where(survey.deletedAt.isNull(),
-                        survey.endDate.goe(dateHolder.getDate()))
+                        survey.endDate.goe(LocalDate.now(clock)))
                 .groupBy(survey.id)
                 .orderBy(survey.endDate.asc())
                 .limit(3)

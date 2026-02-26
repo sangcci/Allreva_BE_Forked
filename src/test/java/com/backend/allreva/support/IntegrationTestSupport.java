@@ -19,7 +19,7 @@ import com.backend.allreva.common.config.JpaAuditingConfig;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
-@Import(AsyncAspect.class)
+@Import({AsyncAspect.class, FixedClockConfig.class})
 public abstract class IntegrationTestSupport {
 
     static final PostgreSQLContainer<?> postgres;
