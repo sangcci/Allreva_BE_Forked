@@ -1,4 +1,4 @@
-package com.backend.allreva.common.util;
+package com.backend.allreva.module.concert.place.infra.kopis;
 
 import com.opencsv.CSVReader;
 import lombok.extern.slf4j.Slf4j;

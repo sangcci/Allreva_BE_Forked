@@ -1,6 +1,6 @@
 package com.backend.allreva.module.concert.place.application;
 
-import com.backend.allreva.common.util.CsvUtil;
+import com.backend.allreva.module.concert.place.infra.kopis.CsvUtil;
 import com.backend.allreva.module.concert.place.application.port.ConcertHallDataSyncPort;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;

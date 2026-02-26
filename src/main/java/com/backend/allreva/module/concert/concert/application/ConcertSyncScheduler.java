@@ -1,7 +1,7 @@
 package com.backend.allreva.module.concert.concert.application;
 
-import com.backend.allreva.common.util.CsvUtil;
-import com.backend.allreva.common.util.DateConverter;
+import com.backend.allreva.module.concert.concert.infra.kopis.DateConverter;
+import com.backend.allreva.module.concert.place.infra.kopis.CsvUtil;
 import com.backend.allreva.module.concert.concert.application.port.ConcertDataSyncPort;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
