@@ -1,30 +1,27 @@
 package com.backend.allreva.module.notification.application;
 
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.module.member.domain.Member;
+import com.backend.allreva.module.notification.application.dto.NotificationIdRequest;
+import com.backend.allreva.module.notification.application.dto.NotificationTargetRequest;
+import com.backend.allreva.module.notification.application.port.NotificationSender;
+import com.backend.allreva.module.notification.application.port.NotificationTargetStorage;
+import com.backend.allreva.module.notification.domain.Notification;
+import com.backend.allreva.module.notification.domain.NotificationRepository;
+import com.backend.allreva.module.notification.domain.event.NotificationEvent;
+import com.backend.allreva.module.notification.domain.value.NotificationType;
+import com.backend.allreva.module.notification.exception.NotificationErrorCode;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
-
-import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.module.member.domain.Member;
-import com.backend.allreva.module.notification.application.dto.NotificationTargetRequest;
-import com.backend.allreva.module.notification.application.dto.NotificationIdRequest;
-import com.backend.allreva.module.notification.application.port.NotificationSender;
-import com.backend.allreva.module.notification.application.port.NotificationTargetStorage;
-import com.backend.allreva.module.notification.domain.Notification;
-import com.backend.allreva.module.notification.domain.event.NotificationEvent;
-import com.backend.allreva.module.notification.domain.NotificationRepository;
-import com.backend.allreva.module.notification.domain.value.NotificationType;
-import com.backend.allreva.module.notification.exception.NotificationErrorCode;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -36,8 +33,8 @@ public class NotificationService {
     private final NotificationTargetStorage targetStorage;
 
     @Transactional(readOnly = true)
-    public List<Notification> getNotificationsByRecipientId(final Member member, final Long lastId,
-            final int pageSize) {
+    public List<Notification> getNotificationsByRecipientId(
+            final Member member, final Long lastId, final int pageSize) {
         return notificationRepository.findNotificationsByRecipientId(member.getId(), lastId, pageSize);
     }
 
@@ -58,17 +55,17 @@ public class NotificationService {
     }
 
     /**
-     * 모든 알림 이벤트를 통합 처리
-     * - 알림 타입에 따라 적절한 포매팅 적용
-     * - 모든 NotificationSender로 전송 (FCM, SSE)
-     * - 채팅 메시지는 내역 저장 제외 (MongoDB에 이미 저장됨)
+     * 모든 알림 이벤트를 통합 처리 - 알림 타입에 따라 적절한 포매팅 적용 - 모든 NotificationSender로 전송 (FCM, SSE) - 채팅 메시지는 내역
+     * 저장 제외 (MongoDB에 이미 저장됨)
      */
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void sendMessage(final NotificationEvent event) {
         try {
-            log.info("알림 이벤트 수신 - type: {}, recipients: {}",
-                     event.getType(), event.getRecipientIds().size());
+            log.info(
+                    "알림 이벤트 수신 - type: {}, recipients: {}",
+                    event.getType(),
+                    event.getRecipientIds().size());
 
             // 1. 알림 메시지 포매팅
             String title = formatTitle(event);
@@ -89,14 +86,11 @@ public class NotificationService {
         }
     }
 
-    /**
-     * 알림 타입에 따라 제목 포매팅
-     */
+    /** 알림 타입에 따라 제목 포매팅 */
     private String formatTitle(NotificationEvent event) {
         return switch (event.getType()) {
-            case CHAT_MESSAGE -> event.getRoomName();  // "채팅방 이름"
-            case CHAT_MEMBER_JOINED, CHAT_MEMBER_LEFT ->
-                event.getRoomName() + " 알림";
+            case CHAT_MESSAGE -> event.getRoomName(); // "채팅방 이름"
+            case CHAT_MEMBER_JOINED, CHAT_MEMBER_LEFT -> event.getRoomName() + " 알림";
             case RENT_REGISTERED -> "차량 대절 등록";
             case RENT_PARTICIPANT_JOINED -> "차량 대절 참여";
             case RENT_CANCELLED -> "차량 대절 취소";
@@ -111,26 +105,19 @@ public class NotificationService {
         };
     }
 
-    /**
-     * 알림 타입에 따라 메시지 포매팅
-     */
+    /** 알림 타입에 따라 메시지 포매팅 */
     private String formatMessage(NotificationEvent event) {
         return switch (event.getType()) {
-            case CHAT_MESSAGE ->
-                event.getSenderName() + ": " + event.getContent();
-            case CHAT_MEMBER_JOINED, CHAT_MEMBER_LEFT ->
-                event.getContent();
+            case CHAT_MESSAGE -> event.getSenderName() + ": " + event.getContent();
+            case CHAT_MEMBER_JOINED, CHAT_MEMBER_LEFT -> event.getContent();
             default -> event.getContent();
         };
     }
 
-    /**
-     * 모든 NotificationSender로 알림 전송
-     */
+    /** 모든 NotificationSender로 알림 전송 */
     private void sendToAllSenders(List<Long> recipientIds, String title, String message) {
         // FCM 토큰 조회 (FCM용)
-        List<String> fcmTargets = Optional
-                .ofNullable(targetStorage.findTargetsByMemberIds(recipientIds))
+        List<String> fcmTargets = Optional.ofNullable(targetStorage.findTargetsByMemberIds(recipientIds))
                 .orElseGet(Collections::emptyList)
                 .stream()
                 .filter(Objects::nonNull)
@@ -144,8 +131,9 @@ public class NotificationService {
 
             try {
                 // FCM은 토큰 사용, SSE는 memberId 사용
-                List<String> targets = isFcmSender(sender) ? fcmTargets :
-                        recipientIds.stream().map(String::valueOf).toList();
+                List<String> targets = isFcmSender(sender)
+                        ? fcmTargets
+                        : recipientIds.stream().map(String::valueOf).toList();
 
                 if (targets.isEmpty()) {
                     log.warn("{} - 알림 대상이 없습니다.", senderName);
@@ -178,9 +166,7 @@ public class NotificationService {
         log.info("전체 알림 전송 완료 - 성공: {}, 실패: {}", totalSuccess, totalFailure);
     }
 
-    /**
-     * 알림 내역 저장
-     */
+    /** 알림 내역 저장 */
     private void saveNotificationHistory(NotificationEvent event, String title, String message) {
         try {
             List<Notification> notifications = event.getRecipientIds().stream()
@@ -193,16 +179,12 @@ public class NotificationService {
         }
     }
 
-    /**
-     * 채팅 메시지 알림인지 확인
-     */
+    /** 채팅 메시지 알림인지 확인 */
     private boolean isChatMessage(NotificationType type) {
         return type == NotificationType.CHAT_MESSAGE;
     }
 
-    /**
-     * FCM Sender인지 확인
-     */
+    /** FCM Sender인지 확인 */
     private boolean isFcmSender(NotificationSender sender) {
         return sender.getClass().getSimpleName().contains("Fcm");
     }

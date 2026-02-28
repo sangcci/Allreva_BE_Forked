@@ -1,11 +1,16 @@
 package com.backend.allreva.module.search.application;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.BDDMockito.given;
+
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.concert.place.application.dto.ConcertHallMainResponse;
 import com.backend.allreva.module.concert.place.application.dto.ConcertHallThumbnail;
 import com.backend.allreva.module.concert.place.domain.value.ConvenienceInfo;
 import com.backend.allreva.module.concert.place.exception.ConcertHallErrorCode;
 import com.backend.allreva.module.search.application.port.PlaceSearchRepository;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -13,12 +18,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.mockito.BDDMockito.given;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("NonAsciiCharacters")
@@ -32,10 +31,16 @@ class PlaceSearchServiceTest {
     private PlaceSearchRepository placeSearchRepository;
 
     private ConcertHallThumbnail createThumbnail(String id, String name, int seatScale) {
-        return new ConcertHallThumbnail(id, name, "서울특별시", seatScale,
+        return new ConcertHallThumbnail(
+                id,
+                name,
+                "서울특별시",
+                seatScale,
                 ConvenienceInfo.builder()
-                        .hasParkingLot(true).hasRestaurant(true)
-                        .hasCafe(true).hasDisabledParking(true)
+                        .hasParkingLot(true)
+                        .hasRestaurant(true)
+                        .hasCafe(true)
+                        .hasDisabledParking(true)
                         .build());
     }
 
@@ -58,22 +63,23 @@ class PlaceSearchServiceTest {
 
                 ConcertHallThumbnail thumb1 = createThumbnail("hall1", "서울 예술의전당", 2500);
                 ConcertHallThumbnail thumb2 = createThumbnail("hall2", "세종문화회관", 1800);
-                ConcertHallMainResponse mockResponse = ConcertHallMainResponse.from(
-                        List.of(thumb1, thumb2), null);
+                ConcertHallMainResponse mockResponse = ConcertHallMainResponse.from(List.of(thumb1, thumb2), null);
 
                 given(placeSearchRepository.searchMain(address, seatScale, cursorId, size))
                         .willReturn(mockResponse);
 
                 // when
-                ConcertHallMainResponse result = placeSearchService.searchMainPlaces(
-                        address, seatScale, cursorId, size);
+                ConcertHallMainResponse result =
+                        placeSearchService.searchMainPlaces(address, seatScale, cursorId, size);
 
                 // then
                 assertSoftly(softly -> {
                     softly.assertThat(result).isNotNull();
                     softly.assertThat(result.concertHallThumbnails()).hasSize(2);
-                    softly.assertThat(result.concertHallThumbnails().get(0).name()).isEqualTo("서울 예술의전당");
-                    softly.assertThat(result.concertHallThumbnails().get(1).name()).isEqualTo("세종문화회관");
+                    softly.assertThat(result.concertHallThumbnails().get(0).name())
+                            .isEqualTo("서울 예술의전당");
+                    softly.assertThat(result.concertHallThumbnails().get(1).name())
+                            .isEqualTo("세종문화회관");
                 });
             }
 
@@ -91,8 +97,7 @@ class PlaceSearchServiceTest {
                         .willReturn(mockResponse);
 
                 // when & then
-                assertThatThrownBy(() ->
-                        placeSearchService.searchMainPlaces(address, seatScale, cursorId, size))
+                assertThatThrownBy(() -> placeSearchService.searchMainPlaces(address, seatScale, cursorId, size))
                         .isInstanceOf(CustomException.class)
                         .hasFieldOrPropertyWithValue("errorCode", ConcertHallErrorCode.CONCERT_HALL_SEARCH_NOTFOUND);
             }
@@ -108,15 +113,14 @@ class PlaceSearchServiceTest {
 
                 ConcertHallThumbnail thumb1 = createThumbnail("hall1", "홀1", 1500);
                 ConcertHallThumbnail thumb2 = createThumbnail("hall2", "홀2", 1600);
-                ConcertHallMainResponse mockResponse = ConcertHallMainResponse.from(
-                        List.of(thumb1, thumb2), "hall2");
+                ConcertHallMainResponse mockResponse = ConcertHallMainResponse.from(List.of(thumb1, thumb2), "hall2");
 
                 given(placeSearchRepository.searchMain(address, seatScale, cursorId, size))
                         .willReturn(mockResponse);
 
                 // when
-                ConcertHallMainResponse result = placeSearchService.searchMainPlaces(
-                        address, seatScale, cursorId, size);
+                ConcertHallMainResponse result =
+                        placeSearchService.searchMainPlaces(address, seatScale, cursorId, size);
 
                 // then
                 assertSoftly(softly -> {

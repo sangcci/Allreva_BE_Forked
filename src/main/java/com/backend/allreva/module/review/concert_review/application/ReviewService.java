@@ -1,8 +1,7 @@
 package com.backend.allreva.module.review.concert_review.application;
 
-import com.backend.allreva.module.concert.place.application.HallService;
-import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.module.concert.place.application.HallService;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.review.concert_review.application.dto.ReviewCreateRequest;
 import com.backend.allreva.module.review.concert_review.application.dto.ReviewUpdateRequest;
@@ -10,9 +9,8 @@ import com.backend.allreva.module.review.concert_review.application.dto.SeatRevi
 import com.backend.allreva.module.review.concert_review.application.dto.SeatReviewSearchCondition;
 import com.backend.allreva.module.review.concert_review.domain.SeatReview;
 import com.backend.allreva.module.review.concert_review.domain.SeatReviewRepository;
-
-import java.util.List;
 import com.backend.allreva.module.review.concert_review.exception.ReviewErrorCode;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,17 +23,13 @@ public class ReviewService {
     private final HallService hallService;
 
     // Query methods (read-only)
-    public List<SeatReviewResponse> getReviews(
-            final SeatReviewSearchCondition condition,
-            final Long currentMemberId) {
+    public List<SeatReviewResponse> getReviews(final SeatReviewSearchCondition condition, final Long currentMemberId) {
         return seatReviewRepository.findReviewsWithNoOffset(condition, currentMemberId);
     }
 
     // Command methods (write)
     @Transactional
-    public Long createReview(
-            final ReviewCreateRequest request,
-            final Member member) {
+    public Long createReview(final ReviewCreateRequest request, final Member member) {
         SeatReview savedSeatReview = seatReviewRepository.save(SeatReview.builder()
                 .seat(request.seat())
                 .content(request.content())
@@ -52,10 +46,9 @@ public class ReviewService {
     }
 
     @Transactional
-    public SeatReview updateReview(
-            final ReviewUpdateRequest request,
-            final Member member) {
-        SeatReview seatReview = seatReviewRepository.findById(request.reviewId())
+    public SeatReview updateReview(final ReviewUpdateRequest request, final Member member) {
+        SeatReview seatReview = seatReviewRepository
+                .findById(request.reviewId())
                 .orElseThrow(() -> new CustomException(ReviewErrorCode.REVIEW_NOT_FOUND));
         int starDelta = request.star() - seatReview.getStar();
         validateWriter(seatReview.getMemberId(), member.getId());
@@ -68,7 +61,8 @@ public class ReviewService {
 
     @Transactional
     public void deleteReview(final Long id, final Member member) {
-        SeatReview seatReview = seatReviewRepository.findById(id)
+        SeatReview seatReview = seatReviewRepository
+                .findById(id)
                 .orElseThrow(() -> new CustomException(ReviewErrorCode.REVIEW_NOT_FOUND));
         validateWriter(seatReview.getMemberId(), member.getId());
 

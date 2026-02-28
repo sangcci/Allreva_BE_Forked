@@ -28,13 +28,9 @@ public class RefundAccountConverter implements AttributeConverter<RefundAccount,
     @Override
     public RefundAccount convertToEntityAttribute(final String dbData) {
         if (dbData.equals(DELEMETER)) {
-            return RefundAccount.builder()
-                    .build();
+            return RefundAccount.builder().build();
         }
         String[] split = dbData.split(",");
-        return RefundAccount.builder()
-                .bank(split[0])
-                .number(split[1])
-                .build();
+        return RefundAccount.builder().bank(split[0]).number(split[1]).build();
     }
 }

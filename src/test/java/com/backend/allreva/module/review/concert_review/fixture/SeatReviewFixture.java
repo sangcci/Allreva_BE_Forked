@@ -1,11 +1,10 @@
 package com.backend.allreva.module.review.concert_review.fixture;
 
 import com.backend.allreva.module.review.concert_review.domain.SeatReview;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.test.util.ReflectionTestUtils;
-
-import java.time.LocalDate;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SeatReviewFixture {
@@ -41,12 +40,7 @@ public final class SeatReviewFixture {
     }
 
     public static SeatReview createDetailedSeatReview(
-            Long reviewId,
-            Long memberId,
-            String hallId,
-            String seat,
-            String content,
-            int star) {
+            Long reviewId, Long memberId, String hallId, String seat, String content, int star) {
         SeatReview review = SeatReview.builder()
                 .seat(seat)
                 .content(content)

@@ -5,10 +5,4 @@ import lombok.Builder;
 
 @Builder
 public record UserInfo(
-        LoginProvider loginProvider,
-        String providerId,
-        String nickname,
-        String email,
-        String profileImageUrl) {
-
-}
+        LoginProvider loginProvider, String providerId, String nickname, String email, String profileImageUrl) {}

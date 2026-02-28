@@ -1,16 +1,14 @@
 package com.backend.allreva.module.auth.oauth2;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.module.member.domain.value.LoginProvider;
 import com.backend.allreva.module.auth.application.OAuth2LoginService;
 import com.backend.allreva.module.auth.application.dto.UserInfo;
 import com.backend.allreva.module.auth.exception.OAuth2ErrorCode;
-
+import com.backend.allreva.module.member.domain.value.LoginProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
@@ -22,12 +20,16 @@ public class KakaoOAuth2LoginService implements OAuth2LoginService {
 
     @Value("${url.front.domain-name}")
     private String prodDomainName;
+
     @Value("${oauth2.kakao.local-redirect-uri}")
     private String kakaoLocalRedirectUri;
+
     @Value("${oauth2.kakao.redirect-uri}")
     private String kakaoRedirectUri;
+
     @Value("${oauth2.kakao.client-id}")
     private String kakaoClientId;
+
     @Value("${oauth2.kakao.client-secret}")
     private String kakaoClientSecret;
 
@@ -38,20 +40,13 @@ public class KakaoOAuth2LoginService implements OAuth2LoginService {
      * @return 사용자 정보
      */
     @Override
-    public UserInfo getUserInfo(
-            final String authorizationCode,
-            final String domainName) {
+    public UserInfo getUserInfo(final String authorizationCode, final String domainName) {
         log.info("domainName: {}", domainName);
         String redirectUri = getRedirectUri(domainName); // localhost or prod
         KakaoToken token = kakaoAuthClient.getToken(
-                kakaoClientId,
-                redirectUri,
-                authorizationCode,
-                "authorization_code",
-                kakaoClientSecret);
+                kakaoClientId, redirectUri, authorizationCode, "authorization_code", kakaoClientSecret);
 
-        KakaoUserInfo kakaoUserInfo = kakaoUserInfoClient.getUserInfo(
-                "Bearer " + token.accessToken());
+        KakaoUserInfo kakaoUserInfo = kakaoUserInfoClient.getUserInfo("Bearer " + token.accessToken());
 
         return UserInfo.builder()
                 .loginProvider(LoginProvider.KAKAO)

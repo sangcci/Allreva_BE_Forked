@@ -1,20 +1,18 @@
 package com.backend.allreva.module.concert.concert.presentation;
 
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.module.concert.concert.application.ConcertService;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailResponse;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/concerts")
@@ -25,12 +23,9 @@ public class ConcertController implements ConcertControllerSwagger {
     private final ConcertService concertService;
 
     @Operation(summary = "공연 상세 조회", description = "공연 상세 조회 API")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json"))
-    })
+    @ApiResponses(value = {@ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json"))})
     @GetMapping("/{concertId}")
-    public Response<ConcertDetailResponse> findConcertDetail(
-            @PathVariable("concertId") final Long concertId) {
+    public Response<ConcertDetailResponse> findConcertDetail(@PathVariable("concertId") final Long concertId) {
         ConcertDetailResponse detail = concertService.findDetailById(concertId);
         return Response.onSuccess(detail);
     }

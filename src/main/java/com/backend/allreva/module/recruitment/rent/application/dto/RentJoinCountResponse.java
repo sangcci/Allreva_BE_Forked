@@ -5,12 +5,7 @@ import lombok.Builder;
 
 @Builder(access = AccessLevel.PRIVATE)
 public record RentJoinCountResponse(
-        int rentUpCount,
-        int rentDownCount,
-        int rentRoundCount,
-        int refundCount,
-        int additionalDepositCount
-) {
+        int rentUpCount, int rentDownCount, int rentRoundCount, int refundCount, int additionalDepositCount) {
     public static final RentJoinCountResponse EMPTY = RentJoinCountResponse.builder()
             .rentUpCount(0)
             .rentDownCount(0)

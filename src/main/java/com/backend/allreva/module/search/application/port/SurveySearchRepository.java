@@ -2,7 +2,6 @@ package com.backend.allreva.module.search.application.port;
 
 import com.backend.allreva.module.search.application.dto.SurveySearchListResponse;
 import com.backend.allreva.module.search.application.dto.SurveyThumbnail;
-
 import java.util.List;
 
 public interface SurveySearchRepository {

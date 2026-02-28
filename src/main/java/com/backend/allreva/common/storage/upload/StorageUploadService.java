@@ -1,5 +1,12 @@
 package com.backend.allreva.common.storage.upload;
 
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.common.model.Image;
+import com.backend.allreva.common.storage.exception.StorageErrorCode;
+import com.backend.allreva.module.review.concert_review.application.dto.FileData;
+import io.awspring.cloud.s3.ObjectMetadata;
+import io.awspring.cloud.s3.S3Operations;
+import io.awspring.cloud.s3.S3Resource;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,21 +14,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
-import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.common.model.Image;
-import com.backend.allreva.common.storage.exception.StorageErrorCode;
-import com.backend.allreva.module.review.concert_review.application.dto.FileData;
-
-import io.awspring.cloud.s3.ObjectMetadata;
-import io.awspring.cloud.s3.S3Operations;
-import io.awspring.cloud.s3.S3Resource;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -44,9 +41,8 @@ public class StorageUploadService {
             return new Image("");
         }
 
-        ObjectMetadata objectMetadata = ObjectMetadata.builder()
-                .contentType(imageFile.getContentType())
-                .build();
+        ObjectMetadata objectMetadata =
+                ObjectMetadata.builder().contentType(imageFile.getContentType()).build();
 
         String storeKey = generateStoreKey(imageFile.getOriginalFilename());
 
@@ -86,9 +82,8 @@ public class StorageUploadService {
             return new Image("");
         }
 
-        ObjectMetadata objectMetadata = ObjectMetadata.builder()
-                .contentType("application/octet-stream")
-                .build();
+        ObjectMetadata objectMetadata =
+                ObjectMetadata.builder().contentType("application/octet-stream").build();
 
         String storeKey = generateStoreKey(fileData.filename());
 
@@ -135,13 +130,8 @@ public class StorageUploadService {
         imageUrls.forEach(this::deleteImage);
     }
 
-    /**
-     * MultipartFile을 S3에 업로드
-     */
-    private Image uploadToS3(
-            MultipartFile imageFile,
-            String storeKey,
-            ObjectMetadata metadata) {
+    /** MultipartFile을 S3에 업로드 */
+    private Image uploadToS3(MultipartFile imageFile, String storeKey, ObjectMetadata metadata) {
         try (InputStream inputStream = imageFile.getInputStream()) {
             S3Resource resource = s3Operations.upload(bucketName, storeKey, inputStream, metadata);
             String url = resource.getURL().toString();

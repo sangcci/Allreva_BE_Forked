@@ -1,15 +1,16 @@
 package com.backend.allreva.module.concert.concert.integration;
 
-import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createTestConcertHall;
-
-import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createTestConcert;
 import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createConcertWithHallCode;
+import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createTestConcert;
+import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createTestConcertHall;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.backend.allreva.module.concert.concert.application.ConcertService;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailResponse;
 import com.backend.allreva.module.concert.concert.domain.Concert;
-import com.backend.allreva.module.concert.concert.domain.value.ConcertInfo;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
+import com.backend.allreva.module.concert.concert.domain.value.ConcertInfo;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import com.backend.allreva.support.IntegrationTestSupport;
@@ -18,9 +19,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayName("Concert 통합 테스트")
@@ -127,7 +125,8 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
                 String newTitle = "변경된 콘서트 제목";
 
                 // when
-                Concert updatedConcert = concertRepository.findById(concert.getId()).orElseThrow();
+                Concert updatedConcert =
+                        concertRepository.findById(concert.getId()).orElseThrow();
                 ConcertInfo newConcertInfo = ConcertInfo.builder()
                         .title(newTitle)
                         .price(updatedConcert.getConcertInfo().getPrice())
@@ -142,8 +141,7 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
                         updatedConcert.getEpisodes(),
                         updatedConcert.getPoster(),
                         updatedConcert.getDetailImages(),
-                        updatedConcert.getSellers()
-                );
+                        updatedConcert.getSellers());
                 concertRepository.save(updatedConcert);
 
                 // then

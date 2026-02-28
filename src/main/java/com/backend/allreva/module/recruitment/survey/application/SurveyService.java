@@ -41,9 +41,7 @@ public class SurveyService {
     private final SurveyParticipantRepository surveyParticipantRepository;
     private final ConcertRepository concertRepository;
 
-    /**
-     * 수요조사 개설
-     */
+    /** 수요조사 개설 */
     public Long openSurvey(final Long memberId, final OpenSurveyRequest request) {
         validateBoardingDates(request.concertId(), request.boardingDates());
 
@@ -71,9 +69,7 @@ public class SurveyService {
         return survey.getId();
     }
 
-    /**
-     * 수요조사 수정
-     */
+    /** 수요조사 수정 */
     public void updateSurvey(final Long memberId, final UpdateSurveyRequest request) {
         Survey survey = findSurvey(request.surveyId());
 
@@ -89,18 +85,14 @@ public class SurveyService {
                 request.boardingDates());
     }
 
-    /**
-     * 수요조사 삭제
-     */
+    /** 수요조사 삭제 */
     public void removeSurvey(final Long memberId, final SurveyIdRequest surveyIdRequest) {
         Survey survey = findSurvey(surveyIdRequest.surveyId());
         survey.isWriter(memberId);
         surveyRepository.delete(survey);
     }
 
-    /**
-     * 수요조사 참여 (응답 제출)
-     */
+    /** 수요조사 참여 (응답 제출) */
     public Long joinSurvey(final Long memberId, final JoinSurveyRequest request) {
         Survey survey = findSurvey(request.surveyId());
         survey.containsBoardingDate(request.boardingDate());
@@ -117,49 +109,34 @@ public class SurveyService {
         return surveyParticipantRepository.save(participant).getId();
     }
 
-    /**
-     * 수요조사 참여 취소
-     */
+    /** 수요조사 참여 취소 */
     public void cancelJoin(final Long memberId, final Long participantId) {
-        SurveyParticipant participant = surveyParticipantRepository.findById(participantId)
+        SurveyParticipant participant = surveyParticipantRepository
+                .findById(participantId)
                 .orElseThrow(() -> new CustomException(SurveyErrorCode.SURVEY_PARTICIPANT_NOT_FOUND));
         surveyParticipantRepository.delete(participant);
     }
 
-    /**
-     * 내가 개설한 수요조사 목록 조회
-     */
+    /** 내가 개설한 수요조사 목록 조회 */
     @Transactional(readOnly = true)
     public List<CreatedSurveyResponse> findCreatedSurveyList(
-            final Long memberId,
-            final Long lastId,
-            final LocalDate lastBoardingDate,
-            final int pageSize) {
+            final Long memberId, final Long lastId, final LocalDate lastBoardingDate, final int pageSize) {
         return surveyParticipantRepository.findCreatedSurveyList(memberId, lastId, lastBoardingDate, pageSize);
     }
 
-    /**
-     * 내가 참여한 수요조사 목록 조회
-     */
+    /** 내가 참여한 수요조사 목록 조회 */
     @Transactional(readOnly = true)
-    public List<JoinSurveyResponse> findJoinSurveyList(
-            final Long memberId,
-            final Long lastId,
-            final int pageSize) {
+    public List<JoinSurveyResponse> findJoinSurveyList(final Long memberId, final Long lastId, final int pageSize) {
         return surveyParticipantRepository.findJoinSurveyList(memberId, lastId, pageSize);
     }
 
-    /**
-     * 수요조사 상세 조회
-     */
+    /** 수요조사 상세 조회 */
     @Transactional(readOnly = true)
     public SurveyDetailResponse findSurveyDetail(final Long surveyId) {
         return surveyRepository.findSurveyDetail(surveyId);
     }
 
-    /**
-     * 수요조사 목록 조회
-     */
+    /** 수요조사 목록 조회 */
     @Transactional(readOnly = true)
     public List<SurveySummaryResponse> findSurveyList(
             final Region region,
@@ -194,12 +171,14 @@ public class SurveyService {
     }
 
     private ConcertDateInfoResponse findStartDateAndEndDateById(final Long concertId) {
-        return concertRepository.findStartDateAndEndDateById(concertId)
+        return concertRepository
+                .findStartDateAndEndDateById(concertId)
                 .orElseThrow(() -> new CustomException(ConcertErrorCode.CONCERT_NOT_FOUND));
     }
 
     private Survey findSurvey(final Long surveyId) {
-        return surveyRepository.findById(surveyId)
+        return surveyRepository
+                .findById(surveyId)
                 .orElseThrow(() -> new CustomException(SurveyErrorCode.SURVEY_NOT_FOUND));
     }
 }

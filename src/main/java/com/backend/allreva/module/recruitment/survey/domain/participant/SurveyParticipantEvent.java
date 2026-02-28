@@ -12,9 +12,7 @@ public class SurveyParticipantEvent extends Event {
     private Long surveyId;
     private int participationCount;
 
-    public SurveyParticipantEvent(
-            final Long surveyId,
-            final int participationCount) {
+    public SurveyParticipantEvent(final Long surveyId, final int participationCount) {
         this.surveyId = surveyId;
         this.participationCount = participationCount;
     }

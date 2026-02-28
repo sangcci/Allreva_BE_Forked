@@ -1,14 +1,11 @@
 package com.backend.allreva.module.review.concert_review.infra;
 
-import java.util.Optional;
-
-import org.springframework.stereotype.Repository;
-
 import com.backend.allreva.module.review.concert_review.domain.SeatReviewLike;
 import com.backend.allreva.module.review.concert_review.domain.SeatReviewLikeRepository;
 import com.backend.allreva.module.review.concert_review.infra.jpa.SeatReviewLikeJpaRepository;
-
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor

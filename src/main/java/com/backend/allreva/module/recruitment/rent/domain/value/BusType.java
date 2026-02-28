@@ -6,5 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum BusType {
-    STANDARD, DELUXE, PREMIUM
+    STANDARD,
+    DELUXE,
+    PREMIUM
 }

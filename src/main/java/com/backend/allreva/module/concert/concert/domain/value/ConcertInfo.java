@@ -36,8 +36,7 @@ public class ConcertInfo {
             final String price,
             final ConcertStatus performStatus,
             final String host,
-            final DateInfo dateInfo
-    ) {
+            final DateInfo dateInfo) {
         this.title = title;
         this.price = price;
         this.performStatus = performStatus;

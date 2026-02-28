@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 @Getter
 @RequiredArgsConstructor
 public enum JwtErrorCode implements ErrorCode {
-
     TOKEN_EMPTY(HttpStatus.UNAUTHORIZED.value(), "TOKEN_EMPTY", "토큰이 비어있습니다."),
     TOKEN_INVALID(HttpStatus.UNAUTHORIZED.value(), "TOKEN_INVALID", "유효하지 않은 토큰입니다."),
     TOKEN_NOT_FOUND(HttpStatus.UNAUTHORIZED.value(), "TOKEN_NOT_FOUND", "토큰을 찾을 수 없습니다."),

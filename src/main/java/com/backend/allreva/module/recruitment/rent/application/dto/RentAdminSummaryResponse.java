@@ -19,12 +19,8 @@ public record RentAdminSummaryResponse(
         boolean isClosed,
         BusSize busSize,
         BusType busType,
-        int maxPassenger
-) {
-    public static RentAdminSummaryResponse from(
-            final Rent rent,
-            final RentBoardingInfo rentBoardingInfo
-    ) {
+        int maxPassenger) {
+    public static RentAdminSummaryResponse from(final Rent rent, final RentBoardingInfo rentBoardingInfo) {
         return new RentAdminSummaryResponse(
                 rent.getId(),
                 rent.getTitle(),
@@ -37,7 +33,6 @@ public record RentAdminSummaryResponse(
                 rent.isClosed(),
                 rent.getBus().getBusSize(),
                 rent.getBus().getBusType(),
-                rent.getBus().getMaxPassenger()
-        );
+                rent.getBus().getMaxPassenger());
     }
 }

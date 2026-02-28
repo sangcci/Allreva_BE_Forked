@@ -1,8 +1,15 @@
 package com.backend.allreva.module.auth.security;
 
+import com.backend.allreva.common.config.SecurityEndpointPaths;
+import com.backend.allreva.module.auth.application.JwtService;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Arrays;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,16 +20,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.backend.allreva.common.config.SecurityEndpointPaths;
-import com.backend.allreva.module.auth.application.JwtService;
-
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -31,14 +28,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
 
-    /**
-     * JWT 토큰을 검증하고 권한을 부여합니다.
-     */
+    /** JWT 토큰을 검증하고 권한을 부여합니다. */
     @Override
     protected void doFilterInternal(
             @NonNull final HttpServletRequest request,
             @NonNull final HttpServletResponse response,
-            @NonNull final FilterChain filterChain) throws ServletException, IOException {
+            @NonNull final FilterChain filterChain)
+            throws ServletException, IOException {
         // white list 요청 처리
         AntPathMatcher pathMatcher = new AntPathMatcher();
         boolean isWhiteListed = Arrays.stream(SecurityEndpointPaths.WHITE_LIST)
@@ -67,18 +63,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     /**
-     *
      * 사용자 인증을 수행하고 SecurityContextHolder에 저장합니다.
      *
      * @param memberId 사용자 ID
-     * @param request  HTTP 요청 객체
+     * @param request HTTP 요청 객체
      */
     private void setAuthenication(final String memberId, final HttpServletRequest request) {
         // member db 확인
         UserDetails userDetails = userDetailsService.loadUserByUsername(memberId);
 
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                userDetails, null, userDetails.getAuthorities());
+        UsernamePasswordAuthenticationToken authenticationToken =
+                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
         // add info (default - remote ip address, session id)
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

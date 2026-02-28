@@ -59,7 +59,9 @@ public class RentParticipantRepositoryImpl implements RentParticipantRepository 
 
     @Override
     public List<RentJoinResponse> findByMemberId(final Long memberId) {
-        return queryFactory.select(Projections.constructor(RentJoinResponse.class,
+        return queryFactory
+                .select(Projections.constructor(
+                        RentJoinResponse.class,
                         rent.id,
                         rent.title,
                         rentBoardingInfo.date,
@@ -75,32 +77,34 @@ public class RentParticipantRepositoryImpl implements RentParticipantRepository 
                         rentParticipant.boardingType,
                         rentParticipant.depositor.depositorName,
                         rentParticipant.depositor.depositorTime,
-                        rentParticipant.refundType
-                ))
+                        rentParticipant.refundType))
                 .from(rent)
-                .join(rentBoardingInfo).on(rent.id.eq(rentBoardingInfo.rent.id))
-                .join(rentParticipant).on(
-                        rentBoardingInfo.rent.id.eq(rentParticipant.rentId)
-                                .and(rentBoardingInfo.date.eq(rentParticipant.boardingDate)))
+                .join(rentBoardingInfo)
+                .on(rent.id.eq(rentBoardingInfo.rent.id))
+                .join(rentParticipant)
+                .on(rentBoardingInfo
+                        .rent
+                        .id
+                        .eq(rentParticipant.rentId)
+                        .and(rentBoardingInfo.date.eq(rentParticipant.boardingDate)))
                 .where(rentParticipant.memberId.eq(memberId))
                 .fetch();
     }
 
     @Override
     public Optional<RentJoinCountResponse> findRentJoinCount(
-            final Long memberId,
-            final LocalDate boardingDate,
-            final Long rentId
-    ) {
-        RentJoinCountResponse result = queryFactory.select(
-                Projections.constructor(RentJoinCountResponse.class,
+            final Long memberId, final LocalDate boardingDate, final Long rentId) {
+        RentJoinCountResponse result = queryFactory
+                .select(Projections.constructor(
+                        RentJoinCountResponse.class,
                         getRentBoardingCount(BoardingType.UP, "rentUpCount"),
                         getRentBoardingCount(BoardingType.DOWN, "rentDownCount"),
                         getRentBoardingCount(BoardingType.ROUND, "rentRoundCount"),
                         getRefundCount(RefundType.REFUND, "refundCount"),
                         getRefundCount(RefundType.ADDITIONAL_DEPOSIT, "additionalDepositCount")))
                 .from(rentParticipant)
-                .join(rent).on(rentParticipant.rentId.eq(rent.id))
+                .join(rent)
+                .on(rentParticipant.rentId.eq(rent.id))
                 .where(
                         rentParticipant.rentId.eq(rentId),
                         rentParticipant.boardingDate.eq(boardingDate),
@@ -110,7 +114,8 @@ public class RentParticipantRepositoryImpl implements RentParticipantRepository 
     }
 
     private NumberExpression<Integer> getRentBoardingCount(final BoardingType boardingType, final String alias) {
-        return rentParticipant.boardingType
+        return rentParticipant
+                .boardingType
                 .when(boardingType)
                 .then(rentParticipant.passengerNum.sumAggregate().intValue())
                 .otherwise(0)
@@ -118,11 +123,13 @@ public class RentParticipantRepositoryImpl implements RentParticipantRepository 
     }
 
     private NumberExpression<Integer> getRefundCount(final RefundType refundType, final String alias) {
-        return rentParticipant.refundType
+        return rentParticipant
+                .refundType
                 .when(refundType)
                 .then(rentParticipant.passengerNum.sumAggregate().intValue())
                 .otherwise(0)
-                .add(rentParticipant.refundType
+                .add(rentParticipant
+                        .refundType
                         .when(RefundType.BOTH)
                         .then(rentParticipant.passengerNum.sumAggregate().intValue())
                         .otherwise(0))

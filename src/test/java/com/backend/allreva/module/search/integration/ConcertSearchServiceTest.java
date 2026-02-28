@@ -1,7 +1,10 @@
 package com.backend.allreva.module.search.integration;
 
-import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createConcertHall;
 import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createTestConcert;
+import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createConcertHall;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
@@ -12,18 +15,13 @@ import com.backend.allreva.module.search.application.dto.ConcertSearchListRespon
 import com.backend.allreva.module.search.application.dto.ConcertThumbnail;
 import com.backend.allreva.module.search.application.dto.SortDirection;
 import com.backend.allreva.support.IntegrationTestSupport;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 @SuppressWarnings("NonAsciiCharacters")
@@ -32,8 +30,10 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
 
     @Autowired
     ConcertSearchService concertSearchService;
+
     @Autowired
     ConcertRepository concertRepository;
+
     @Autowired
     ConcertHallRepository concertHallRepository;
 
@@ -68,8 +68,7 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
             @Test
             @DisplayName("빈 검색어인 경우 예외가 발생한다")
             void 빈_검색어인_경우_예외가_발생한다() {
-                assertThrows(CustomException.class, () ->
-                        concertSearchService.searchConcertThumbnails(""));
+                assertThrows(CustomException.class, () -> concertSearchService.searchConcertThumbnails(""));
             }
         }
 
@@ -88,7 +87,8 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
 
                 // when
                 ConcertSearchListResponse page1 = concertSearchService.searchConcertList("Sample", null, 2);
-                ConcertSearchListResponse page2 = concertSearchService.searchConcertList("Sample", page1.nextCursorId(), 2);
+                ConcertSearchListResponse page2 =
+                        concertSearchService.searchConcertList("Sample", page1.nextCursorId(), 2);
 
                 // then
                 assertSoftly(softly -> {
@@ -103,8 +103,8 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
             @Test
             @DisplayName("검색 결과가 없는 경우 예외가 발생한다")
             void 검색_결과가_없는_경우_예외가_발생한다() {
-                assertThrows(CustomException.class, () ->
-                        concertSearchService.searchConcertList("존재하지않는검색어12345", null, 2));
+                assertThrows(
+                        CustomException.class, () -> concertSearchService.searchConcertList("존재하지않는검색어12345", null, 2));
             }
         }
     }
@@ -124,14 +124,14 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
 
             // when
             ConcertMainResponse page1 = concertSearchService.searchMainConcerts("", null, 3, SortDirection.DATE);
-            ConcertMainResponse page2 = concertSearchService.searchMainConcerts("", page1.nextCursorId(), 3, SortDirection.DATE);
+            ConcertMainResponse page2 =
+                    concertSearchService.searchMainConcerts("", page1.nextCursorId(), 3, SortDirection.DATE);
 
             // then
             assertSoftly(softly -> {
                 softly.assertThat(page1.concertThumbnails()).hasSize(3);
                 softly.assertThat(page2.concertThumbnails()).hasSize(2);
-                softly.assertThat(page1.concertThumbnails())
-                        .doesNotContainAnyElementsOf(page2.concertThumbnails());
+                softly.assertThat(page1.concertThumbnails()).doesNotContainAnyElementsOf(page2.concertThumbnails());
             });
         }
     }

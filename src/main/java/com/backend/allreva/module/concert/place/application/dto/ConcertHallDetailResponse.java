@@ -4,12 +4,4 @@ import com.backend.allreva.module.concert.place.domain.value.ConvenienceInfo;
 import com.backend.allreva.module.concert.place.domain.value.Location;
 
 public record ConcertHallDetailResponse(
-        String name,
-        Integer seatScale,
-        Double star,
-
-        ConvenienceInfo convenienceInfo,
-        Location location
-) {
-
-}
+        String name, Integer seatScale, Double star, ConvenienceInfo convenienceInfo, Location location) {}

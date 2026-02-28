@@ -8,13 +8,13 @@ import jakarta.validation.constraints.NotNull;
 /**
  * Presigned URL 생성 요청 DTO
  *
- * 클라이언트가 S3에 직접 파일을 업로드하기 위한
- * 임시 서명된 URL을 요청할 때 사용합니다.
+ * <p>클라이언트가 S3에 직접 파일을 업로드하기 위한 임시 서명된 URL을 요청할 때 사용합니다.
  */
 @Schema(description = "Presigned URL 생성 요청")
 public record PresignedUrlRequest(
+        @NotBlank(message = "파일 이름은 필수입니다.") @Schema(description = "업로드할 파일 이름", example = "profile.jpg")
+        String fileName,
 
-        @NotBlank(message = "파일 이름은 필수입니다.") @Schema(description = "업로드할 파일 이름", example = "profile.jpg") String fileName,
-
-        @NotNull(message = "파일 타입은 필수입니다.") @Schema(description = "파일 타입 (PROFILE, CHAT, REVIEW, SURVEY, RENT)", example = "PROFILE") FileType fileType) {
-}
+        @NotNull(message = "파일 타입은 필수입니다.")
+        @Schema(description = "파일 타입 (PROFILE, CHAT, REVIEW, SURVEY, RENT)", example = "PROFILE")
+        FileType fileType) {}

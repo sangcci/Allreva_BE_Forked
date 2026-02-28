@@ -11,6 +11,8 @@ import com.backend.allreva.module.recruitment.rent.application.dto.RentAdminDeta
 import com.backend.allreva.module.recruitment.rent.application.dto.RentAdminSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentIdRequest;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinCountResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinDetailResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinIdRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinResponse;
@@ -19,8 +21,6 @@ import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterR
 import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinCountResponse;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinDetailResponse;
 import com.backend.allreva.module.recruitment.rent.domain.Rent;
 import com.backend.allreva.module.recruitment.rent.domain.RentBoardingInfo;
 import com.backend.allreva.module.recruitment.rent.domain.RentBoardingSlot;
@@ -62,9 +62,7 @@ public class RentService {
     // Command
     // -------------------------
 
-    public Long registerRent(
-            final RentRegisterRequest request,
-            final Long memberId) {
+    public Long registerRent(final RentRegisterRequest request, final Long memberId) {
         Rent rent = request.toEntity(memberId);
         Rent savedRent = rentRepository.save(rent);
 
@@ -80,10 +78,9 @@ public class RentService {
         return savedRent.getId();
     }
 
-    public void updateRent(
-            final RentUpdateRequest request,
-            final Long memberId) {
-        Rent rent = rentRepository.findById(request.rentId())
+    public void updateRent(final RentUpdateRequest request, final Long memberId) {
+        Rent rent = rentRepository
+                .findById(request.rentId())
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
 
         rent.validateMine(memberId);
@@ -121,10 +118,9 @@ public class RentService {
                 newBoardingInfos);
     }
 
-    public void closeRent(
-            final RentIdRequest request,
-            final Long memberId) {
-        Rent rent = rentRepository.findById(request.rentId())
+    public void closeRent(final RentIdRequest request, final Long memberId) {
+        Rent rent = rentRepository
+                .findById(request.rentId())
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
 
         rent.validateMine(memberId);
@@ -135,16 +131,16 @@ public class RentService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void closeRent(RentClosedEvent event) {
-        Rent rent = rentRepository.findById(event.getRentId())
+        Rent rent = rentRepository
+                .findById(event.getRentId())
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
 
         rent.close();
     }
 
-    public void deleteRent(
-            final RentIdRequest request,
-            final Long memberId) {
-        Rent rent = rentRepository.findById(request.rentId())
+    public void deleteRent(final RentIdRequest request, final Long memberId) {
+        Rent rent = rentRepository
+                .findById(request.rentId())
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
 
         rent.validateMine(memberId);
@@ -173,7 +169,8 @@ public class RentService {
     }
 
     public void updateRentJoin(final RentJoinUpdateRequest request, final Long memberId) {
-        RentParticipant participant = rentParticipantRepository.findById(request.rentParticipantId())
+        RentParticipant participant = rentParticipantRepository
+                .findById(request.rentParticipantId())
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_JOIN_NOT_FOUND));
 
         participant.validateMine(memberId);
@@ -192,7 +189,8 @@ public class RentService {
     }
 
     public void cancelRentJoin(final RentJoinIdRequest request, final Long memberId) {
-        RentParticipant participant = rentParticipantRepository.findById(request.rentParticipantId())
+        RentParticipant participant = rentParticipantRepository
+                .findById(request.rentParticipantId())
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_JOIN_NOT_FOUND));
 
         participant.validateMine(memberId);
@@ -230,23 +228,21 @@ public class RentService {
 
     @Transactional(readOnly = true)
     public List<RentAdminSummaryResponse> getRentAdminSummaries(
-            final Long memberId,
-            final Long lastId,
-            final int pageSize) {
+            final Long memberId, final Long lastId, final int pageSize) {
         return rentRepository.findRentAdminSummaries(memberId, lastId, pageSize);
     }
 
     @Transactional(readOnly = true)
     public RentDetailResponse getRentDetail(final Long id, final Member member) {
-        RentDetailResponse rentDetailResponse = rentRepository.findRentDetail(id)
-                .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
+        RentDetailResponse rentDetailResponse =
+                rentRepository.findRentDetail(id).orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
         if (member != null) {
-            Set<LocalDate> appliedDates = rentParticipantRepository
-                    .findAppliedBoardingDates(member.getId(), id)
-                    .stream()
-                    .collect(Collectors.toSet());
-            rentDetailResponse.getBoardingDates().forEach(
-                    response -> response.setIsApplied(appliedDates.contains(response.getDate())));
+            Set<LocalDate> appliedDates =
+                    rentParticipantRepository.findAppliedBoardingDates(member.getId(), id).stream()
+                            .collect(Collectors.toSet());
+            rentDetailResponse
+                    .getBoardingDates()
+                    .forEach(response -> response.setIsApplied(appliedDates.contains(response.getDate())));
             rentDetailResponse.setRefundAccount(member.getRefundAccount());
         }
         return rentDetailResponse;
@@ -254,28 +250,25 @@ public class RentService {
 
     @Transactional(readOnly = true)
     public DepositAccountResponse getDepositAccount(final Long id) {
-        Rent rent = rentRepository.findById(id)
-                .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
+        Rent rent = rentRepository.findById(id).orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
         return DepositAccountResponse.from(rent);
     }
 
     @Transactional(readOnly = true)
     public RentAdminDetailResponse getRentAdminDetail(
-            final Long memberId,
-            final LocalDate boardingDate,
-            final Long rentId) {
+            final Long memberId, final LocalDate boardingDate, final Long rentId) {
         return new RentAdminDetailResponse(
                 getRentAdminSummary(memberId, boardingDate, rentId),
-                rentParticipantRepository.findRentJoinCount(memberId, boardingDate, rentId)
+                rentParticipantRepository
+                        .findRentJoinCount(memberId, boardingDate, rentId)
                         .orElse(RentJoinCountResponse.EMPTY),
                 getRentJoinDetails(boardingDate, rentId));
     }
 
     private RentAdminSummaryResponse getRentAdminSummary(
-            final Long memberId,
-            final LocalDate boardingDate,
-            final Long rentId) {
-        return rentRepository.findByIdAndMemberId(rentId, memberId)
+            final Long memberId, final LocalDate boardingDate, final Long rentId) {
+        return rentRepository
+                .findByIdAndMemberId(rentId, memberId)
                 .flatMap(rent -> rent.getBoardingInfos().stream()
                         .filter(info -> info.getDate().equals(boardingDate))
                         .map(info -> RentAdminSummaryResponse.from(rent, info))
@@ -283,9 +276,7 @@ public class RentService {
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
     }
 
-    private List<RentJoinDetailResponse> getRentJoinDetails(
-            final LocalDate boardingDate,
-            final Long rentId) {
+    private List<RentJoinDetailResponse> getRentJoinDetails(final LocalDate boardingDate, final Long rentId) {
         return rentParticipantRepository.findByRentIdAndBoardingDate(rentId, boardingDate).stream()
                 .map(RentJoinDetailResponse::from)
                 .toList();

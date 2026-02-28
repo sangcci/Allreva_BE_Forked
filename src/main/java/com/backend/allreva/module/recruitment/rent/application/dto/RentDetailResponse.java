@@ -23,8 +23,10 @@ public class RentDetailResponse {
     private final String dropOffArea;
     private final String upTime;
     private final String downTime;
+
     @Setter
     private List<RentBoardingDateResponse> boardingDates;
+
     private final BusSize busSize;
     private final BusType busType;
     private final int maxPassenger;
@@ -37,6 +39,7 @@ public class RentDetailResponse {
     private final RefundType refundType;
     private final String information;
     private final boolean isClosed;
+
     @Setter
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private RefundAccount refundAccount;
@@ -63,8 +66,7 @@ public class RentDetailResponse {
             final String chatUrl,
             final RefundType refundType,
             final String information,
-            final boolean isClosed
-    ) {
+            final boolean isClosed) {
         this.concertName = concertName;
         this.imageUrl = imageUrl;
         this.title = title;
@@ -93,14 +95,12 @@ public class RentDetailResponse {
     public static class RentBoardingDateResponse {
         private final LocalDate date;
         private final int participationCount;
+
         @Setter
         @JsonInclude(JsonInclude.Include.NON_NULL)
         private Boolean isApplied;
 
-        public RentBoardingDateResponse(
-                final LocalDate date,
-                final int participationCount
-        ) {
+        public RentBoardingDateResponse(final LocalDate date, final int participationCount) {
             this.date = date;
             this.participationCount = participationCount;
         }

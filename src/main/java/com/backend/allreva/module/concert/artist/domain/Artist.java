@@ -20,5 +20,4 @@ public class Artist extends BaseEntity {
     private String id;
 
     private String name;
-
 }

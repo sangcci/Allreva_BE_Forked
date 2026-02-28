@@ -3,15 +3,14 @@ package com.backend.allreva.module.concert.place.infra.kopis;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.value.ConvenienceInfo;
 import com.backend.allreva.module.concert.place.domain.value.Location;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
@@ -84,9 +83,7 @@ public class KopisHallResponse {
 
         @XmlElement(name = "seatscale")
         private String seatscale; // 좌석수
-
     }
-
 
     public static ConcertHall toEntity(final KopisHallResponse response, final int idx) {
         Db db = response.getDb();
@@ -100,6 +97,7 @@ public class KopisHallResponse {
                 .location(toLocation(db.lo, db.la, db.adres))
                 .build();
     }
+
     private static String getHallName(final Db db, final int idx) {
         String fcltyName = db.fcltynm;
         String prfplcName = db.mt13s.mt13List.get(idx).prfplcnm;
@@ -134,5 +132,4 @@ public class KopisHallResponse {
     private static boolean toBoolean(String YN) {
         return "Y".equals(YN);
     }
-
 }

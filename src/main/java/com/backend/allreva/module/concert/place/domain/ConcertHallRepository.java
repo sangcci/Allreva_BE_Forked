@@ -1,8 +1,7 @@
 package com.backend.allreva.module.concert.place.domain;
 
-import java.util.Optional;
-
 import com.backend.allreva.module.concert.place.application.dto.ConcertHallDetailResponse;
+import java.util.Optional;
 
 public interface ConcertHallRepository {
 

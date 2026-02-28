@@ -4,6 +4,7 @@ import static com.backend.allreva.module.concert.concert.domain.QConcert.concert
 import static com.backend.allreva.module.concert.place.domain.QConcertHall.concertHall;
 import static com.backend.allreva.module.recruitment.rent.domain.QRent.rent;
 import static com.backend.allreva.module.recruitment.rent.domain.QRentBoardingInfo.rentBoardingInfo;
+
 import com.backend.allreva.module.recruitment.rent.application.dto.RentAdminSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse.RentBoardingDateResponse;
@@ -45,10 +46,7 @@ public class RentRepositoryImpl implements RentRepository {
     }
 
     @Override
-    public Optional<RentBoardingInfo> findByIdAndBoardingDate(
-            final Long rentId,
-            final LocalDate date
-    ) {
+    public Optional<RentBoardingInfo> findByIdAndBoardingDate(final Long rentId, final LocalDate date) {
         return rentBoardingInfoJpaRepository.findByRentIdAndDate(rentId, date);
     }
 
@@ -73,10 +71,10 @@ public class RentRepositoryImpl implements RentRepository {
             final SortType sortType,
             final LocalDate lastEndDate,
             final Long lastId,
-            final int pageSize
-    ) {
+            final int pageSize) {
         return queryFactory
-                .select(Projections.constructor(RentSummaryResponse.class,
+                .select(Projections.constructor(
+                        RentSummaryResponse.class,
                         rent.id,
                         rent.title,
                         rent.boardingArea,
@@ -95,12 +93,10 @@ public class RentRepositoryImpl implements RentRepository {
 
     @Override
     public List<RentAdminSummaryResponse> findRentAdminSummaries(
-            final Long memberId,
-            final Long lastId,
-            final int pageSize
-    ) {
+            final Long memberId, final Long lastId, final int pageSize) {
         return queryFactory
-                .select(Projections.constructor(RentAdminSummaryResponse.class,
+                .select(Projections.constructor(
+                        RentAdminSummaryResponse.class,
                         rent.id,
                         rent.title,
                         rentBoardingInfo.date,
@@ -116,9 +112,7 @@ public class RentRepositoryImpl implements RentRepository {
                 .from(rent)
                 .join(rentBoardingInfo)
                 .on(rent.id.eq(rentBoardingInfo.rent.id))
-                .where(
-                        rent.memberId.eq(memberId),
-                        getPagingCondition(SortType.LATEST, lastId, null))
+                .where(rent.memberId.eq(memberId), getPagingCondition(SortType.LATEST, lastId, null))
                 .orderBy(orderSpecifiers(SortType.LATEST))
                 .limit(pageSize)
                 .fetch();
@@ -129,15 +123,19 @@ public class RentRepositoryImpl implements RentRepository {
         return Optional.ofNullable(queryFactory
                 .select(rentDetailProjections())
                 .from(rent)
-                .join(rentBoardingInfo).on(rent.id.eq(rentBoardingInfo.rent.id))
-                .leftJoin(concert).on(rent.concertId.eq(concert.id))
-                .leftJoin(concertHall).on(concert.code.hallCode.eq(concertHall.id))
+                .join(rentBoardingInfo)
+                .on(rent.id.eq(rentBoardingInfo.rent.id))
+                .leftJoin(concert)
+                .on(rent.concertId.eq(concert.id))
+                .leftJoin(concertHall)
+                .on(concert.code.hallCode.eq(concertHall.id))
                 .where(rent.id.eq(rentId))
                 .fetchFirst());
     }
 
     private ConstructorExpression<RentDetailResponse> rentDetailProjections() {
-        return Projections.constructor(RentDetailResponse.class,
+        return Projections.constructor(
+                RentDetailResponse.class,
                 concert.concertInfo.title,
                 rent.image.url,
                 rent.title,
@@ -147,10 +145,8 @@ public class RentRepositoryImpl implements RentRepository {
                 concertHall.name,
                 rent.upTime,
                 rent.downTime,
-                Projections.list(
-                        Projections.constructor(RentBoardingDateResponse.class,
-                                rentBoardingInfo.date,
-                                rentBoardingInfo.passengerCount)),
+                Projections.list(Projections.constructor(
+                        RentBoardingDateResponse.class, rentBoardingInfo.date, rentBoardingInfo.passengerCount)),
                 rent.bus.busSize,
                 rent.bus.busType,
                 rent.bus.maxPassenger,
@@ -170,9 +166,7 @@ public class RentRepositoryImpl implements RentRepository {
     }
 
     private BooleanExpression getPagingCondition(
-            final SortType sortType,
-            final Long lastId,
-            final LocalDate lastEndDate) {
+            final SortType sortType, final Long lastId, final LocalDate lastEndDate) {
         if (lastId == null && lastEndDate == null) {
             return null;
         }
@@ -194,22 +188,14 @@ public class RentRepositoryImpl implements RentRepository {
     private OrderSpecifier<?>[] orderSpecifiers(final SortType sortType) {
         switch (sortType) {
             case CLOSING -> {
-                return new OrderSpecifier[]{
-                        rent.endDate.asc(),
-                        rent.id.asc()
-                };
+                return new OrderSpecifier[] {rent.endDate.asc(), rent.id.asc()};
             }
             case OLDEST -> {
-                return new OrderSpecifier[]{
-                        rent.id.asc()
-                };
+                return new OrderSpecifier[] {rent.id.asc()};
             }
             default -> {
-                return new OrderSpecifier[]{
-                        rent.id.desc()
-                };
+                return new OrderSpecifier[] {rent.id.desc()};
             }
         }
     }
-
 }

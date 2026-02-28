@@ -7,5 +7,4 @@ public record SurveyDetailResponse(
         String title,
         List<SurveyBoardingDateResponse> boardingDates,
         String information,
-        boolean isClosed) {
-}
+        boolean isClosed) {}

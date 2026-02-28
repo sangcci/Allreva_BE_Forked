@@ -1,11 +1,5 @@
 package com.backend.allreva.module.concert.artist.infra.spotify;
 
-import java.util.Base64;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.concert.artist.application.dto.ArtistSearchResponse;
 import com.backend.allreva.module.concert.artist.application.dto.ArtistSearchResponse.ArtistImage;
@@ -13,8 +7,11 @@ import com.backend.allreva.module.concert.artist.application.port.ArtistSearchPo
 import com.backend.allreva.module.concert.artist.exception.ArtistErrorCode;
 import com.backend.allreva.module.concert.artist.infra.spotify.dto.SpotifyArtistWrapper;
 import com.backend.allreva.module.concert.artist.infra.spotify.dto.SpotifySearchResponse;
-
+import java.util.Base64;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
@@ -39,9 +36,7 @@ public class SpotifyAdapter implements ArtistSearchPort {
             throw new CustomException(ArtistErrorCode.ARTIST_SEARCH_NO_CONTENT);
         }
 
-        return spotifyArtists.stream()
-                .map(this::toArtistSearchResponse)
-                .toList();
+        return spotifyArtists.stream().map(this::toArtistSearchResponse).toList();
     }
 
     private ArtistSearchResponse toArtistSearchResponse(SpotifySearchResponse spotify) {
@@ -54,11 +49,10 @@ public class SpotifyAdapter implements ArtistSearchPort {
 
     private String getAccessToken() {
         String credentials = clientId + ":" + clientSecret;
-        String encodedCredentials = Base64.getEncoder()
-                .encodeToString(credentials.getBytes());
+        String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
 
-        return spotifyAccountClient.getAccessToken(
-                "Basic " + encodedCredentials, "client_credentials")
+        return spotifyAccountClient
+                .getAccessToken("Basic " + encodedCredentials, "client_credentials")
                 .access_token();
     }
 }

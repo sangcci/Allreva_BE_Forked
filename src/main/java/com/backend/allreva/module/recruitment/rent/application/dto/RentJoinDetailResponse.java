@@ -14,8 +14,7 @@ public record RentJoinDetailResponse(
         BoardingType boardingType,
         String depositorTime,
         RefundType refundType,
-        String rentAccount
-) {
+        String rentAccount) {
 
     public static RentJoinDetailResponse from(final RentParticipant participant) {
         return new RentJoinDetailResponse(
@@ -27,7 +26,6 @@ public record RentJoinDetailResponse(
                 participant.getBoardingType(),
                 participant.getDepositor().getDepositorTime(),
                 participant.getRefundType(),
-                participant.getRefundAccount()
-        );
+                participant.getRefundAccount());
     }
 }

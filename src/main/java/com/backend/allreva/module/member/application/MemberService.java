@@ -1,6 +1,5 @@
 package com.backend.allreva.module.member.application;
 
-import com.backend.allreva.common.event.Events;
 import com.backend.allreva.module.concert.artist.application.ArtistService;
 import com.backend.allreva.module.concert.artist.application.dto.ArtistCreateRequest;
 import com.backend.allreva.module.member.application.dto.MemberArtistRequest;
@@ -10,14 +9,13 @@ import com.backend.allreva.module.member.application.dto.NicknameDuplication;
 import com.backend.allreva.module.member.application.dto.RefundAccountRequest;
 import com.backend.allreva.module.member.application.port.MemberDetailRepository;
 import com.backend.allreva.module.member.domain.Member;
+import com.backend.allreva.module.member.domain.MemberRepository;
 import com.backend.allreva.module.member.domain.artist.MemberArtist;
 import com.backend.allreva.module.member.domain.artist.MemberArtistRepository;
-import com.backend.allreva.module.member.domain.MemberRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -48,28 +46,18 @@ public class MemberService {
     }
 
     @Transactional
-    public void updateMemberInfo(
-            final MemberRegisterRequest memberRegisterRequest,
-            final Member member
-    ) {
+    public void updateMemberInfo(final MemberRegisterRequest memberRegisterRequest, final Member member) {
         member.setMemberInfo(
                 memberRegisterRequest.nickname(),
                 memberRegisterRequest.introduce(),
-                memberRegisterRequest.image().getUrl()
-        );
+                memberRegisterRequest.image().getUrl());
         memberRepository.save(member);
         updateMemberArtist(memberRegisterRequest.memberArtistRequests(), member);
     }
 
     @Transactional
-    public void registerRefundAccount(
-            final RefundAccountRequest refundAccountRequest,
-            final Member member
-    ) {
-        member.setRefundAccount(
-                refundAccountRequest.bank(),
-                refundAccountRequest.number()
-        );
+    public void registerRefundAccount(final RefundAccountRequest refundAccountRequest, final Member member) {
+        member.setRefundAccount(refundAccountRequest.bank(), refundAccountRequest.number());
         memberRepository.save(member);
     }
 
@@ -79,10 +67,7 @@ public class MemberService {
         memberRepository.save(member);
     }
 
-    private void updateMemberArtist(
-            final List<MemberArtistRequest> memberArtistRequests,
-            final Member member
-    ) {
+    private void updateMemberArtist(final List<MemberArtistRequest> memberArtistRequests, final Member member) {
         List<ArtistCreateRequest> artistCreateRequests = memberArtistRequests.stream()
                 .map(req -> new ArtistCreateRequest(req.spotifyArtistId(), req.name()))
                 .toList();
@@ -106,8 +91,7 @@ public class MemberService {
     }
 
     private boolean isNewMemberArtists(final MemberArtistRequest req, final List<MemberArtist> preMemberArtists) {
-        return preMemberArtists.stream()
-                .noneMatch(pre -> pre.getArtistId().equals(req.spotifyArtistId()));
+        return preMemberArtists.stream().noneMatch(pre -> pre.getArtistId().equals(req.spotifyArtistId()));
     }
 
     private boolean isRemoveMemberArtist(final MemberArtist pre, final List<MemberArtistRequest> memberArtistRequests) {

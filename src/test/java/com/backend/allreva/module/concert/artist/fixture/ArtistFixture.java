@@ -8,16 +8,10 @@ import lombok.NoArgsConstructor;
 public final class ArtistFixture {
 
     public static Artist createArtist(String id, String name) {
-        return Artist.builder()
-                .id(id)
-                .name(name)
-                .build();
+        return Artist.builder().id(id).name(name).build();
     }
 
     public static Artist createArtist(String id) {
-        return Artist.builder()
-                .id(id)
-                .name("테스트 아티스트")
-                .build();
+        return Artist.builder().id(id).name("테스트 아티스트").build();
     }
 }

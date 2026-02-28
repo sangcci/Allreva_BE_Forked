@@ -1,5 +1,13 @@
 package com.backend.allreva.module.member.application;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import com.backend.allreva.module.concert.artist.application.ArtistService;
 import com.backend.allreva.module.concert.artist.domain.Artist;
 import com.backend.allreva.module.member.application.dto.MemberArtistRequest;
@@ -8,12 +16,14 @@ import com.backend.allreva.module.member.application.dto.NicknameDuplication;
 import com.backend.allreva.module.member.application.dto.RefundAccountRequest;
 import com.backend.allreva.module.member.application.port.MemberDetailRepository;
 import com.backend.allreva.module.member.domain.Member;
+import com.backend.allreva.module.member.domain.MemberRepository;
 import com.backend.allreva.module.member.domain.artist.MemberArtist;
 import com.backend.allreva.module.member.domain.artist.MemberArtistRepository;
-import com.backend.allreva.module.member.domain.MemberRepository;
 import com.backend.allreva.module.member.domain.value.MemberRole;
 import com.backend.allreva.module.member.fixture.MemberFixture;
 import com.backend.allreva.module.member.fixture.MemberRequestFixture;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -21,17 +31,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.Collections;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("NonAsciiCharacters")
@@ -102,7 +101,8 @@ class MemberServiceTest {
             void 회원_정보가_성공적으로_수정된다() {
                 // given
                 Member member = MemberFixture.createMember(1L, MemberRole.USER);
-                MemberRegisterRequest request = MemberRequestFixture.createMemberRegisterRequestWithArtists(Collections.emptyList());
+                MemberRegisterRequest request =
+                        MemberRequestFixture.createMemberRegisterRequestWithArtists(Collections.emptyList());
                 given(memberRepository.save(any(Member.class))).willReturn(member);
                 given(memberArtistRepository.findByMemberId(any())).willReturn(Collections.emptyList());
 
@@ -132,12 +132,12 @@ class MemberServiceTest {
             void 아티스트가_성공적으로_추가된다() {
                 // given
                 Member member = MemberFixture.createMember(1L, MemberRole.USER);
-                List<MemberArtistRequest> artistRequests = List.of(
-                        new MemberArtistRequest("spotifyId1", "Artist1")
-                );
-                MemberRegisterRequest request = MemberRequestFixture.createMemberRegisterRequestWithArtists(artistRequests);
+                List<MemberArtistRequest> artistRequests = List.of(new MemberArtistRequest("spotifyId1", "Artist1"));
+                MemberRegisterRequest request =
+                        MemberRequestFixture.createMemberRegisterRequestWithArtists(artistRequests);
 
-                Artist artist = Artist.builder().id("spotifyId1").name("Artist1").build();
+                Artist artist =
+                        Artist.builder().id("spotifyId1").name("Artist1").build();
                 given(artistService.getArtistById(anyString())).willReturn(artist);
                 given(memberArtistRepository.findByMemberId(any())).willReturn(Collections.emptyList());
                 given(memberRepository.save(any(Member.class))).willReturn(member);
@@ -161,7 +161,8 @@ class MemberServiceTest {
             void 아티스트가_성공적으로_삭제된다() {
                 // given
                 Member member = MemberFixture.createMember(1L, MemberRole.USER);
-                MemberRegisterRequest request = MemberRequestFixture.createMemberRegisterRequestWithArtists(Collections.emptyList());
+                MemberRegisterRequest request =
+                        MemberRequestFixture.createMemberRegisterRequestWithArtists(Collections.emptyList());
 
                 MemberArtist existingArtist = MemberArtist.builder()
                         .memberId(1L)

@@ -1,13 +1,11 @@
 package com.backend.allreva.module.concert.concert.application;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailResponse;
-
+import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,14 +18,12 @@ public class ConcertService {
     @Transactional
     public ConcertDetailResponse findDetailById(final Long concertId) {
         // Increment view count
-        concertRepository.findById(concertId)
-                .ifPresent(concert -> concert.addViewCount(1));
+        concertRepository.findById(concertId).ifPresent(concert -> concert.addViewCount(1));
         return concertRepository.findDetailById(concertId);
     }
 
     @Transactional
     public void increaseViewCount(final Long concertId) {
-        concertRepository.findById(concertId)
-                .ifPresent(concert -> concert.addViewCount(1));
+        concertRepository.findById(concertId).ifPresent(concert -> concert.addViewCount(1));
     }
 }

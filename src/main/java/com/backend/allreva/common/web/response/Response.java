@@ -1,21 +1,20 @@
 package com.backend.allreva.common.web.response;
 
-import java.time.LocalDateTime;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-@JsonPropertyOrder({ "timeStamp", "code", "message", "result" })
+@JsonPropertyOrder({"timeStamp", "code", "message", "result"})
 public class Response<T> {
 
     private final LocalDateTime timeStamp = LocalDateTime.now();
     private final String code;
     private final String message;
+
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T result;
 

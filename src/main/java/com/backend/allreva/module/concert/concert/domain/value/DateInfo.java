@@ -1,12 +1,11 @@
 package com.backend.allreva.module.concert.concert.domain.value;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -15,6 +14,7 @@ public class DateInfo {
 
     @Column(nullable = false, name = "stdate")
     private LocalDate startDate;
+
     @Column(nullable = false, name = "eddate")
     private LocalDate endDate;
 

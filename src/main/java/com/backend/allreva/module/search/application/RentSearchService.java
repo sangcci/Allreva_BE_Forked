@@ -5,10 +5,9 @@ import com.backend.allreva.module.search.application.dto.RentSearchListResponse;
 import com.backend.allreva.module.search.application.dto.RentThumbnail;
 import com.backend.allreva.module.search.application.port.RentSearchRepository;
 import com.backend.allreva.module.search.exception.SearchErrorCode;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +22,7 @@ public class RentSearchService {
         return thumbnails;
     }
 
-    public RentSearchListResponse searchRentSearchList(
-            final String title, final Long cursorId, final int size) {
+    public RentSearchListResponse searchRentSearchList(final String title, final Long cursorId, final int size) {
         RentSearchListResponse response = rentSearchRepository.searchByTitle(title, cursorId, size);
         if (response.rentThumbnails().isEmpty()) {
             throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);

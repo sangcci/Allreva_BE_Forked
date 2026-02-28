@@ -18,17 +18,14 @@ public class JwtExceptionFilter extends OncePerRequestFilter {
 
     private final HandlerExceptionResolver resolver;
 
-    public JwtExceptionFilter(
-            @Qualifier("handlerExceptionResolver") final HandlerExceptionResolver resolver) {
+    public JwtExceptionFilter(@Qualifier("handlerExceptionResolver") final HandlerExceptionResolver resolver) {
         this.resolver = resolver;
     }
 
-    /**
-     * 필터 처리 중 CustomException이 발생하면 해당 필터에서 처리합니다.
-     */
+    /** 필터 처리 중 CustomException이 발생하면 해당 필터에서 처리합니다. */
     @Override
-    protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
-            final FilterChain filterChain)
+    protected void doFilterInternal(
+            final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
             throws ServletException, IOException {
         try {
             filterChain.doFilter(request, response);

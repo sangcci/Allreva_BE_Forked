@@ -22,11 +22,7 @@ public interface SurveyRepository {
     SurveyDetailResponse findSurveyDetail(Long surveyId);
 
     List<SurveySummaryResponse> findSurveyList(
-            Region region,
-            SortType sortType,
-            Long lastId,
-            LocalDate lastEndDate,
-            int pageSize);
+            Region region, SortType sortType, Long lastId, LocalDate lastEndDate, int pageSize);
 
     List<SurveySummaryResponse> findSurveyMainList();
 

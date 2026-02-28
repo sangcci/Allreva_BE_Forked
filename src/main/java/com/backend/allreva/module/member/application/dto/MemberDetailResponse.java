@@ -10,8 +10,7 @@ public record MemberDetailResponse(
         String profileImageUrl,
         List<MemberArtistDetail> artists,
         String bank,
-        String number
-) {
+        String number) {
 
     // for querydsl projections
     public MemberDetailResponse(
@@ -20,16 +19,9 @@ public record MemberDetailResponse(
             final String introduce,
             final String profileImageUrl,
             final List<MemberArtistDetail> artists,
-            final RefundAccount refundAccount
-    ) {
-        this(email, nickname, introduce, profileImageUrl, artists,
-                refundAccount.getBank(), refundAccount.getNumber());
+            final RefundAccount refundAccount) {
+        this(email, nickname, introduce, profileImageUrl, artists, refundAccount.getBank(), refundAccount.getNumber());
     }
 
-    public record MemberArtistDetail(
-        String name,
-        String artistId
-    ) {
-
-    }
+    public record MemberArtistDetail(String name, String artistId) {}
 }

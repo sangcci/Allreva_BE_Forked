@@ -7,11 +7,10 @@ import com.backend.allreva.module.search.application.dto.ConcertThumbnail;
 import com.backend.allreva.module.search.application.dto.SortDirection;
 import com.backend.allreva.module.search.application.port.ConcertSearchRepository;
 import com.backend.allreva.module.search.exception.SearchErrorCode;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -29,8 +28,7 @@ public class ConcertSearchService {
         return thumbnails;
     }
 
-    public ConcertSearchListResponse searchConcertList(
-            final String title, final Long cursorId, final int size) {
+    public ConcertSearchListResponse searchConcertList(final String title, final Long cursorId, final int size) {
         ConcertSearchListResponse response = concertSearchRepository.searchByTitle(title, cursorId, size);
         if (response.concertThumbnails().isEmpty()) {
             throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
@@ -38,8 +36,7 @@ public class ConcertSearchService {
         return response;
     }
 
-    public ConcertSearchListResponse searchAllConcertList(
-            final String title, final Long cursorId, final int size) {
+    public ConcertSearchListResponse searchAllConcertList(final String title, final Long cursorId, final int size) {
         ConcertSearchListResponse response = concertSearchRepository.searchByTitleAll(title, cursorId, size);
         if (response.concertThumbnails().isEmpty()) {
             throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);

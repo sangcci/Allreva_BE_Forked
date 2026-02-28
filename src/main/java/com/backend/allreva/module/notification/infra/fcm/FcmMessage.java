@@ -1,32 +1,18 @@
 package com.backend.allreva.module.notification.infra.fcm;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.Builder;
 
 @Builder
-public record FcmMessage(
-        @JsonProperty("validate_only") boolean validateOnly,
-        Message message) {
+public record FcmMessage(@JsonProperty("validate_only") boolean validateOnly, Message message) {
     @Builder
-    public record Message(
-            Notification notification,
-            String token) {
-
-    }
+    public record Message(Notification notification, String token) {}
 
     @Builder
-    public record Notification(
-            String title,
-            String body) {
-
-    }
+    public record Notification(String title, String body) {}
 
     public static FcmMessage from(
-            final String token,
-            final boolean validateOnly,
-            final String title,
-            final String message) {
+            final String token, final boolean validateOnly, final String title, final String message) {
         return FcmMessage.builder()
                 .validateOnly(validateOnly)
                 .message(Message.builder()

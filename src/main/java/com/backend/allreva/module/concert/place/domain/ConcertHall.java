@@ -1,4 +1,5 @@
 package com.backend.allreva.module.concert.place.domain;
+
 import com.backend.allreva.module.concert.place.domain.value.ConvenienceInfo;
 import com.backend.allreva.module.concert.place.domain.value.Location;
 import jakarta.persistence.Column;
@@ -17,6 +18,7 @@ public class ConcertHall {
 
     @Column(nullable = false)
     private String name; // fcltyName + prfplcName
+
     private int seatScale;
     private double star;
     private long totalStars;
@@ -24,6 +26,7 @@ public class ConcertHall {
 
     @Embedded
     private ConvenienceInfo convenienceInfo;
+
     @Embedded
     private Location location;
 
@@ -33,8 +36,7 @@ public class ConcertHall {
             final String name,
             final int seatScale,
             final ConvenienceInfo convenienceInfo,
-            final Location location
-    ) {
+            final Location location) {
         this.id = id;
         this.name = name;
         this.seatScale = seatScale;

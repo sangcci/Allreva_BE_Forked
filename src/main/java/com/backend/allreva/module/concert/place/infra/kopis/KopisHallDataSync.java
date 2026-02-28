@@ -2,17 +2,16 @@ package com.backend.allreva.module.concert.place.infra.kopis;
 
 import com.backend.allreva.module.concert.place.application.port.ConcertHallDataSyncPort;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Kopis Hall API Adapter
  *
- * Kopis API를 호출하여 공연장 정보를 조회하고 도메인 객체로 변환합니다.
+ * <p>Kopis API를 호출하여 공연장 정보를 조회하고 도메인 객체로 변환합니다.
  */
 @Slf4j
 @Service

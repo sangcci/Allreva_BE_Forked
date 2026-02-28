@@ -1,14 +1,12 @@
 package com.backend.allreva.common.config;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
-
 
 @Configuration
 public class CorsConfig {
@@ -31,9 +29,7 @@ public class CorsConfig {
                 "https://allreva.shop/",
                 "https://api.allreva.store",
                 "https://allreva.store/",
-
-                frontProtocol + "://" + frontDomain
-        ));
+                frontProtocol + "://" + frontDomain));
 
         // 자격 증명 허용
         configuration.setAllowCredentials(true);

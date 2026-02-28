@@ -40,9 +40,7 @@ public abstract class AbstractJsonListConverter<T> implements AttributeConverter
         }
         try {
             return OBJECT_MAPPER.readValue(
-                    json,
-                    OBJECT_MAPPER.getTypeFactory().constructCollectionType(List.class, elementType)
-            );
+                    json, OBJECT_MAPPER.getTypeFactory().constructCollectionType(List.class, elementType));
         } catch (JsonProcessingException e) {
             throw new RuntimeException("JSON을 List로 변환하는 데 실패했습니다.", e);
         }

@@ -14,14 +14,12 @@ public class Code {
 
     @Column(nullable = false)
     private String concertCode;
+
     @Column(nullable = false)
     private String hallCode;
 
     @Builder
-    private Code(
-            final String concertCode,
-            final String hallCode
-    ) {
+    private Code(final String concertCode, final String hallCode) {
         this.concertCode = concertCode;
         this.hallCode = hallCode;
     }

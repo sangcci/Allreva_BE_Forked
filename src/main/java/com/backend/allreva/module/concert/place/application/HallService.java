@@ -7,13 +7,12 @@ import com.backend.allreva.module.concert.place.application.dto.RelatedConcertRe
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import com.backend.allreva.module.concert.place.exception.ConcertHallErrorCode;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +27,11 @@ public class HallService {
         return concertHallRepository.findDetailByHallCode(hallCode);
     }
 
-    @Cacheable(cacheNames = "relatedConcert", key = "#hallCode + '_' + #lastId + '_' + #pageSize", unless = "#result == null", cacheManager = "relatedConcertCacheManager")
+    @Cacheable(
+            cacheNames = "relatedConcert",
+            key = "#hallCode + '_' + #lastId + '_' + #pageSize",
+            unless = "#result == null",
+            cacheManager = "relatedConcertCacheManager")
     public List<RelatedConcertResponse> getRelatedConcert(
             final String hallCode, final Long lastId, final Long lastViewCount, final int pageSize) {
         try {
@@ -39,11 +42,9 @@ public class HallService {
     }
 
     @Transactional
-    public ConcertHall updateConcertHallStar(
-            final String hallId,
-            final int starDelta,
-            final int countDelta) {
-        ConcertHall concertHall = concertHallRepository.findByIdWithLock(hallId)
+    public ConcertHall updateConcertHallStar(final String hallId, final int starDelta, final int countDelta) {
+        ConcertHall concertHall = concertHallRepository
+                .findByIdWithLock(hallId)
                 .orElseThrow(() -> new CustomException(ConcertHallErrorCode.CONCERT_HALL_SEARCH_NOTFOUND));
 
         concertHall.updateStar(starDelta, countDelta);

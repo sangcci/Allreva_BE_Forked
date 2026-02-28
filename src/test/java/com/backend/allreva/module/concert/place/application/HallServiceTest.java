@@ -1,5 +1,15 @@
 package com.backend.allreva.module.concert.place.application;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.place.application.dto.ConcertHallDetailResponse;
@@ -10,6 +20,9 @@ import com.backend.allreva.module.concert.place.domain.value.ConvenienceInfo;
 import com.backend.allreva.module.concert.place.domain.value.Location;
 import com.backend.allreva.module.concert.place.exception.ConcertHallErrorCode;
 import com.backend.allreva.module.concert.place.fixture.ConcertHallFixture;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -17,21 +30,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("NonAsciiCharacters")
@@ -65,8 +63,7 @@ class HallServiceTest {
                         2500,
                         4.5,
                         ConvenienceInfo.builder().build(),
-                        Location.builder().build()
-                );
+                        Location.builder().build());
 
                 given(concertHallRepository.findDetailByHallCode(hallCode)).willReturn(expectedResponse);
 
@@ -101,24 +98,15 @@ class HallServiceTest {
                 Long lastViewCount = 0L;
                 int pageSize = 10;
 
-                List<RelatedConcertResponse> expectedConcerts = List.of(
-                        new RelatedConcertResponse(
-                                1L,
-                                "아이유 콘서트",
-                                LocalDate.of(2030, 12, 1),
-                                LocalDate.of(2030, 12, 31),
-                                "poster1.jpg",
-                                100L
-                        )
-                );
+                List<RelatedConcertResponse> expectedConcerts = List.of(new RelatedConcertResponse(
+                        1L, "아이유 콘서트", LocalDate.of(2030, 12, 1), LocalDate.of(2030, 12, 31), "poster1.jpg", 100L));
 
-                given(concertRepository.findRelatedConcertsByHall(
-                        anyString(), anyLong(), anyLong(), anyInt()))
+                given(concertRepository.findRelatedConcertsByHall(anyString(), anyLong(), anyLong(), anyInt()))
                         .willReturn(expectedConcerts);
 
                 // when
-                List<RelatedConcertResponse> result = hallService.getRelatedConcert(
-                        hallCode, lastId, lastViewCount, pageSize);
+                List<RelatedConcertResponse> result =
+                        hallService.getRelatedConcert(hallCode, lastId, lastViewCount, pageSize);
 
                 // then
                 assertSoftly(softly -> {
@@ -135,13 +123,11 @@ class HallServiceTest {
             void 조회_중_예외가_발생하면_CustomException이_발생한다() {
                 // given
                 String hallCode = "FC001";
-                given(concertRepository.findRelatedConcertsByHall(
-                        anyString(), anyLong(), anyLong(), anyInt()))
+                given(concertRepository.findRelatedConcertsByHall(anyString(), anyLong(), anyLong(), anyInt()))
                         .willThrow(new RuntimeException("Database error"));
 
                 // when & then
-                assertThatThrownBy(() ->
-                        hallService.getRelatedConcert(hallCode, 0L, 0L, 10))
+                assertThatThrownBy(() -> hallService.getRelatedConcert(hallCode, 0L, 0L, 10))
                         .isInstanceOf(CustomException.class)
                         .hasFieldOrPropertyWithValue("errorCode", ConcertHallErrorCode.RELATED_CONCERT_EXCEPTION);
             }
@@ -189,8 +175,7 @@ class HallServiceTest {
                 given(concertHallRepository.findByIdWithLock(hallId)).willReturn(Optional.empty());
 
                 // when & then
-                assertThatThrownBy(() ->
-                        hallService.updateConcertHallStar(hallId, 5, 1))
+                assertThatThrownBy(() -> hallService.updateConcertHallStar(hallId, 5, 1))
                         .isInstanceOf(CustomException.class)
                         .hasFieldOrPropertyWithValue("errorCode", ConcertHallErrorCode.CONCERT_HALL_SEARCH_NOTFOUND);
             }

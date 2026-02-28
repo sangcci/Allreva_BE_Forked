@@ -1,11 +1,9 @@
 package com.backend.allreva.module.concert.place.exception;
 
-import org.springframework.http.HttpStatus;
-
 import com.backend.allreva.common.exception.ErrorCode;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor

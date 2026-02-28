@@ -1,7 +1,14 @@
 package com.backend.allreva.module.notification.presentation;
 
+import com.backend.allreva.common.web.response.Response;
+import com.backend.allreva.module.auth.security.AuthMember;
+import com.backend.allreva.module.member.domain.Member;
+import com.backend.allreva.module.notification.application.NotificationService;
+import com.backend.allreva.module.notification.application.dto.NotificationIdRequest;
+import com.backend.allreva.module.notification.application.dto.NotificationTargetRequest;
+import com.backend.allreva.module.notification.domain.Notification;
 import java.util.List;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,16 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.backend.allreva.common.web.response.Response;
-import com.backend.allreva.module.member.domain.Member;
-import com.backend.allreva.module.auth.security.AuthMember;
-import com.backend.allreva.module.notification.application.NotificationService;
-import com.backend.allreva.module.notification.application.dto.NotificationTargetRequest;
-import com.backend.allreva.module.notification.application.dto.NotificationIdRequest;
-import com.backend.allreva.module.notification.domain.Notification;
-
-import lombok.RequiredArgsConstructor;
 
 @Validated
 @RestController
@@ -40,23 +37,20 @@ public class NotificationController implements NotificationSwagger {
 
     @PatchMapping("/read")
     public Response<Void> markAsRead(
-            @AuthMember final Member member,
-            @RequestBody final NotificationIdRequest notificationIdRequest) {
+            @AuthMember final Member member, @RequestBody final NotificationIdRequest notificationIdRequest) {
         notificationService.markAsRead(member, notificationIdRequest);
         return Response.onSuccess();
     }
 
     @PostMapping("/device-token")
     public Response<Void> registerDeviceToken(
-            @AuthMember final Member member,
-            @RequestBody final NotificationTargetRequest deviceTokenRequest) {
+            @AuthMember final Member member, @RequestBody final NotificationTargetRequest deviceTokenRequest) {
         notificationService.registerTarget(member, deviceTokenRequest);
         return Response.onSuccess();
     }
 
     @DeleteMapping("/device-token")
-    public Response<Void> deleteDeviceToken(
-            @RequestBody final Member member) {
+    public Response<Void> deleteDeviceToken(@RequestBody final Member member) {
         notificationService.deleteTarget(member);
         return Response.onSuccess();
     }

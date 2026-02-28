@@ -4,9 +4,4 @@ import com.backend.allreva.module.recruitment.survey.domain.value.Region;
 import java.time.LocalDate;
 
 public record SurveySummaryResponse(
-        Long surveyId,
-        String title,
-        Region region,
-        int participationCount,
-        LocalDate endDate) {
-}
+        Long surveyId, String title, Region region, int participationCount, LocalDate endDate) {}

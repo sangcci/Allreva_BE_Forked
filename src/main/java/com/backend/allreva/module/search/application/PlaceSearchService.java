@@ -19,16 +19,12 @@ public class PlaceSearchService {
     private final PlaceSearchRepository placeSearchRepository;
 
     @Cacheable(
-        cacheNames = "placeMain",
-        key = "#address + '_' + #seatScale + '_' + #size + '_' + #cursorId",
-        unless = "#result == null",
-        cacheManager = "placeMainCacheManager"
-    )
+            cacheNames = "placeMain",
+            key = "#address + '_' + #seatScale + '_' + #size + '_' + #cursorId",
+            unless = "#result == null",
+            cacheManager = "placeMainCacheManager")
     public ConcertHallMainResponse searchMainPlaces(
-            final String address,
-            final int seatScale,
-            final String cursorId,
-            final int size) {
+            final String address, final int seatScale, final String cursorId, final int size) {
         ConcertHallMainResponse response = placeSearchRepository.searchMain(address, seatScale, cursorId, size);
         if (response.concertHallThumbnails().isEmpty()) {
             throw new CustomException(ConcertHallErrorCode.CONCERT_HALL_SEARCH_NOTFOUND);

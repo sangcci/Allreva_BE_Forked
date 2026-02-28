@@ -43,32 +43,26 @@ public class RentController {
 
     @PostMapping
     public Response<Long> createRent(
-            @RequestBody final RentRegisterRequest rentRegisterRequest,
-            @AuthMember final Member member) {
+            @RequestBody final RentRegisterRequest rentRegisterRequest, @AuthMember final Member member) {
         Long rentId = rentService.registerRent(rentRegisterRequest, member.getId());
         return Response.onSuccess(rentId);
     }
 
     @PatchMapping
     public Response<Void> updateRent(
-            @RequestBody final RentUpdateRequest rentUpdateRequest,
-            @AuthMember final Member member) {
+            @RequestBody final RentUpdateRequest rentUpdateRequest, @AuthMember final Member member) {
         rentService.updateRent(rentUpdateRequest, member.getId());
         return Response.onSuccess();
     }
 
     @PatchMapping("/close")
-    public Response<Void> closeRent(
-            @RequestBody final RentIdRequest rentIdRequest,
-            @AuthMember final Member member) {
+    public Response<Void> closeRent(@RequestBody final RentIdRequest rentIdRequest, @AuthMember final Member member) {
         rentService.closeRent(rentIdRequest, member.getId());
         return Response.onSuccess();
     }
 
     @DeleteMapping
-    public Response<Void> deleteRent(
-            @RequestBody final RentIdRequest rentIdRequest,
-            @AuthMember final Member member) {
+    public Response<Void> deleteRent(@RequestBody final RentIdRequest rentIdRequest, @AuthMember final Member member) {
         rentService.deleteRent(rentIdRequest, member.getId());
         return Response.onSuccess();
     }
@@ -98,14 +92,12 @@ public class RentController {
 
     @GetMapping("/{id}")
     public Response<RentDetailResponse> getRentDetailById(
-            @PathVariable final Long id,
-            @AuthMember final Member member) {
+            @PathVariable final Long id, @AuthMember final Member member) {
         return Response.onSuccess(rentService.getRentDetail(id, member));
     }
 
     @GetMapping("/{id}/deposit-account")
-    public Response<DepositAccountResponse> getDepositAccountById(
-            @PathVariable final Long id) {
+    public Response<DepositAccountResponse> getDepositAccountById(@PathVariable final Long id) {
         return Response.onSuccess(rentService.getDepositAccount(id));
     }
 
@@ -123,31 +115,27 @@ public class RentController {
 
     @PostMapping("/apply")
     public Response<Long> applyRent(
-            @RequestBody final RentJoinRequest rentJoinRequest,
-            @AuthMember final Member member) {
+            @RequestBody final RentJoinRequest rentJoinRequest, @AuthMember final Member member) {
         Long participantId = rentService.applyRent(rentJoinRequest, member.getId());
         return Response.onSuccess(participantId);
     }
 
     @PatchMapping("/apply")
     public Response<Void> updateRentJoin(
-            @RequestBody final RentJoinUpdateRequest rentJoinUpdateRequest,
-            @AuthMember final Member member) {
+            @RequestBody final RentJoinUpdateRequest rentJoinUpdateRequest, @AuthMember final Member member) {
         rentService.updateRentJoin(rentJoinUpdateRequest, member.getId());
         return Response.onSuccess();
     }
 
     @DeleteMapping("/apply")
     public Response<Void> cancelRentJoin(
-            @RequestBody final RentJoinIdRequest rentJoinIdRequest,
-            @AuthMember final Member member) {
+            @RequestBody final RentJoinIdRequest rentJoinIdRequest, @AuthMember final Member member) {
         rentService.cancelRentJoin(rentJoinIdRequest, member.getId());
         return Response.onSuccess();
     }
 
     @GetMapping("/join/list")
-    public Response<List<RentJoinResponse>> getRentJoinList(
-            @AuthMember final Member member) {
+    public Response<List<RentJoinResponse>> getRentJoinList(@AuthMember final Member member) {
         return Response.onSuccess(rentService.getRentJoinList(member.getId()));
     }
 }

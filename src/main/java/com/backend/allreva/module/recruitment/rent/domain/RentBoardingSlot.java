@@ -21,8 +21,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @Table(
         name = "rent_boarding_slots",
-        indexes = @Index(name = "idx_rent_boarding_slots_rent_date", columnList = "rent_id, date")
-)
+        indexes = @Index(name = "idx_rent_boarding_slots_rent_date", columnList = "rent_id, date"))
 @SQLDelete(sql = "UPDATE rent_boarding_slots SET deleted_at = NOW() WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -46,10 +45,7 @@ public class RentBoardingSlot extends BaseEntity {
     private int passengerCount = 0;
 
     @Builder
-    private RentBoardingSlot(
-            Long rentId,
-            LocalDate date,
-            int recruitmentCount) {
+    private RentBoardingSlot(Long rentId, LocalDate date, int recruitmentCount) {
         this.rentId = rentId;
         this.date = date;
         this.recruitmentCount = recruitmentCount;

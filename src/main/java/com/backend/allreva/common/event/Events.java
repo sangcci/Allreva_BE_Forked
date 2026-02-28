@@ -3,7 +3,6 @@ package com.backend.allreva.common.event;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.stereotype.Component;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Events {
@@ -19,5 +18,4 @@ public final class Events {
             publisher.publishEvent(event);
         }
     }
-
 }

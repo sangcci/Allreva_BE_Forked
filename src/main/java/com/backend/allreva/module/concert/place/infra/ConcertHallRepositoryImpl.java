@@ -2,10 +2,6 @@ package com.backend.allreva.module.concert.place.infra;
 
 import static com.backend.allreva.module.concert.place.domain.QConcertHall.concertHall;
 
-import java.util.Optional;
-
-import org.springframework.stereotype.Repository;
-
 import com.backend.allreva.module.concert.place.application.dto.ConcertHallDetailResponse;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
@@ -13,8 +9,9 @@ import com.backend.allreva.module.concert.place.infra.jpa.ConcertHallJpaReposito
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
@@ -45,19 +42,20 @@ public class ConcertHallRepositoryImpl implements ConcertHallRepository {
 
     @Override
     public ConcertHallDetailResponse findDetailByHallCode(final String hallCode) {
-        return queryFactory.select(hallDetailProjections())
+        return queryFactory
+                .select(hallDetailProjections())
                 .from(concertHall)
                 .where(concertHall.id.eq(hallCode))
                 .fetchFirst();
     }
 
     private static ConstructorExpression<ConcertHallDetailResponse> hallDetailProjections() {
-        return Projections.constructor(ConcertHallDetailResponse.class,
+        return Projections.constructor(
+                ConcertHallDetailResponse.class,
                 concertHall.name,
                 concertHall.seatScale,
                 concertHall.star,
                 concertHall.convenienceInfo,
-                concertHall.location
-        );
+                concertHall.location);
     }
 }

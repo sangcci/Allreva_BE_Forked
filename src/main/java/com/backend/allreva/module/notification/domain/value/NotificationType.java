@@ -1,9 +1,6 @@
 package com.backend.allreva.module.notification.domain.value;
 
-/**
- * 알림 타입
- * 각 모듈에서 발생하는 알림의 종류를 정의
- */
+/** 알림 타입 각 모듈에서 발생하는 알림의 종류를 정의 */
 public enum NotificationType {
 
     // 채팅 관련 알림

@@ -1,11 +1,10 @@
 package com.backend.allreva.module.review.concert_review.application.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
-import lombok.Getter;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Getter;
 
 @Getter
 public class SeatReviewResponse {
@@ -37,8 +36,7 @@ public class SeatReviewResponse {
             String profileImageUrl,
             String nickname,
             boolean isWriter,
-            String concertTitle
-    ) {
+            String concertTitle) {
         this.reviewId = reviewId;
         this.seat = seat;
         this.content = content;

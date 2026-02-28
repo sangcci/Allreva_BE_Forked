@@ -1,20 +1,19 @@
 package com.backend.allreva.module.concert.concert.application;
 
-import com.backend.allreva.module.concert.concert.infra.kopis.DateConverter;
-import com.backend.allreva.module.concert.place.infra.kopis.CsvUtil;
 import com.backend.allreva.module.concert.concert.application.port.ConcertDataSyncPort;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
+import com.backend.allreva.module.concert.concert.infra.kopis.DateConverter;
+import com.backend.allreva.module.concert.place.infra.kopis.CsvUtil;
+import java.time.LocalDate;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDate;
-import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -24,10 +23,7 @@ public class ConcertSyncScheduler {
     private final ConcertDataSyncPort concertDataSyncPort;
     private final ConcertRepository concertRepository;
 
-    /**
-     * 공연 정보 매일 동기화
-     * 매일 새벽 4시 실행
-     */
+    /** 공연 정보 매일 동기화 매일 새벽 4시 실행 */
     @Scheduled(cron = "0 0 4 * * *") // 매일 새벽 4시
     public void fetchDailyConcertInfoList() {
         try {
@@ -71,15 +67,15 @@ public class ConcertSyncScheduler {
 
     // 기존 공연 정보 업데이트
     private void updateConcert(Concert newConcert) {
-        Concert existingConcert = concertRepository.findByCodeConcertCode(newConcert.getCode().getConcertCode());
+        Concert existingConcert =
+                concertRepository.findByCodeConcertCode(newConcert.getCode().getConcertCode());
         existingConcert.updateFrom(
                 newConcert.getCode(),
                 newConcert.getConcertInfo(),
                 newConcert.getEpisodes(),
                 newConcert.getPoster(),
                 newConcert.getDetailImages(),
-                newConcert.getSellers()
-        );
+                newConcert.getSellers());
         concertRepository.save(existingConcert);
     }
 
@@ -87,6 +83,6 @@ public class ConcertSyncScheduler {
         YearMonth yearMonth = YearMonth.of(year, month);
         String startDate = DateConverter.convertToyyyyMMdd(yearMonth.atDay(1));
         String endDate = DateConverter.convertToyyyyMMdd(yearMonth.atEndOfMonth());
-        return new String[] { startDate, endDate };
+        return new String[] {startDate, endDate};
     }
 }

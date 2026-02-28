@@ -15,13 +15,7 @@ public interface SurveyParticipantRepository {
     void delete(SurveyParticipant participant);
 
     List<CreatedSurveyResponse> findCreatedSurveyList(
-            Long memberId,
-            Long lastId,
-            LocalDate lastBoardingDate,
-            int pageSize);
+            Long memberId, Long lastId, LocalDate lastBoardingDate, int pageSize);
 
-    List<JoinSurveyResponse> findJoinSurveyList(
-            Long memberId,
-            Long lastId,
-            int pageSize);
+    List<JoinSurveyResponse> findJoinSurveyList(Long memberId, Long lastId, int pageSize);
 }

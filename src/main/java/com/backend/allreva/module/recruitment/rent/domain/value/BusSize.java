@@ -6,5 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum BusSize {
-    LARGE, MEDIUM, MINI
+    LARGE,
+    MEDIUM,
+    MINI
 }

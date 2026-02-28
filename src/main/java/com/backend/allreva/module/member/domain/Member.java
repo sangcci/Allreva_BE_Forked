@@ -59,8 +59,7 @@ public class Member extends BaseEntity {
             final MemberRole memberRole,
             final String nickname,
             final String introduce,
-            final String profileImageUrl
-    ) {
+            final String profileImageUrl) {
         this.email = email;
         this.loginProvider = loginProvider;
         this.memberRole = memberRole;
@@ -71,11 +70,7 @@ public class Member extends BaseEntity {
                 .build();
     }
 
-    public void setMemberInfo(
-            final String nickname,
-            final String introduce,
-            final String profileImageUrl
-    ) {
+    public void setMemberInfo(final String nickname, final String introduce, final String profileImageUrl) {
         this.memberInfo = MemberInfo.builder()
                 .nickname(nickname)
                 .introduce(introduce)
@@ -83,20 +78,11 @@ public class Member extends BaseEntity {
                 .build();
     }
 
-    public void setRefundAccount(
-            final String bank,
-            final String number
-    ) {
-        this.refundAccount = RefundAccount.builder()
-                .bank(bank)
-                .number(number)
-                .build();
+    public void setRefundAccount(final String bank, final String number) {
+        this.refundAccount = RefundAccount.builder().bank(bank).number(number).build();
     }
 
     public void setDefaultRefundAccount() {
-        this.refundAccount = RefundAccount.builder()
-                .bank("")
-                .number("")
-                .build();
+        this.refundAccount = RefundAccount.builder().bank("").number("").build();
     }
 }

@@ -1,15 +1,13 @@
 package com.backend.allreva.module.notification.infra.fcm;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
-
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.notification.application.port.NotificationSender;
 import com.backend.allreva.module.notification.exception.NotificationErrorCode;
-
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
@@ -22,19 +20,13 @@ public class FcmSender implements NotificationSender {
     private String projectId;
 
     @Override
-    public void sendMessage(
-            final String target,
-            final String title,
-            final String message) {
+    public void sendMessage(final String target, final String title, final String message) {
         try {
             String accessToken = FcmTokenUtils.getAccessToken();
             String authorizationHeader = "Bearer " + accessToken;
             FcmMessage fcmMessage = FcmMessage.from(target, false, title, message);
 
-            fcmClient.sendMessage(
-                    authorizationHeader,
-                    fcmMessage,
-                    projectId);
+            fcmClient.sendMessage(authorizationHeader, fcmMessage, projectId);
 
             log.debug("FCM 메시지 전송 성공 - title: {}", title);
         } catch (CustomException e) {

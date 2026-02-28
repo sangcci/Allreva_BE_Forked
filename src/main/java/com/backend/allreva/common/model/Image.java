@@ -2,7 +2,6 @@ package com.backend.allreva.common.model;
 
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
-
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

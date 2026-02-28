@@ -1,10 +1,9 @@
 package com.backend.allreva.module.review.concert_review.domain;
 
-import java.util.List;
-import java.util.Optional;
-
 import com.backend.allreva.module.review.concert_review.application.dto.SeatReviewResponse;
 import com.backend.allreva.module.review.concert_review.application.dto.SeatReviewSearchCondition;
+import java.util.List;
+import java.util.Optional;
 
 public interface SeatReviewRepository {
 

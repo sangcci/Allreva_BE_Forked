@@ -16,9 +16,7 @@ public class ReviewFacade {
     private final ReviewService reviewService;
     private final ReviewImageService reviewImageService;
 
-    public Long createReview(
-            final ReviewCreateRequest request,
-            final Member member) {
+    public Long createReview(final ReviewCreateRequest request, final Member member) {
         Long seatReviewId = reviewService.createReview(request, member);
 
         reviewImageService.saveImageMetadata(seatReviewId, request.imageUrls());
@@ -26,9 +24,7 @@ public class ReviewFacade {
         return seatReviewId;
     }
 
-    public Long updateReview(
-            final ReviewUpdateRequest request,
-            final Member member) {
+    public Long updateReview(final ReviewUpdateRequest request, final Member member) {
         SeatReview seatReview = reviewService.updateReview(request, member);
 
         // 기존 이미지 삭제
@@ -40,9 +36,7 @@ public class ReviewFacade {
         return seatReview.getId();
     }
 
-    public void deleteReview(
-            final Long reviewId,
-            final Member member) {
+    public void deleteReview(final Long reviewId, final Member member) {
         reviewImageService.deleteImages(reviewId);
 
         reviewService.deleteReview(reviewId, member);

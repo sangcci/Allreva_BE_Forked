@@ -1,8 +1,20 @@
 package com.backend.allreva.module.review.concert_review.presentation;
 
+import com.backend.allreva.common.web.response.Response;
+import com.backend.allreva.module.auth.security.AuthMember;
+import com.backend.allreva.module.member.domain.Member;
+import com.backend.allreva.module.review.concert_review.application.ReviewFacade;
+import com.backend.allreva.module.review.concert_review.application.ReviewService;
+import com.backend.allreva.module.review.concert_review.application.dto.ReviewCreateRequest;
+import com.backend.allreva.module.review.concert_review.application.dto.ReviewUpdateRequest;
+import com.backend.allreva.module.review.concert_review.application.dto.SeatReviewResponse;
+import com.backend.allreva.module.review.concert_review.application.dto.SeatReviewSearchCondition;
+import com.backend.allreva.module.review.concert_review.application.dto.SortType;
+import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.List;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -11,21 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.backend.allreva.common.web.response.Response;
-import com.backend.allreva.module.member.domain.Member;
-import com.backend.allreva.module.auth.security.AuthMember;
-import com.backend.allreva.module.review.concert_review.application.ReviewFacade;
-import com.backend.allreva.module.review.concert_review.application.dto.ReviewCreateRequest;
-import com.backend.allreva.module.review.concert_review.application.dto.ReviewUpdateRequest;
-import com.backend.allreva.module.review.concert_review.application.ReviewService;
-import com.backend.allreva.module.review.concert_review.application.dto.SeatReviewResponse;
-import com.backend.allreva.module.review.concert_review.application.dto.SeatReviewSearchCondition;
-import com.backend.allreva.module.review.concert_review.application.dto.SortType;
-
-import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/seat-review")
@@ -39,26 +36,20 @@ public class SeatReviewController implements SeatReviewControllerSwagger {
     @Override
     @PostMapping
     public Response<Long> createSeatReview(
-            @RequestBody @Valid final ReviewCreateRequest request,
-            @AuthMember final Member member) {
-        return Response.onSuccess(
-                reviewFacade.createReview(request, member));
+            @RequestBody @Valid final ReviewCreateRequest request, @AuthMember final Member member) {
+        return Response.onSuccess(reviewFacade.createReview(request, member));
     }
 
     @Override
     @PatchMapping
     public Response<Long> updateSeatReview(
-            @RequestBody @Valid final ReviewUpdateRequest request,
-            @AuthMember final Member member) {
-        return Response.onSuccess(
-                reviewFacade.updateReview(request, member));
+            @RequestBody @Valid final ReviewUpdateRequest request, @AuthMember final Member member) {
+        return Response.onSuccess(reviewFacade.updateReview(request, member));
     }
 
     @Override
     @DeleteMapping
-    public Response<Void> deleteSeatReview(
-            @RequestParam final Long seatReviewId,
-            @AuthMember final Member member) {
+    public Response<Void> deleteSeatReview(@RequestParam final Long seatReviewId, @AuthMember final Member member) {
         reviewFacade.deleteReview(seatReviewId, member);
 
         return Response.onSuccess();
@@ -73,10 +64,9 @@ public class SeatReviewController implements SeatReviewControllerSwagger {
             @RequestParam(defaultValue = "CREATED_DESC") final SortType sortType,
             @RequestParam final String hallId,
             @AuthMember final Member member) {
-        SeatReviewSearchCondition condition = new SeatReviewSearchCondition(lastId, lastCreatedAt, size, sortType,
-                hallId, member.getId());
+        SeatReviewSearchCondition condition =
+                new SeatReviewSearchCondition(lastId, lastCreatedAt, size, sortType, hallId, member.getId());
         List<SeatReviewResponse> reviews = reviewService.getReviews(condition, member.getId());
         return Response.onSuccess(reviews);
     }
-
 }

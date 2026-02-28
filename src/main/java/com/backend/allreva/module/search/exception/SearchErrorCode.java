@@ -1,11 +1,9 @@
 package com.backend.allreva.module.search.exception;
 
-import org.springframework.http.HttpStatus;
-
 import com.backend.allreva.common.exception.ErrorCode;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
@@ -18,5 +16,4 @@ public enum SearchErrorCode implements ErrorCode {
     private final int status;
     private final String code;
     private final String message;
-
 }

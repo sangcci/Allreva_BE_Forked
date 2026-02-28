@@ -16,8 +16,6 @@ public class MultipartJacksonConverter extends AbstractJackson2HttpMessageConver
         return false;
     }
 
-
-
     @Override
     protected boolean canWrite(MediaType mediaType) {
         return false;

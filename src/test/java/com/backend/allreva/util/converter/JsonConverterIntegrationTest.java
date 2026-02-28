@@ -75,8 +75,7 @@ class JsonConverterIntegrationTest extends IntegrationTestSupport {
                 assertSoftly(softly -> {
                     softly.assertThat(loaded.getSellers())
                             .hasSize(concert.getSellers().size());
-                    softly.assertThat(loaded.getSellers())
-                            .containsExactlyInAnyOrderElementsOf(concert.getSellers());
+                    softly.assertThat(loaded.getSellers()).containsExactlyInAnyOrderElementsOf(concert.getSellers());
                 });
             }
         }

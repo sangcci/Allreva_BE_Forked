@@ -1,7 +1,6 @@
 package com.backend.allreva.module.auth.presentation;
 
 import com.backend.allreva.common.web.response.Response;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 

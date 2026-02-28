@@ -4,7 +4,6 @@ import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.exception.ErrorCode;
 import com.backend.allreva.common.exception.GlobalErrorCode;
 import com.backend.allreva.common.web.response.Response;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -30,7 +29,8 @@ public class CustomControllerAdvice {
         StringBuilder errorMessage = new StringBuilder();
 
         for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
-            errorMessage.append(fieldError.getField())
+            errorMessage
+                    .append(fieldError.getField())
                     .append(": ")
                     .append(fieldError.getDefaultMessage())
                     .append("\n");
@@ -44,7 +44,7 @@ public class CustomControllerAdvice {
     public ResponseEntity<?> handleException(Exception e) {
         log.error("unexpected error: {}", e.getMessage(), e);
         return ResponseEntity.status(GlobalErrorCode.SERVER_ERROR.getStatus())
-                .body(Response.onFailure(GlobalErrorCode.SERVER_ERROR.getCode(),
-                        GlobalErrorCode.SERVER_ERROR.getMessage()));
+                .body(Response.onFailure(
+                        GlobalErrorCode.SERVER_ERROR.getCode(), GlobalErrorCode.SERVER_ERROR.getMessage()));
     }
 }

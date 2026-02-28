@@ -1,15 +1,13 @@
 package com.backend.allreva.common.logging;
 
 import java.util.UUID;
-
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
-
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Aspect
@@ -19,12 +17,11 @@ public class LoggingAspect {
     private static final String TRACE_ID = "traceId";
     private static final String SPAN_ID = "spanId";
 
-    @Pointcut("execution(* com.backend.allreva..*Controller.*(..)) || " +
-            "execution(* com.backend.allreva..*Service.*(..)) || " +
-            "execution(* com.backend.allreva..*Repository.*(..)) || " +
-            "execution(* com.backend.allreva..*Scheduler.*(..))")
-    public void applicationLayer() {
-    }
+    @Pointcut("execution(* com.backend.allreva..*Controller.*(..)) || "
+            + "execution(* com.backend.allreva..*Service.*(..)) || "
+            + "execution(* com.backend.allreva..*Repository.*(..)) || "
+            + "execution(* com.backend.allreva..*Scheduler.*(..))")
+    public void applicationLayer() {}
 
     @Around("applicationLayer()")
     public Object logExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {

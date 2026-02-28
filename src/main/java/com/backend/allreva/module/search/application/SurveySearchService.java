@@ -5,10 +5,9 @@ import com.backend.allreva.module.search.application.dto.SurveySearchListRespons
 import com.backend.allreva.module.search.application.dto.SurveyThumbnail;
 import com.backend.allreva.module.search.application.port.SurveySearchRepository;
 import com.backend.allreva.module.search.exception.SearchErrorCode;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,8 +22,7 @@ public class SurveySearchService {
         return thumbnails;
     }
 
-    public SurveySearchListResponse searchSurveyList(
-            final String title, final Long cursorId, final int size) {
+    public SurveySearchListResponse searchSurveyList(final String title, final Long cursorId, final int size) {
         SurveySearchListResponse response = surveySearchRepository.searchByTitle(title, cursorId, size);
         if (response.surveyThumbnails().isEmpty()) {
             throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);

@@ -12,8 +12,6 @@ public class FixedClockConfig {
     @Bean
     public Clock clock() {
         return Clock.fixed(
-                LocalDate.of(2024, 9, 1).atStartOfDay(ZoneId.systemDefault()).toInstant(),
-                ZoneId.systemDefault()
-        );
+                LocalDate.of(2024, 9, 1).atStartOfDay(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
     }
 }

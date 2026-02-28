@@ -1,13 +1,12 @@
 package com.backend.allreva.module.notification.infra;
 
+import com.backend.allreva.module.notification.domain.Notification;
 import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-
-import com.backend.allreva.module.notification.domain.Notification;
 
 @Repository
 @RequiredArgsConstructor

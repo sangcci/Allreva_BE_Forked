@@ -16,7 +16,7 @@ public interface NotificationTargetStorage {
      * 회원의 알림 대상 식별자 저장
      *
      * @param memberId 회원 ID
-     * @param target   알림 대상 식별자 (FCM Token, APNS Token 등)
+     * @param target 알림 대상 식별자 (FCM Token, APNS Token 등)
      */
     void save(Long memberId, String target);
 

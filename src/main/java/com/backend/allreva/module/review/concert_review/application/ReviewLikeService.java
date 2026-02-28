@@ -1,11 +1,11 @@
 package com.backend.allreva.module.review.concert_review.application;
 
+import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.review.concert_review.application.dto.ReviewLikeRequest;
 import com.backend.allreva.module.review.concert_review.domain.SeatReviewLike;
-import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.module.review.concert_review.exception.ReviewErrorCode;
 import com.backend.allreva.module.review.concert_review.domain.SeatReviewLikeRepository;
+import com.backend.allreva.module.review.concert_review.exception.ReviewErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,32 +16,26 @@ import org.springframework.transaction.annotation.Transactional;
 public class ReviewLikeService {
     private final SeatReviewLikeRepository seatReviewLikeRepository;
 
-    public Long increaseReviewLike(
-            final ReviewLikeRequest request,
-            final Member member) {
+    public Long increaseReviewLike(final ReviewLikeRequest request, final Member member) {
         if (checkMemberLike(request.reviewId(), member.getId())) {
             throw new CustomException(ReviewErrorCode.DUPLICATE_LIKE);
         }
 
-        SeatReviewLike seatReviewLike = seatReviewLikeRepository.save(
-                SeatReviewLike.builder()
-                        .reviewId(request.reviewId())
-                        .memberId(member.getId())
-                        .build());
+        SeatReviewLike seatReviewLike = seatReviewLikeRepository.save(SeatReviewLike.builder()
+                .reviewId(request.reviewId())
+                .memberId(member.getId())
+                .build());
 
         return seatReviewLike.getId();
     }
 
     /**
-     * BUGFIX: Fixed inverted condition and incorrect delete method
-     * - Before: if (checkMemberLike) throw error (inverted logic)
-     * - After: if (!checkMemberLike) throw error (correct logic)
-     * - Before: deleteById(seatReviewId) (deletes wrong entity)
-     * - After: find entity by reviewId and memberId, then delete (correct)
+     * BUGFIX: Fixed inverted condition and incorrect delete method - Before: if (checkMemberLike)
+     * throw error (inverted logic) - After: if (!checkMemberLike) throw error (correct logic) -
+     * Before: deleteById(seatReviewId) (deletes wrong entity) - After: find entity by reviewId and
+     * memberId, then delete (correct)
      */
-    public void cancelReviewLike(
-            final Long reviewId,
-            final Member member) {
+    public void cancelReviewLike(final Long reviewId, final Member member) {
         // FIX 1: Inverted condition - should check if NOT liked
         if (!checkMemberLike(reviewId, member.getId())) {
             throw new CustomException(ReviewErrorCode.NOT_LIKE_MEMBER);
@@ -55,9 +49,7 @@ public class ReviewLikeService {
         seatReviewLikeRepository.delete(like);
     }
 
-    private boolean checkMemberLike(
-            final Long seatReviewId,
-            final Long memberId) {
+    private boolean checkMemberLike(final Long seatReviewId, final Long memberId) {
         return seatReviewLikeRepository.existsByReviewIdAndMemberId(seatReviewId, memberId);
     }
 }

@@ -1,20 +1,19 @@
 package com.backend.allreva.module.search.infra.postgresql;
 
+import com.backend.allreva.module.recruitment.rent.domain.QRent;
 import com.backend.allreva.module.search.application.dto.RentSearchListResponse;
 import com.backend.allreva.module.search.application.dto.RentThumbnail;
 import com.backend.allreva.module.search.application.port.RentSearchRepository;
-import com.backend.allreva.module.recruitment.rent.domain.QRent;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
-
-import java.time.LocalDate;
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -30,32 +29,23 @@ public class RentSearchRepositoryImpl implements RentSearchRepository {
     }
 
     @Override
-    public RentSearchListResponse searchByTitle(
-            final String query, final Long cursorId, final int pageSize) {
+    public RentSearchListResponse searchByTitle(final String query, final Long cursorId, final int pageSize) {
         BooleanExpression notExpired = rent.endDate.goe(LocalDate.now());
         BooleanExpression titleMatch = titleMatchCondition(query);
         BooleanExpression cursor = cursorId != null ? rent.id.lt(cursorId) : null;
 
-        List<RentThumbnail> results = fetchRents(
-                titleMatch != null ? titleMatch.and(notExpired) : notExpired,
-                cursor,
-                pageSize + 1);
+        List<RentThumbnail> results =
+                fetchRents(titleMatch != null ? titleMatch.and(notExpired) : notExpired, cursor, pageSize + 1);
 
-        Long nextCursorId = results.size() > pageSize
-                ? results.get(pageSize - 1).id()
-                : null;
+        Long nextCursorId =
+                results.size() > pageSize ? results.get(pageSize - 1).id() : null;
         return RentSearchListResponse.from(results.stream().limit(pageSize).toList(), nextCursorId);
     }
 
-    private List<RentThumbnail> fetchRents(
-            BooleanExpression condition, BooleanExpression cursor, int fetchSize) {
+    private List<RentThumbnail> fetchRents(BooleanExpression condition, BooleanExpression cursor, int fetchSize) {
         return queryFactory
-                .select(Projections.constructor(RentThumbnail.class,
-                        rent.id,
-                        rent.title,
-                        rent.boardingArea,
-                        rent.image.url,
-                        rent.endDate))
+                .select(Projections.constructor(
+                        RentThumbnail.class, rent.id, rent.title, rent.boardingArea, rent.image.url, rent.endDate))
                 .from(rent)
                 .where(condition, cursor)
                 .orderBy(rent.id.desc())
@@ -65,10 +55,9 @@ public class RentSearchRepositoryImpl implements RentSearchRepository {
 
     private BooleanExpression titleMatchCondition(final String query) {
         if (!StringUtils.hasText(query)) return null;
-        NumberTemplate<Double> sim = Expressions.numberTemplate(Double.class,
-                "similarity({0}, {1})", rent.title, query);
-        BooleanExpression ilike = Expressions.booleanTemplate("({0} ilike {1})",
-                rent.title, "%" + query + "%");
+        NumberTemplate<Double> sim =
+                Expressions.numberTemplate(Double.class, "similarity({0}, {1})", rent.title, query);
+        BooleanExpression ilike = Expressions.booleanTemplate("({0} ilike {1})", rent.title, "%" + query + "%");
         return sim.gt(SIMILARITY_THRESHOLD).or(ilike);
     }
 }

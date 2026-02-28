@@ -14,19 +14,25 @@ public class ConvenienceInfo {
 
     @Column(name = "parking")
     private boolean hasParkingLot;
+
     @Column(name = "restaurant")
     private boolean hasRestaurant;
+
     @Column(name = "cafe")
     private boolean hasCafe;
+
     @Column(name = "store")
     private boolean hasStore;
 
     @Column(name = "park_barrier")
     private boolean hasDisabledParking;
+
     @Column(name = "rest_barrier")
     private boolean hasDisabledToilet;
+
     @Column(name = "elev_barrier")
     private boolean hasElevator;
+
     @Column(name = "runw_barrier")
     private boolean hasRunway;
 
@@ -39,8 +45,7 @@ public class ConvenienceInfo {
             final boolean hasDisabledParking,
             final boolean hasDisabledToilet,
             final boolean hasElevator,
-            final boolean hasRunway
-    ) {
+            final boolean hasRunway) {
         this.hasParkingLot = hasParkingLot;
         this.hasRestaurant = hasRestaurant;
         this.hasCafe = hasCafe;

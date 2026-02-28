@@ -2,6 +2,7 @@ package com.backend.allreva.module.search.integration;
 
 import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createConcertHall;
 import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createTestConcertHall;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.backend.allreva.module.concert.place.application.dto.ConcertHallMainResponse;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
@@ -13,8 +14,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @Slf4j
 @SuppressWarnings("NonAsciiCharacters")
@@ -50,8 +49,7 @@ class PlaceSearchServiceTest extends IntegrationTestSupport {
                 int size = 10;
 
                 // when
-                ConcertHallMainResponse result = placeSearchService.searchMainPlaces(
-                        address, seatScale, null, size);
+                ConcertHallMainResponse result = placeSearchService.searchMainPlaces(address, seatScale, null, size);
 
                 // then
                 assertSoftly(softly -> {
@@ -75,15 +73,13 @@ class PlaceSearchServiceTest extends IntegrationTestSupport {
                 int size = 10;
 
                 // when
-                ConcertHallMainResponse result = placeSearchService.searchMainPlaces(
-                        address, seatScale, null, size);
+                ConcertHallMainResponse result = placeSearchService.searchMainPlaces(address, seatScale, null, size);
 
                 // then
                 assertSoftly(softly -> {
                     softly.assertThat(result).isNotNull();
                     softly.assertThat(result.concertHallThumbnails()).isNotEmpty();
-                    softly.assertThat(result.concertHallThumbnails())
-                            .allMatch(hall -> hall.seatScale() >= seatScale);
+                    softly.assertThat(result.concertHallThumbnails()).allMatch(hall -> hall.seatScale() >= seatScale);
                 });
             }
         }
@@ -104,8 +100,7 @@ class PlaceSearchServiceTest extends IntegrationTestSupport {
                 int pageSize = 2;
 
                 // when - 첫 페이지 조회
-                ConcertHallMainResponse page1 = placeSearchService.searchMainPlaces(
-                        address, seatScale, null, pageSize);
+                ConcertHallMainResponse page1 = placeSearchService.searchMainPlaces(address, seatScale, null, pageSize);
 
                 // then
                 assertSoftly(softly -> {
@@ -114,14 +109,13 @@ class PlaceSearchServiceTest extends IntegrationTestSupport {
                 });
 
                 // when - 두 번째 페이지 조회
-                ConcertHallMainResponse page2 = placeSearchService.searchMainPlaces(
-                        address, seatScale, page1.nextCursorId(), pageSize);
+                ConcertHallMainResponse page2 =
+                        placeSearchService.searchMainPlaces(address, seatScale, page1.nextCursorId(), pageSize);
 
                 // then
                 assertSoftly(softly -> {
                     softly.assertThat(page2.concertHallThumbnails()).hasSize(2);
-                    softly.assertThat(page2.concertHallThumbnails())
-                            .isNotEqualTo(page1.concertHallThumbnails());
+                    softly.assertThat(page2.concertHallThumbnails()).isNotEqualTo(page1.concertHallThumbnails());
                 });
             }
         }

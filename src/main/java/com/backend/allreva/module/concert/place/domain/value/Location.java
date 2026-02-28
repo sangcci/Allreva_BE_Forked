@@ -16,11 +16,7 @@ public class Location {
     private String address;
 
     @Builder
-    private Location(
-            final Double longitude,
-            final Double latitude,
-            final String address
-    ) {
+    private Location(final Double longitude, final Double latitude, final String address) {
         this.longitude = longitude;
         this.latitude = latitude;
         this.address = address;

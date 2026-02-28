@@ -1,10 +1,14 @@
 package com.backend.allreva.module.search.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+
 import com.backend.allreva.module.search.application.PopularKeywordService;
 import com.backend.allreva.module.search.application.dto.ChangeStatus;
 import com.backend.allreva.module.search.application.dto.PopularKeywordResponse;
 import com.backend.allreva.module.search.application.dto.PopularKeywordResponses;
 import com.backend.allreva.support.IntegrationTestSupport;
+import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,11 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.ZSetOperations;
-
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayName("인기 검색어 통합 테스트")
@@ -119,8 +118,7 @@ class PopularKeywordCommandTest extends IntegrationTestSupport {
                                 .rank(3)
                                 .keyword("아이유")
                                 .changeStatus(ChangeStatus.STAY)
-                                .build()
-                );
+                                .build());
                 valueOperations.set(POPULAR_KEYWORD_KEY, new PopularKeywordResponses(keywordRankList));
 
                 // given - 검색 카운트 변경
@@ -197,4 +195,3 @@ class PopularKeywordCommandTest extends IntegrationTestSupport {
         }
     }
 }
-

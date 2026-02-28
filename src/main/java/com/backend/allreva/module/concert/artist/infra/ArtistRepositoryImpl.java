@@ -1,15 +1,12 @@
 package com.backend.allreva.module.concert.artist.infra;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.stereotype.Repository;
-
 import com.backend.allreva.module.concert.artist.domain.Artist;
 import com.backend.allreva.module.concert.artist.domain.ArtistRepository;
 import com.backend.allreva.module.concert.artist.infra.jpa.ArtistJpaRepository;
-
+import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor

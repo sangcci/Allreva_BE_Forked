@@ -2,12 +2,11 @@ package com.backend.allreva.module.notification.domain.event;
 
 import com.backend.allreva.common.event.Event;
 import com.backend.allreva.module.notification.domain.value.NotificationType;
-import lombok.Builder;
-import lombok.Getter;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lombok.Builder;
+import lombok.Getter;
 
 @Getter
 @Builder

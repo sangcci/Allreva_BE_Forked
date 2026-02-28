@@ -1,6 +1,7 @@
 package com.backend.allreva.module.concert.place.integration;
 
 import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createTestConcertHall;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.backend.allreva.module.concert.place.application.HallService;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
@@ -11,9 +12,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayName("Hall 통합 테스트")
@@ -173,8 +171,7 @@ class HallIntegrationTest extends IntegrationTestSupport {
                 // when - 동시에 5점 리뷰 10개 추가 시도
                 Thread[] threads = new Thread[10];
                 for (int i = 0; i < 10; i++) {
-                    threads[i] = new Thread(() ->
-                            hallService.updateConcertHallStar(hallId, 5, 1));
+                    threads[i] = new Thread(() -> hallService.updateConcertHallStar(hallId, 5, 1));
                     threads[i].start();
                 }
 

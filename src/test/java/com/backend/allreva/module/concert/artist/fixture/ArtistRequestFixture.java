@@ -1,10 +1,9 @@
 package com.backend.allreva.module.concert.artist.fixture;
 
 import com.backend.allreva.module.concert.artist.application.dto.ArtistCreateRequest;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ArtistRequestFixture {
@@ -21,7 +20,6 @@ public final class ArtistRequestFixture {
         return List.of(
                 new ArtistCreateRequest("artist-1", "아티스트1"),
                 new ArtistCreateRequest("artist-2", "아티스트2"),
-                new ArtistCreateRequest("artist-3", "아티스트3")
-        );
+                new ArtistCreateRequest("artist-3", "아티스트3"));
     }
 }

@@ -40,9 +40,7 @@ public abstract class AbstractJsonSetConverter<T> implements AttributeConverter<
         }
         try {
             return OBJECT_MAPPER.readValue(
-                    json,
-                    OBJECT_MAPPER.getTypeFactory().constructCollectionType(Set.class, elementType)
-            );
+                    json, OBJECT_MAPPER.getTypeFactory().constructCollectionType(Set.class, elementType));
         } catch (JsonProcessingException e) {
             throw new RuntimeException("JSON을 Set으로 변환하는 데 실패했습니다.", e);
         }

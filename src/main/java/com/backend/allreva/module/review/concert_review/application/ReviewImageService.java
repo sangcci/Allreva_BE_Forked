@@ -1,20 +1,17 @@
 package com.backend.allreva.module.review.concert_review.application;
 
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.common.model.Image;
+import com.backend.allreva.common.storage.upload.StorageUploadService;
+import com.backend.allreva.module.review.concert_review.domain.SeatReviewImage;
+import com.backend.allreva.module.review.concert_review.domain.SeatReviewImageRepository;
+import com.backend.allreva.module.review.concert_review.exception.ReviewErrorCode;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import org.springframework.stereotype.Service;
-
-import com.backend.allreva.common.model.Image;
-import com.backend.allreva.common.storage.upload.StorageUploadService;
-import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.module.review.concert_review.domain.SeatReviewImage;
-import com.backend.allreva.module.review.concert_review.exception.ReviewErrorCode;
-import com.backend.allreva.module.review.concert_review.domain.SeatReviewImageRepository;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
@@ -47,9 +44,7 @@ public class ReviewImageService {
             return;
         }
 
-        List<String> imageUrls = images.stream()
-                .map(SeatReviewImage::getUrl)
-                .collect(Collectors.toList());
+        List<String> imageUrls = images.stream().map(SeatReviewImage::getUrl).collect(Collectors.toList());
 
         try {
             storageUploadService.deleteImages(imageUrls);

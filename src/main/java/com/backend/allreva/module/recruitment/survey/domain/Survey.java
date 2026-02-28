@@ -110,8 +110,7 @@ public class Survey extends BaseEntity {
     }
 
     public void containsBoardingDate(final LocalDate boardingDate) {
-        boolean contain = this.boardingDates.stream()
-                .noneMatch(bd -> bd.equals(boardingDate));
+        boolean contain = this.boardingDates.stream().noneMatch(bd -> bd.equals(boardingDate));
         if (contain) {
             throw new CustomException(SurveyErrorCode.SURVEY_INVALID_BOARDING_DATE);
         }

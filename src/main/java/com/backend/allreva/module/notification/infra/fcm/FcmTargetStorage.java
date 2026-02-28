@@ -1,13 +1,10 @@
 package com.backend.allreva.module.notification.infra.fcm;
 
+import com.backend.allreva.module.notification.application.port.NotificationTargetStorage;
 import java.util.List;
-
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
-
-import com.backend.allreva.module.notification.application.port.NotificationTargetStorage;
-
-import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
@@ -17,9 +14,7 @@ public class FcmTargetStorage implements NotificationTargetStorage {
 
     @Override
     public List<String> findTargetsByMemberIds(List<Long> memberIds) {
-        List<String> keys = memberIds.stream()
-                .map(this::buildRedisKey)
-                .toList();
+        List<String> keys = memberIds.stream().map(this::buildRedisKey).toList();
         return redisTemplate.opsForValue().multiGet(keys);
     }
 

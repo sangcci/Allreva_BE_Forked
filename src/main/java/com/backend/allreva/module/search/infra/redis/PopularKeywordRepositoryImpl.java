@@ -3,14 +3,13 @@ package com.backend.allreva.module.search.infra.redis;
 import com.backend.allreva.module.search.application.dto.PopularKeywordResponses;
 import com.backend.allreva.module.search.application.port.PopularKeywordRepository;
 import jakarta.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Repository;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 @Repository
 @RequiredArgsConstructor
@@ -23,7 +22,6 @@ public class PopularKeywordRepositoryImpl implements PopularKeywordRepository {
 
     @Resource(name = "redisTemplate")
     private ValueOperations<String, Object> valueOperations;
-
 
     @Override
     public PopularKeywordResponses getPopularKeywordRank() {

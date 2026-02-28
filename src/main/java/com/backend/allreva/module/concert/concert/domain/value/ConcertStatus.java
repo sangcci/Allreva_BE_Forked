@@ -2,7 +2,6 @@ package com.backend.allreva.module.concert.concert.domain.value;
 
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.concert.concert.exception.ConcertErrorCode;
-
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

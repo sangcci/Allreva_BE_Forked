@@ -1,5 +1,7 @@
 package com.backend.allreva.module.search.integration;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.search.application.RentSearchService;
 import com.backend.allreva.support.IntegrationTestSupport;
@@ -8,8 +10,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @Slf4j
 @SuppressWarnings("NonAsciiCharacters")

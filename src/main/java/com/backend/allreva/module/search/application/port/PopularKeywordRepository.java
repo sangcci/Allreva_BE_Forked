@@ -1,7 +1,6 @@
 package com.backend.allreva.module.search.application.port;
 
 import com.backend.allreva.module.search.application.dto.PopularKeywordResponses;
-
 import java.util.List;
 
 public interface PopularKeywordRepository {

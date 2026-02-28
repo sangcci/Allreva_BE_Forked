@@ -1,12 +1,10 @@
 package com.backend.allreva.module.concert.artist.presentation;
 
-import java.util.List;
-
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.module.concert.artist.application.dto.ArtistSearchResponse;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 
 @Tag(name = "아티스트 API", description = "아티스트 API")
 public interface ArtistControllerSwagger {

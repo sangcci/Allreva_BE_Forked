@@ -1,18 +1,15 @@
 package com.backend.allreva.common.storage.presigned;
 
-import java.time.Duration;
-import java.util.UUID;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.storage.exception.StorageErrorCode;
 import com.backend.allreva.common.storage.presigned.dto.PresignedUrlRequest;
 import com.backend.allreva.module.member.domain.Member;
-
+import java.time.Duration;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -37,16 +34,14 @@ public class PresignedUrlService {
      * 파일 업로드를 위한 Presigned URL 생성
      *
      * @param request 파일명과 파일 타입 정보
-     * @param member  업로드하는 회원 정보 (null 가능)
+     * @param member 업로드하는 회원 정보 (null 가능)
      * @return Presigned PUT URL
      */
     public String generateUploadUrl(final PresignedUrlRequest request, final Member member) {
         String objectKey = buildObjectKey(request, member);
 
-        PutObjectRequest objectRequest = PutObjectRequest.builder()
-                .bucket(bucket)
-                .key(objectKey)
-                .build();
+        PutObjectRequest objectRequest =
+                PutObjectRequest.builder().bucket(bucket).key(objectKey).build();
 
         PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
                 .signatureDuration(Duration.ofMinutes(URL_EXPIRATION_MINUTES))
@@ -72,10 +67,8 @@ public class PresignedUrlService {
     public String generateDeleteUrl(final String fileUrl) {
         String objectKey = extractObjectKeyFromUrl(fileUrl);
 
-        DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
-                .bucket(bucket)
-                .key(objectKey)
-                .build();
+        DeleteObjectRequest deleteRequest =
+                DeleteObjectRequest.builder().bucket(bucket).key(objectKey).build();
 
         DeleteObjectPresignRequest presignDeleteRequest = DeleteObjectPresignRequest.builder()
                 .signatureDuration(Duration.ofMinutes(URL_EXPIRATION_MINUTES))
@@ -94,27 +87,22 @@ public class PresignedUrlService {
     /**
      * S3 객체 키 생성
      *
-     * 경로 구조: [닉네임/]파일타입/UUID_파일명
-     * 예: john/PROFILE/a1b2c3d4_profile.jpg
+     * <p>경로 구조: [닉네임/]파일타입/UUID_파일명 예: john/PROFILE/a1b2c3d4_profile.jpg
      */
     private String buildObjectKey(final PresignedUrlRequest request, final Member member) {
         StringBuilder keyBuilder = new StringBuilder();
 
         // 회원이 있으면 닉네임 폴더 추가
         if (member != null) {
-            keyBuilder.append(member.getMemberInfo().getNickname())
-                    .append("/");
+            keyBuilder.append(member.getMemberInfo().getNickname()).append("/");
         }
 
         // 파일 타입 폴더 추가
-        keyBuilder.append(request.fileType().toString())
-                .append("/");
+        keyBuilder.append(request.fileType().toString()).append("/");
 
         // UUID와 파일명 추가 (하이픈 제거)
         String uuid = UUID.randomUUID().toString().replaceAll("-", "");
-        keyBuilder.append(uuid)
-                .append("_")
-                .append(request.fileName());
+        keyBuilder.append(uuid).append("_").append(request.fileName());
 
         return keyBuilder.toString();
     }

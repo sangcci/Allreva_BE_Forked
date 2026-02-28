@@ -1,8 +1,8 @@
 package com.backend.allreva.module.recruitment.rent.domain;
 
 import com.backend.allreva.common.event.Events;
-import com.backend.allreva.common.model.BaseEntity;
 import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.common.model.BaseEntity;
 import com.backend.allreva.module.recruitment.rent.domain.event.RentClosedEvent;
 import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
 import jakarta.persistence.Column;
@@ -27,9 +27,9 @@ import org.hibernate.annotations.SQLRestriction;
 @SQLRestriction("deleted_at is NULL")
 @SQLDelete(sql = "UPDATE rent_boarding_info SET deleted_at = NOW() WHERE id = ?")
 @Entity
-@Table(name = "rent_boarding_info", indexes = {
-        @Index(name = "idx_rent_boarding_info_rent_date", columnList = "rent_id, date")
-})
+@Table(
+        name = "rent_boarding_info",
+        indexes = {@Index(name = "idx_rent_boarding_info_rent_date", columnList = "rent_id, date")})
 public class RentBoardingInfo extends BaseEntity {
 
     @Id
@@ -49,10 +49,7 @@ public class RentBoardingInfo extends BaseEntity {
     private int passengerCount;
 
     @Builder
-    private RentBoardingInfo(
-            Rent rent,
-            LocalDate date,
-            int recruitmentCount) {
+    private RentBoardingInfo(Rent rent, LocalDate date, int recruitmentCount) {
         this.rent = rent;
         this.date = date;
         this.recruitmentCount = recruitmentCount;

@@ -5,10 +5,9 @@ import com.backend.allreva.module.member.application.dto.MemberArtistRequest;
 import com.backend.allreva.module.member.application.dto.MemberRegisterRequest;
 import com.backend.allreva.module.member.application.dto.RefundAccountRequest;
 import com.backend.allreva.module.member.domain.value.LoginProvider;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MemberRequestFixture {

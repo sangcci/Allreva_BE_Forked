@@ -1,5 +1,11 @@
 package com.backend.allreva.module.concert.artist.application;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
+
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.concert.artist.application.dto.ArtistCreateRequest;
 import com.backend.allreva.module.concert.artist.domain.Artist;
@@ -7,6 +13,8 @@ import com.backend.allreva.module.concert.artist.domain.ArtistRepository;
 import com.backend.allreva.module.concert.artist.exception.ArtistErrorCode;
 import com.backend.allreva.module.concert.artist.fixture.ArtistFixture;
 import com.backend.allreva.module.concert.artist.fixture.ArtistRequestFixture;
+import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -14,15 +22,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("NonAsciiCharacters")
@@ -48,9 +47,8 @@ class ArtistServiceTest {
             void 모든_아티스트가_저장된다() {
                 // given
                 List<ArtistCreateRequest> requests = ArtistRequestFixture.createArtistCreateRequests();
-                List<String> artistIds = requests.stream()
-                        .map(ArtistCreateRequest::artistId)
-                        .toList();
+                List<String> artistIds =
+                        requests.stream().map(ArtistCreateRequest::artistId).toList();
 
                 given(artistRepository.findAllById(artistIds)).willReturn(List.of());
                 given(artistRepository.saveAll(anyList())).willAnswer(invocation -> invocation.getArgument(0));
@@ -78,8 +76,7 @@ class ArtistServiceTest {
                 List<ArtistCreateRequest> requests = List.of(
                         ArtistRequestFixture.createArtistCreateRequest("artist-1", "아티스트1"),
                         ArtistRequestFixture.createArtistCreateRequest("artist-2", "아티스트2"),
-                        ArtistRequestFixture.createArtistCreateRequest("artist-3", "아티스트3")
-                );
+                        ArtistRequestFixture.createArtistCreateRequest("artist-3", "아티스트3"));
                 List<String> artistIds = List.of("artist-1", "artist-2", "artist-3");
 
                 // artist-1은 이미 존재
@@ -94,8 +91,9 @@ class ArtistServiceTest {
                 verify(artistRepository, times(1)).findAllById(artistIds);
                 verify(artistRepository, times(1)).saveAll(argThat(artists -> {
                     List<Artist> artistList = (List<Artist>) artists;
-                    return artistList.size() == 2 &&
-                            artistList.stream().noneMatch(artist -> artist.getId().equals("artist-1"));
+                    return artistList.size() == 2
+                            && artistList.stream()
+                                    .noneMatch(artist -> artist.getId().equals("artist-1"));
                 }));
             }
         }
@@ -110,14 +108,12 @@ class ArtistServiceTest {
                 // given
                 List<ArtistCreateRequest> requests = List.of(
                         ArtistRequestFixture.createArtistCreateRequest("artist-1", "아티스트1"),
-                        ArtistRequestFixture.createArtistCreateRequest("artist-2", "아티스트2")
-                );
+                        ArtistRequestFixture.createArtistCreateRequest("artist-2", "아티스트2"));
                 List<String> artistIds = List.of("artist-1", "artist-2");
 
                 List<Artist> existingArtists = List.of(
                         ArtistFixture.createArtist("artist-1", "아티스트1"),
-                        ArtistFixture.createArtist("artist-2", "아티스트2")
-                );
+                        ArtistFixture.createArtist("artist-2", "아티스트2"));
                 given(artistRepository.findAllById(artistIds)).willReturn(existingArtists);
 
                 // when

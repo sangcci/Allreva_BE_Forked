@@ -7,12 +7,11 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import java.text.MessageFormat;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
 
 @Configuration
 @RequiredArgsConstructor
@@ -20,6 +19,7 @@ public class SwaggerConfig {
 
     @Value("${url.back.protocol}")
     private String protocol;
+
     @Value("${url.back.domain}")
     private String domain;
 
@@ -33,8 +33,7 @@ public class SwaggerConfig {
         return new OpenAPI()
                 .info(new Info().title("Allreva"))
                 .servers(List.of(server1))
-                .components(new Components()
-                        .addSecuritySchemes("USER", createSecurityScheme()))
+                .components(new Components().addSecuritySchemes("USER", createSecurityScheme()))
                 .addSecurityItem(developerRequirement);
     }
 

@@ -4,13 +4,12 @@ import com.backend.allreva.module.search.application.dto.ChangeStatus;
 import com.backend.allreva.module.search.application.dto.PopularKeywordResponse;
 import com.backend.allreva.module.search.application.dto.PopularKeywordResponses;
 import com.backend.allreva.module.search.application.port.PopularKeywordRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor

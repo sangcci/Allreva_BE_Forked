@@ -20,47 +20,30 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record RentRegisterRequest(
-        @NotNull
-        Long concertId,
-        @NotBlank
-        String title,
-        @NotNull
-        String artistName,
-        @NotNull
-        Region region,
-        @NotNull
-        String depositAccount,
-        @NotNull
-        String boardingArea,
-        @NotNull
-        String upTime,
-        @NotNull
-        String downTime,
-        @NotEmpty(message = "날짜는 하루 이상 선택되어야 합니다.")
-        @JsonProperty("boardingDates")
+        @NotNull Long concertId,
+        @NotBlank String title,
+        @NotNull String artistName,
+        @NotNull Region region,
+        @NotNull String depositAccount,
+        @NotNull String boardingArea,
+        @NotNull String upTime,
+        @NotNull String downTime,
+
+        @NotEmpty(message = "날짜는 하루 이상 선택되어야 합니다.") @JsonProperty("boardingDates")
         List<LocalDate> rentBoardingDateRequests,
-        @NotNull
-        BusSize busSize,
-        @NotNull
-        BusType busType,
-        @Min(value = 1, message = "탑승 인원 수는 1명 이상이어야 합니다.")
-        int maxPassenger,
-        @PositiveOrZero
-        int roundPrice,
-        @PositiveOrZero
-        int upTimePrice,
-        @PositiveOrZero
-        int downTimePrice,
-        @Min(value = 1, message = "모집 인원 수는 1명 이상이어야 합니다.")
-        int recruitmentCount,
-        @FutureOrPresent(message = "마감 기한은 과거일 수 없습니다.")
-        LocalDate endDate,
+
+        @NotNull BusSize busSize,
+        @NotNull BusType busType,
+        @Min(value = 1, message = "탑승 인원 수는 1명 이상이어야 합니다.") int maxPassenger,
+        @PositiveOrZero int roundPrice,
+        @PositiveOrZero int upTimePrice,
+        @PositiveOrZero int downTimePrice,
+        @Min(value = 1, message = "모집 인원 수는 1명 이상이어야 합니다.") int recruitmentCount,
+        @FutureOrPresent(message = "마감 기한은 과거일 수 없습니다.") LocalDate endDate,
         String chatUrl,
-        @NotNull
-        RefundType refundType,
+        @NotNull RefundType refundType,
         String information,
-        Image image
-) {
+        Image image) {
 
     public Rent toEntity(final Long memberId) {
         List<RentBoardingInfo> rentBoardingInfos = rentBoardingDateRequests.stream()

@@ -13,8 +13,10 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 public class S3Config {
     @Value("${spring.cloud.aws.credentials.access-key}")
     private String accessKey;
+
     @Value("${spring.cloud.aws.credentials.secret-key}")
     private String secretKey;
+
     @Value("${spring.cloud.aws.region.static}")
     private String region;
 
@@ -31,10 +33,7 @@ public class S3Config {
     public S3Presigner s3Presigner() {
         return S3Presigner.builder()
                 .region(Region.of(region))
-                .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(accessKey, secretKey)
-                ))
+                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey)))
                 .build();
     }
-
 }

@@ -1,19 +1,9 @@
 package com.backend.allreva.module.auth.application;
 
-import java.util.Date;
-import java.util.Optional;
-
-import javax.crypto.SecretKey;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.auth.domain.RefreshToken;
 import com.backend.allreva.module.auth.domain.RefreshTokenRepository;
 import com.backend.allreva.module.auth.exception.JwtErrorCode;
-
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
@@ -22,7 +12,13 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.Optional;
+import javax.crypto.SecretKey;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Slf4j
 @Service
@@ -82,10 +78,7 @@ public class JwtService {
      */
     public void validateToken(final String token) {
         try {
-            Jwts.parser()
-                    .verifyWith(secretKey)
-                    .build()
-                    .parse(token);
+            Jwts.parser().verifyWith(secretKey).build().parse(token);
         } catch (SignatureException e) {
             log.warn("Invalid JWT token signature: {}", e.getMessage());
             throw new CustomException(JwtErrorCode.TOKEN_INVALID);
@@ -144,13 +137,10 @@ public class JwtService {
      * Refresh Token을 Redis에 새로 갱신합니다.
      *
      * @param generatedRefreshToken 새로 생성된 Refresh Token
-     * @param memberId              회원 ID
+     * @param memberId 회원 ID
      */
-    public void updateRefreshToken(
-            final String generatedRefreshToken,
-            final Long memberId) {
-        refreshTokenRepository.findRefreshTokenByMemberId(memberId)
-                .ifPresent(refreshTokenRepository::delete);
+    public void updateRefreshToken(final String generatedRefreshToken, final Long memberId) {
+        refreshTokenRepository.findRefreshTokenByMemberId(memberId).ifPresent(refreshTokenRepository::delete);
 
         RefreshToken refreshTokenEntity = RefreshToken.builder()
                 .token(generatedRefreshToken)

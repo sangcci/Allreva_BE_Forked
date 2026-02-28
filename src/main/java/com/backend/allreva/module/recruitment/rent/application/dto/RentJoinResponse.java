@@ -5,9 +5,7 @@ import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-/**
- * 자신이 참여한 차량 대절 마이페이지
- */
+/** 자신이 참여한 차량 대절 마이페이지 */
 public record RentJoinResponse(
         Long rentId,
         String title,
@@ -24,7 +22,4 @@ public record RentJoinResponse(
         BoardingType boardingType,
         String depositorName,
         String depositorTime,
-        RefundType refundType
-) {
-
-}
+        RefundType refundType) {}

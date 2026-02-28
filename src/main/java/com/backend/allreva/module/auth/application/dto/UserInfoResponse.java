@@ -10,6 +10,4 @@ public record UserInfoResponse(
         String nickname,
         String profileImageUrl,
         @JsonIgnore String accessToken,
-        @JsonIgnore String refreshToken) {
-
-}
+        @JsonIgnore String refreshToken) {}

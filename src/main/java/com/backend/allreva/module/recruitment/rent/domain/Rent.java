@@ -1,8 +1,8 @@
 package com.backend.allreva.module.recruitment.rent.domain;
 
+import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.BaseEntity;
 import com.backend.allreva.common.model.Image;
-import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.recruitment.rent.domain.value.Bus;
 import com.backend.allreva.module.recruitment.rent.domain.value.Price;
 import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;

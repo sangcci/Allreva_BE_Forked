@@ -30,8 +30,7 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class SurveyParticipantRepositoryImpl implements SurveyParticipantRepository {
 
-    private static final QSurveyParticipant participantSub =
-            new QSurveyParticipant("participantSub");
+    private static final QSurveyParticipant participantSub = new QSurveyParticipant("participantSub");
 
     private final SurveyParticipantJpaRepository surveyParticipantJpaRepository;
     private final JPAQueryFactory queryFactory;
@@ -53,17 +52,13 @@ public class SurveyParticipantRepositoryImpl implements SurveyParticipantReposit
 
     @Override
     public List<CreatedSurveyResponse> findCreatedSurveyList(
-            final Long memberId,
-            final Long lastId,
-            final LocalDate lastBoardingDate,
-            final int pageSize) {
+            final Long memberId, final Long lastId, final LocalDate lastBoardingDate, final int pageSize) {
         return queryFactory
                 .select(createdSurveyProjections())
                 .from(survey)
                 .leftJoin(surveyParticipant)
                 .on(survey.id.eq(surveyParticipant.surveyId))
-                .where(survey.memberId.eq(memberId),
-                        getCreatedSurveyPagingCondition(lastId, lastBoardingDate))
+                .where(survey.memberId.eq(memberId), getCreatedSurveyPagingCondition(lastId, lastBoardingDate))
                 .groupBy(survey.id, surveyParticipant.boardingDate)
                 .orderBy(survey.id.desc())
                 .limit(pageSize)
@@ -71,8 +66,10 @@ public class SurveyParticipantRepositoryImpl implements SurveyParticipantReposit
     }
 
     private ConstructorExpression<CreatedSurveyResponse> createdSurveyProjections() {
-        return Projections.constructor(CreatedSurveyResponse.class,
-                Projections.constructor(SurveyResponse.class,
+        return Projections.constructor(
+                CreatedSurveyResponse.class,
+                Projections.constructor(
+                        SurveyResponse.class,
                         survey.id,
                         survey.title,
                         surveyParticipant.boardingDate,
@@ -86,14 +83,11 @@ public class SurveyParticipantRepositoryImpl implements SurveyParticipantReposit
                 getPassengerSumByBoardingType(BoardingType.ROUND));
     }
 
-    private BooleanExpression getCreatedSurveyPagingCondition(
-            final Long lastId,
-            final LocalDate lastBoardingDate) {
+    private BooleanExpression getCreatedSurveyPagingCondition(final Long lastId, final LocalDate lastBoardingDate) {
         if (lastId == null && lastBoardingDate == null) {
             return null;
         }
-        return survey.id.lt(lastId)
-                .or(survey.id.eq(lastId).and(surveyParticipant.boardingDate.gt(lastBoardingDate)));
+        return survey.id.lt(lastId).or(survey.id.eq(lastId).and(surveyParticipant.boardingDate.gt(lastBoardingDate)));
     }
 
     private NumberExpression<Integer> getPassengerSumByBoardingType(final BoardingType boardingType) {
@@ -105,25 +99,23 @@ public class SurveyParticipantRepositoryImpl implements SurveyParticipantReposit
     }
 
     @Override
-    public List<JoinSurveyResponse> findJoinSurveyList(
-            final Long memberId,
-            final Long lastId,
-            final int pageSize) {
+    public List<JoinSurveyResponse> findJoinSurveyList(final Long memberId, final Long lastId, final int pageSize) {
         return queryFactory
                 .select(joinSurveyProjections())
                 .from(survey)
                 .join(surveyParticipant)
                 .on(survey.id.eq(surveyParticipant.surveyId))
-                .where(surveyParticipant.memberId.eq(memberId),
-                        getJoinSurveyPagingCondition(lastId))
+                .where(surveyParticipant.memberId.eq(memberId), getJoinSurveyPagingCondition(lastId))
                 .orderBy(surveyParticipant.id.desc())
                 .limit(pageSize)
                 .fetch();
     }
 
     private ConstructorExpression<JoinSurveyResponse> joinSurveyProjections() {
-        return Projections.constructor(JoinSurveyResponse.class,
-                Projections.constructor(SurveyResponse.class,
+        return Projections.constructor(
+                JoinSurveyResponse.class,
+                Projections.constructor(
+                        SurveyResponse.class,
                         survey.id,
                         survey.title,
                         surveyParticipant.boardingDate,
@@ -140,10 +132,11 @@ public class SurveyParticipantRepositoryImpl implements SurveyParticipantReposit
 
     private Expression<Integer> getParticipationCount() {
         return ExpressionUtils.as(
-                JPAExpressions
-                        .select(participantSub.passengerNum.sumAggregate())
+                JPAExpressions.select(participantSub.passengerNum.sumAggregate())
                         .from(participantSub)
-                        .where(participantSub.surveyId.eq(survey.id)
+                        .where(participantSub
+                                .surveyId
+                                .eq(survey.id)
                                 .and(participantSub.boardingDate.eq(surveyParticipant.boardingDate)))
                         .groupBy(participantSub.surveyId, participantSub.boardingDate),
                 "participationCount");

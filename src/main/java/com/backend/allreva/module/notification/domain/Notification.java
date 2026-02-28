@@ -66,9 +66,7 @@ public class Notification extends BaseEntity {
         this.isRead = false;
     }
 
-    /**
-     * NotificationEvent로부터 Notification 생성
-     */
+    /** NotificationEvent로부터 Notification 생성 */
     public static Notification fromEvent(NotificationEvent event, Long recipientId, String title, String message) {
         return Notification.builder()
                 .type(event.getType())

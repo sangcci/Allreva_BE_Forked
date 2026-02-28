@@ -11,26 +11,18 @@ import lombok.Builder;
 
 @Builder
 public record RentJoinRequest(
-        @NotNull
-        Long rentId,
-        @NotNull
-        LocalDate boardingDate,
-        @NotNull
-        BoardingType boardingType,
-        @NotNull
-        @Min(value = 1, message = "탑승 인원 수는 1명 이상이어야 합니다.")
+        @NotNull Long rentId,
+        @NotNull LocalDate boardingDate,
+        @NotNull BoardingType boardingType,
+
+        @NotNull @Min(value = 1, message = "탑승 인원 수는 1명 이상이어야 합니다.")
         int passengerNum,
-        @NotNull
-        String depositorName,
-        @NotNull
-        String depositorTime,
-        @NotNull
-        String phone,
-        @NotNull
-        RefundType refundType,
-        @NotNull
-        String refundAccount
-) {
+
+        @NotNull String depositorName,
+        @NotNull String depositorTime,
+        @NotNull String phone,
+        @NotNull RefundType refundType,
+        @NotNull String refundAccount) {
 
     public RentParticipant toEntity(final Long memberId) {
         return RentParticipant.builder()

@@ -13,11 +13,10 @@ import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.core.types.dsl.NumberTemplate;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
-
-import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -31,7 +30,8 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
     @Override
     public List<ConcertThumbnail> findThumbnailsByTitle(final String title, final int limit) {
         return queryFactory
-                .select(Projections.constructor(ConcertThumbnail.class,
+                .select(Projections.constructor(
+                        ConcertThumbnail.class,
                         concert.poster.url,
                         concert.concertInfo.title,
                         hall.name,
@@ -39,7 +39,8 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
                         concert.concertInfo.dateInfo.endDate,
                         concert.id))
                 .from(concert)
-                .leftJoin(hall).on(concert.code.hallCode.eq(hall.id))
+                .leftJoin(hall)
+                .on(concert.code.hallCode.eq(hall.id))
                 .where(titleMatchCondition(title))
                 .orderBy(similarityOrder(title), concert.id.desc())
                 .limit(limit)
@@ -47,41 +48,30 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
     }
 
     @Override
-    public ConcertSearchListResponse searchByTitle(
-            final String query, final Long cursorId, final int pageSize) {
+    public ConcertSearchListResponse searchByTitle(final String query, final Long cursorId, final int pageSize) {
         List<ConcertThumbnail> results = fetchConcerts(
-                titleMatchCondition(query),
-                cursorCondition(cursorId),
-                similarityOrder(query),
-                pageSize + 1);
+                titleMatchCondition(query), cursorCondition(cursorId), similarityOrder(query), pageSize + 1);
 
         return buildResponse(results, pageSize);
     }
 
     @Override
-    public ConcertSearchListResponse searchByTitleAll(
-            final String query, final Long cursorId, final int pageSize) {
+    public ConcertSearchListResponse searchByTitleAll(final String query, final Long cursorId, final int pageSize) {
         return searchByTitle(query, cursorId, pageSize);
     }
 
     @Override
     public ConcertMainResponse searchMain(
-            final String address, final Long cursorId,
-            final int pageSize, final SortDirection sortDirection) {
+            final String address, final Long cursorId, final int pageSize, final SortDirection sortDirection) {
         BooleanExpression addressCondition = StringUtils.hasText(address)
-                ? Expressions.booleanTemplate("({0} ilike {1})",
-                        hall.location.address, "%" + address + "%")
+                ? Expressions.booleanTemplate("({0} ilike {1})", hall.location.address, "%" + address + "%")
                 : null;
 
-        List<ConcertThumbnail> results = fetchConcerts(
-                addressCondition,
-                cursorCondition(cursorId),
-                mainSortOrder(sortDirection),
-                pageSize + 1);
+        List<ConcertThumbnail> results =
+                fetchConcerts(addressCondition, cursorCondition(cursorId), mainSortOrder(sortDirection), pageSize + 1);
 
-        Long nextCursorId = results.size() > pageSize
-                ? results.get(pageSize - 1).id()
-                : null;
+        Long nextCursorId =
+                results.size() > pageSize ? results.get(pageSize - 1).id() : null;
         List<ConcertThumbnail> page = results.stream().limit(pageSize).toList();
         return ConcertMainResponse.from(page, nextCursorId);
     }
@@ -92,7 +82,8 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
             OrderSpecifier<?> primarySort,
             int fetchSize) {
         return queryFactory
-                .select(Projections.constructor(ConcertThumbnail.class,
+                .select(Projections.constructor(
+                        ConcertThumbnail.class,
                         concert.poster.url,
                         concert.concertInfo.title,
                         hall.name,
@@ -100,7 +91,8 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
                         concert.concertInfo.dateInfo.endDate,
                         concert.id))
                 .from(concert)
-                .leftJoin(hall).on(concert.code.hallCode.eq(hall.id))
+                .leftJoin(hall)
+                .on(concert.code.hallCode.eq(hall.id))
                 .where(searchCondition, cursorCondition)
                 .orderBy(primarySort, concert.id.desc())
                 .limit(fetchSize)
@@ -108,19 +100,18 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
     }
 
     private ConcertSearchListResponse buildResponse(List<ConcertThumbnail> results, int pageSize) {
-        Long nextCursorId = results.size() > pageSize
-                ? results.get(pageSize - 1).id()
-                : null;
+        Long nextCursorId =
+                results.size() > pageSize ? results.get(pageSize - 1).id() : null;
         List<ConcertThumbnail> page = results.stream().limit(pageSize).toList();
         return ConcertSearchListResponse.from(page, nextCursorId);
     }
 
     private BooleanExpression titleMatchCondition(final String query) {
         if (!StringUtils.hasText(query)) return null;
-        NumberTemplate<Double> sim = Expressions.numberTemplate(Double.class,
-                "similarity({0}, {1})", concert.concertInfo.title, query);
-        BooleanExpression ilike = Expressions.booleanTemplate("({0} ilike {1})",
-                concert.concertInfo.title, "%" + query + "%");
+        NumberTemplate<Double> sim =
+                Expressions.numberTemplate(Double.class, "similarity({0}, {1})", concert.concertInfo.title, query);
+        BooleanExpression ilike =
+                Expressions.booleanTemplate("({0} ilike {1})", concert.concertInfo.title, "%" + query + "%");
         return sim.gt(SIMILARITY_THRESHOLD).or(ilike);
     }
 
@@ -130,8 +121,8 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
 
     private OrderSpecifier<?> similarityOrder(final String query) {
         if (!StringUtils.hasText(query)) return concert.id.desc();
-        return Expressions.numberTemplate(Double.class,
-                "similarity({0}, {1})", concert.concertInfo.title, query).desc();
+        return Expressions.numberTemplate(Double.class, "similarity({0}, {1})", concert.concertInfo.title, query)
+                .desc();
     }
 
     private OrderSpecifier<?> mainSortOrder(final SortDirection sortDirection) {
