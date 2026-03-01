@@ -8,12 +8,16 @@ import com.backend.allreva.module.concert.place.application.dto.ConcertHallMainR
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import com.backend.allreva.module.search.application.PlaceSearchService;
 import com.backend.allreva.support.IntegrationTestSupport;
+import jakarta.persistence.EntityManager;
+import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.CacheManager;
 
 @Slf4j
 @SuppressWarnings("NonAsciiCharacters")
@@ -26,9 +30,14 @@ class PlaceSearchServiceTest extends IntegrationTestSupport {
     @Autowired
     ConcertHallRepository concertHallRepository;
 
+    @Autowired
+    @Qualifier("placeMainCacheManager")
+    CacheManager cacheManager;
+
     @AfterEach
     void tearDown() {
         concertHallRepository.deleteAll();
+        Objects.requireNonNull(cacheManager.getCache("placeMain")).clear();
     }
 
     @Nested
