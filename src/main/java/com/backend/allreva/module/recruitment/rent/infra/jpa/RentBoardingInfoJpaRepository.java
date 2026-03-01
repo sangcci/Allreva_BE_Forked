@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface RentBoardingInfoJpaRepository extends JpaRepository<RentBoardingInfo, Long> {
 
@@ -13,5 +14,5 @@ public interface RentBoardingInfoJpaRepository extends JpaRepository<RentBoardin
 
     @Modifying
     @Query("DELETE FROM RentBoardingInfo rfbd WHERE rfbd.rent.id = :rentId")
-    void deleteAllByRentId(Long rentId);
+    void deleteAllByRentId(@Param("rentId") Long rentId);
 }

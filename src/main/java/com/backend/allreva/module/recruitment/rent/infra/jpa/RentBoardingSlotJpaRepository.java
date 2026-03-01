@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface RentBoardingSlotJpaRepository extends JpaRepository<RentBoardingSlot, Long> {
 
@@ -16,5 +17,5 @@ public interface RentBoardingSlotJpaRepository extends JpaRepository<RentBoardin
 
     @Modifying
     @Query("UPDATE RentBoardingSlot s SET s.deletedAt = CURRENT_TIMESTAMP WHERE s.rentId = :rentId")
-    void deleteAllByRentId(Long rentId);
+    void deleteAllByRentId(@Param("rentId") Long rentId);
 }
