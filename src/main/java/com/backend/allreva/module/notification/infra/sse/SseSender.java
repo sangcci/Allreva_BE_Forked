@@ -11,8 +11,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class SseSender implements NotificationSender {
 
-    public static final String SSE_EVENT_NAME = "notification";
-
     private final SseConnectionManager sseConnectionManager;
 
     /**
