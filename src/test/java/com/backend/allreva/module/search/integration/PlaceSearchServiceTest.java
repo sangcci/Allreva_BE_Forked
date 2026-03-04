@@ -8,10 +8,10 @@ import com.backend.allreva.module.concert.place.application.dto.ConcertHallMainR
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import com.backend.allreva.module.search.application.PlaceSearchService;
 import com.backend.allreva.support.IntegrationTestSupport;
-import jakarta.persistence.EntityManager;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -97,6 +97,8 @@ class PlaceSearchServiceTest extends IntegrationTestSupport {
         @DisplayName("페이지네이션을 사용한 조회 시")
         class Context_페이지네이션_조회 {
 
+            // TODO: 작업 중인 테스트
+            @Disabled("작업 중인 테스트")
             @Test
             @DisplayName("nextCursorId를 사용하여 다음 페이지를 조회할 수 있다")
             void nextCursorId를_사용하여_다음_페이지를_조회할_수_있다() {

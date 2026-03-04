@@ -2,12 +2,19 @@ package com.backend.allreva.support;
 
 import com.backend.allreva.common.config.FcmInitializer;
 import com.backend.allreva.common.config.JpaAuditingConfig;
+import com.backend.allreva.module.auth.oauth2.KakaoAuthClient;
+import com.backend.allreva.module.auth.oauth2.KakaoUserInfoClient;
+import com.backend.allreva.module.concert.artist.infra.spotify.SpotifyAccountClient;
+import com.backend.allreva.module.concert.artist.infra.spotify.SpotifyClient;
+import com.backend.allreva.module.concert.concert.infra.kopis.KopisConcertClient;
+import com.backend.allreva.module.concert.place.infra.kopis.KopisHallClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -18,6 +25,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureWireMock(port = 0)
 @Import({AsyncAspect.class, FixedClockConfig.class})
 public abstract class IntegrationTestSupport {
 
@@ -47,4 +55,22 @@ public abstract class IntegrationTestSupport {
 
     @MockBean
     protected JpaAuditingConfig jpaAuditingConfig;
+
+    @MockBean
+    protected SpotifyClient spotifyClient;
+
+    @MockBean
+    protected SpotifyAccountClient spotifyAccountClient;
+
+    @MockBean
+    protected KopisConcertClient kopisConcertClient;
+
+    @MockBean
+    protected KopisHallClient kopisHallClient;
+
+    @MockBean
+    protected KakaoAuthClient kakaoAuthClient;
+
+    @MockBean
+    protected KakaoUserInfoClient kakaoUserInfoClient;
 }
