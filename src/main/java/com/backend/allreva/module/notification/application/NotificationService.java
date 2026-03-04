@@ -55,8 +55,7 @@ public class NotificationService {
     }
 
     /**
-     * 모든 알림 이벤트를 통합 처리 - 알림 타입에 따라 적절한 포매팅 적용 - 모든 NotificationSender로 전송 (FCM, SSE) - 채팅 메시지는 내역
-     * 저장 제외 (MongoDB에 이미 저장됨)
+     * 모든 알림 이벤트를 통합 처리 - 알림 타입에 따라 적절한 포매팅 적용 - 모든 NotificationSender로 전송 (FCM, SSE)
      */
     @Async
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -67,26 +66,24 @@ public class NotificationService {
                     event.getType(),
                     event.getRecipientIds().size());
 
-            // 1. 알림 메시지 포매팅
+            // 1. 알림 메시지 formatting
             String title = formatTitle(event);
             String message = formatMessage(event);
 
             // 2. 모든 Sender로 전송 (FCM + SSE)
             sendToAllSenders(event.getRecipientIds(), title, message);
 
-            // 3. 알림 내역 저장 (채팅 메시지는 제외 - MongoDB에 이미 저장됨)
+            // 3. 알림 내역 저장
             if (!isChatMessage(event.getType())) {
                 saveNotificationHistory(event, title, message);
             }
 
         } catch (Exception e) {
-            // 전체 프로세스 실패
             log.error("알림 전송 프로세스 실패 - type: {}", event.getType(), e);
-            // 이벤트 리스너이므로 예외를 던지지 않음 (트랜잭션 롤백 방지)
         }
     }
 
-    /** 알림 타입에 따라 제목 포매팅 */
+    /** 알림 타입에 따라 제목 formatting */
     private String formatTitle(NotificationEvent event) {
         return switch (event.getType()) {
             case CHAT_MESSAGE -> event.getRoomName(); // "채팅방 이름"
@@ -105,7 +102,7 @@ public class NotificationService {
         };
     }
 
-    /** 알림 타입에 따라 메시지 포매팅 */
+    /** 알림 타입에 따라 메시지 formatting */
     private String formatMessage(NotificationEvent event) {
         return switch (event.getType()) {
             case CHAT_MESSAGE -> event.getSenderName() + ": " + event.getContent();
