@@ -1,0 +1,92 @@
+url:
+  back:
+    protocol: http
+    domain: localhost:8080
+  front:
+    protocol: http
+    domain: localhost:3000
+    domain-name: localhost
+
+spring:
+  datasource:
+    hikari:
+      keepalive-time: 30000
+
+  jpa:
+    open-in-view: false
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        format_sql: false
+        show_sql: false
+
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath:db/trgm-indexes.sql
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+  cloud:
+    aws:
+      s3:
+        bucket: test-bucket
+      credentials:
+        access-key: test
+        secret-key: test
+      region:
+        static: us-east-1
+
+    openfeign:
+      client:
+        config:
+          spotify:
+            defaultQueryParameters:
+              type: artist
+              limit: 3
+            defaultRequestHeaders:
+              Authorization: Bearer
+
+oauth2:
+  kakao:
+    local-redirect-uri: http://localhost:3000/signup/callback
+    redirect-uri: http://localhost:3000/signup/callback
+    client-id: test-kakao-client-id
+    client-secret: test-kakao-client-secret
+    api-url: http://localhost:${wiremock.server.port}
+    auth-url: http://localhost:${wiremock.server.port}
+
+jwt:
+  secret_key: test-jwt-secret-key-must-be-long-enough-for-hmac
+  access:
+    expiration: 3600000
+    header: Authorization
+  refresh:
+    expiration: 1209600033
+    cookie-name: refreshToken
+
+public-data:
+  kopis:
+    prf-url: /pblprfr/{concertCode}?service=test-kopis-key
+    prfplc-detail-url: /prfplc/{hallCode}?service=test-kopis-key
+    prfplc-url: /pblprfr?service=test-kopis-key&rows=100&cpage=1&shcate=CCCD
+    stdate: 20241001
+    eddate: 20251231
+
+view:
+  count:
+    schedule:
+      rate: 3000
+
+spotify:
+  client:
+    id: test-spotify-client-id
+    secret: test-spotify-client-secret
+
+fcm:
+  project-id: test-fcm-project-id

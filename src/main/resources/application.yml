@@ -1,0 +1,99 @@
+spring:
+  profiles:
+    active: dev
+  config:
+    import:
+      - optional:secret
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/allreva}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+
+  data:
+    redis:
+      port: ${SPRING_REDIS_PORT:6379}
+      host: ${SPRING_REDIS_HOST:localhost}
+
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+  cloud:
+    aws:
+      s3:
+        bucket: ${AWS_S3_BUCKET:allreva-bucket}
+      credentials:
+        access-key: ${AWS_ACCESS_KEY}
+        secret-key: ${AWS_SECRET_KEY}
+      region:
+        static: ${AWS_REGION:ap-northeast-2}
+
+    openfeign:
+      client:
+        config:
+          spotify:
+            defaultQueryParameters:
+              type: artist
+              limit: 3
+            defaultRequestHeaders:
+              Authorization: Bearer
+
+url:
+  back:
+    protocol: http
+    domain: ${BACKEND_DOMAIN:localhost:8080}
+  front:
+    protocol: http
+    domain: ${FRONTEND_DOMAIN:localhost:3000}
+    domain-name: ${FRONTEND_DOMAIN_NAME:localhost}
+
+oauth2:
+  kakao:
+    local-redirect-uri: ${KAKAO_LOCAL_REDIRECT_URI:http://localhost:3000/signup/callback}
+    redirect-uri: ${KAKAO_REDIRECT_URI:https://allreva.store/signup/callback}
+    client-id: ${KAKAO_CLIENT_ID}
+    client-secret: ${KAKAO_CLIENT_SECRET}
+    api-url: https://kapi.kakao.com
+    auth-url: https://kauth.kakao.com
+
+jwt:
+  secret_key: ${JWT_SECRET_KEY}
+  access:
+    expiration: 3600000
+    header: Authorization
+  refresh:
+    expiration: 1209600033
+    cookie-name: refreshToken
+
+public-data:
+  kopis:
+    prf-url: /pblprfr/{concertCode}?service=${KOPIS_SERVICE_KEY}
+    prfplc-detail-url: /prfplc/{hallCode}?service=${KOPIS_SERVICE_KEY}
+    prfplc-url: /pblprfr?service=${KOPIS_SERVICE_KEY}&rows=100&cpage=1&shcate=CCCD
+    stdate: 20241001
+    eddate: 20251231
+
+view:
+  count:
+    schedule:
+      rate: 3000
+
+spotify:
+  client:
+    id: ${SPOTIFY_CLIENT_ID}
+    secret: ${SPOTIFY_CLIENT_SECRET}
+
+fcm:
+  project-id: ${FCM_PROJECT_ID}

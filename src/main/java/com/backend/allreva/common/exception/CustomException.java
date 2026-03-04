@@ -1,22 +1,23 @@
 package com.backend.allreva.common.exception;
 
-import com.backend.allreva.common.exception.code.ErrorCode;
-import com.backend.allreva.common.exception.code.ErrorCodeInterface;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
 public class CustomException extends RuntimeException {
-    private final ErrorCodeInterface errorCode;
-    private final String errorMsg;
+    private final ErrorCode errorCode;
 
-    public CustomException(ErrorCodeInterface errorCode) {
+    public CustomException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
         this.errorCode = errorCode;
-        this.errorMsg = "nothing";
     }
 
-    public ErrorCode getErrorCode() {
-        return this.errorCode.getErrorCode();
+    public CustomException(ErrorCode errorCode, Throwable cause) {
+        super(errorCode.getMessage(), cause);
+        this.errorCode = errorCode;
+    }
+
+    public CustomException(ErrorCode errorCode, String message) {
+        super(message);
+        this.errorCode = errorCode;
     }
 }

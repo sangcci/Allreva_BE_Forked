@@ -1,116 +1,76 @@
 package com.backend.allreva.support;
 
-import static java.util.List.of;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-
+import com.backend.allreva.common.config.FcmInitializer;
 import com.backend.allreva.common.config.JpaAuditingConfig;
-import com.backend.allreva.common.model.Email;
-import com.backend.allreva.common.model.Image;
-import com.backend.allreva.concert.command.domain.Concert;
-import com.backend.allreva.concert.command.domain.value.Code;
-import com.backend.allreva.concert.command.domain.value.ConcertInfo;
-import com.backend.allreva.concert.command.domain.value.ConcertStatus;
-import com.backend.allreva.concert.command.domain.value.DateInfo;
-import com.backend.allreva.concert.command.domain.value.Seller;
-import com.backend.allreva.hall.command.domain.ConcertHall;
-import com.backend.allreva.hall.command.domain.value.ConvenienceInfo;
-import com.backend.allreva.hall.command.domain.value.Location;
-import com.backend.allreva.member.command.domain.Member;
-import com.backend.allreva.member.command.domain.value.LoginProvider;
-import com.backend.allreva.member.command.domain.value.MemberRole;
-import com.backend.allreva.survey.command.application.request.OpenSurveyRequest;
-import com.backend.allreva.survey.command.domain.value.Region;
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
+import com.backend.allreva.module.auth.oauth2.KakaoAuthClient;
+import com.backend.allreva.module.auth.oauth2.KakaoUserInfoClient;
+import com.backend.allreva.module.concert.artist.infra.spotify.SpotifyAccountClient;
+import com.backend.allreva.module.concert.artist.infra.spotify.SpotifyClient;
+import com.backend.allreva.module.concert.concert.infra.kopis.KopisConcertClient;
+import com.backend.allreva.module.concert.place.infra.kopis.KopisHallClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.PostgreSQLContainer;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-@MockBean(JpaAuditingConfig.class)
 @AutoConfigureMockMvc(addFilters = false)
+@AutoConfigureWireMock(port = 0)
+@Import({AsyncAspect.class, FixedClockConfig.class})
 public abstract class IntegrationTestSupport {
+
+    @ServiceConnection
+    @SuppressWarnings("resource")
+    protected static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16");
+
+    @ServiceConnection(name = "redis")
+    @SuppressWarnings("resource")
+    protected static final GenericContainer<?> redis = new GenericContainer<>("redis:7-alpine").withExposedPorts(6379);
+
+    static {
+        postgres.start();
+        redis.start();
+    }
+
+    @DynamicPropertySource
+    static void configureProperties(DynamicPropertyRegistry registry) {
+        registry.add("spring.datasource.url", () -> postgres.getJdbcUrl() + "?stringtype=unspecified");
+    }
 
     @Autowired
     protected AsyncAspect asyncAspect;
 
-    // 테스트용 Member 객체 생성
-    protected Member createTestMember() {
-        return Member.builder()
-                .email(new Email("example@example.com"))
-                .memberRole(MemberRole.USER)
-                .loginProvider(LoginProvider.GOOGLE)
-                .nickname("JohnDoe")
-                .introduce("Hello, I'm John.")
-                .profileImageUrl("http://example.com/profile.jpg")
-                .build();
-    }
+    @MockBean
+    protected FcmInitializer fcmInitializer;
 
-    // 테스트용 Concert 객체 생성
-    protected Concert createTestConcert() {
-        return Concert.builder()
-                .code(Code.builder()
-                        .hallCode("123")
-                        .concertCode("456")
-                        .build())
-                .concertInfo(ConcertInfo.builder()
-                        .title("Sample Concert")
-                        .price("price")
-                        .performStatus(ConcertStatus.IN_PROGRESS)
-                        .host("host")
-                        .dateInfo(DateInfo.builder()
-                                .startDate(LocalDate.of(2030, 12, 1))
-                                .endDate(LocalDate.of(2030, 12, 2))
-                                .timeTable("timetable")
-                                .build())
-                        .build())
-                .poster(new Image("http://example.com/poster.jpg"))
-                .detailImages(List.of(new Image("http://example.com/detail1.jpg"), new Image("http://example.com/detail2.jpg")))
-                .sellers(Set.of(Seller.builder()
-                        .name("Sample Seller")
-                        .salesUrl("http://seller.com")
-                        .build()))
-                .build();
-    }
+    @MockBean
+    protected JpaAuditingConfig jpaAuditingConfig;
 
-    protected ConcertHall createTestConcertHall() {
-        return ConcertHall.builder()
-                .id("hall-001")
-                .name("서울 예술의전당")
-                .seatScale(2500)
-                .convenienceInfo(
-                        ConvenienceInfo.builder()
-                                .hasParkingLot(true)
-                                .hasRestaurant(true)
-                                .hasCafe(true)
-                                .hasDisabledParking(true)
-                                .build()
-                )
-                .location(
-                        Location.builder()
-                                .longitude(127.013079)
-                                .latitude(37.518486)
-                                .address("서울특별시 송파구 올림픽로 424")
-                                .build()
-                )
-                .build();
+    @MockBean
+    protected SpotifyClient spotifyClient;
 
-    }
+    @MockBean
+    protected SpotifyAccountClient spotifyAccountClient;
 
-    protected OpenSurveyRequest createOpenSurveyRequest(Long concertId, LocalDate endDate, Region region) {
-        return new OpenSurveyRequest(
-                "하현상 콘서트: Elegy [서울] 수요조사 모집합니다.",
-                concertId,
-                of(LocalDate.of(2030, 12, 1), LocalDate.of(2030, 12, 2)),
-                "하현상",
-                region,
-                endDate,
-                25,
-                "이틀 모두 운영합니다."
-        );
-    }
+    @MockBean
+    protected KopisConcertClient kopisConcertClient;
+
+    @MockBean
+    protected KopisHallClient kopisHallClient;
+
+    @MockBean
+    protected KakaoAuthClient kakaoAuthClient;
+
+    @MockBean
+    protected KakaoUserInfoClient kakaoUserInfoClient;
 }
