@@ -91,3 +91,11 @@ spotify:
 fcm:
   project-id: test-fcm-project-id
   service-account-key: classpath:firebase/firebase-service-account-key.json
+
+logging:
+  level:
+    "[com.backend.allreva]": INFO
+    "[org.hibernate.SQL]": OFF
+    "[org.hibernate.type.descriptor.sql.BasicBinder]": OFF
+    "[org.springframework.web]": WARN
+    "[org.springframework.security]": WARN
