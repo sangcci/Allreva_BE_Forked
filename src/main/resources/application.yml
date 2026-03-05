@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: allreva
   profiles:
     active: dev
   config:
@@ -50,6 +52,19 @@ spring:
             defaultRequestHeaders:
               Authorization: Bearer
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - prometheus
+          - metrics
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
 url:
   back:
     protocol: http
@@ -98,3 +113,6 @@ spotify:
 fcm:
   project-id: ${FCM_PROJECT_ID}
   service-account-key: classpath:firebase/firebase-service-account-key.json
+
+loki:
+  url: ""
