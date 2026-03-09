@@ -19,8 +19,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class FcmInitializer {
 
-    private static final List<String> FCM_SCOPES =
-            List.of("https://www.googleapis.com/auth/firebase.messaging");
+    private static final List<String> FCM_SCOPES = List.of("https://www.googleapis.com/auth/firebase.messaging");
 
     private final ResourceLoader resourceLoader;
 
@@ -33,12 +32,10 @@ public class FcmInitializer {
     public void initialize() {
         Resource resource = resourceLoader.getResource(serviceAccountKeyPath);
         try (InputStream serviceAccount = resource.getInputStream()) {
-            credentials = GoogleCredentials.fromStream(serviceAccount)
-                    .createScoped(FCM_SCOPES);
+            credentials = GoogleCredentials.fromStream(serviceAccount).createScoped(FCM_SCOPES);
 
-            FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(credentials)
-                    .build();
+            FirebaseOptions options =
+                    FirebaseOptions.builder().setCredentials(credentials).build();
             FirebaseApp.initializeApp(options);
             log.info("Firebase initialized - key: {}", serviceAccountKeyPath);
         } catch (IOException e) {
