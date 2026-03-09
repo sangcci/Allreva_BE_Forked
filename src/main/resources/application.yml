@@ -97,3 +97,4 @@ spotify:
 
 fcm:
   project-id: ${FCM_PROJECT_ID}
+  service-account-key: classpath:firebase/firebase-service-account-key.json

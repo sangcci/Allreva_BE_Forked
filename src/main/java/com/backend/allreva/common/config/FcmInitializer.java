@@ -5,24 +5,48 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import javax.annotation.PostConstruct;
-import org.springframework.core.io.ClassPathResource;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class FcmInitializer {
+
+    private static final List<String> FCM_SCOPES =
+            List.of("https://www.googleapis.com/auth/firebase.messaging");
+
+    private final ResourceLoader resourceLoader;
+
+    @Value("${fcm.service-account-key}")
+    private String serviceAccountKeyPath;
+
+    private GoogleCredentials credentials;
 
     @PostConstruct
     public void initialize() {
-        try (InputStream serviceAccount =
-                new ClassPathResource("firebase/firebase-service-account-key.json").getInputStream()) {
+        Resource resource = resourceLoader.getResource(serviceAccountKeyPath);
+        try (InputStream serviceAccount = resource.getInputStream()) {
+            credentials = GoogleCredentials.fromStream(serviceAccount)
+                    .createScoped(FCM_SCOPES);
+
             FirebaseOptions options = FirebaseOptions.builder()
-                    .setCredentials(GoogleCredentials.fromStream(serviceAccount))
+                    .setCredentials(credentials)
                     .build();
             FirebaseApp.initializeApp(options);
+            log.info("Firebase initialized - key: {}", serviceAccountKeyPath);
         } catch (IOException e) {
-            e.printStackTrace();
             throw new RuntimeException("Failed to initialize Firebase", e);
         }
+    }
+
+    public GoogleCredentials getCredentials() {
+        return credentials;
     }
 }
