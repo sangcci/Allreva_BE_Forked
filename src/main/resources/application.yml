@@ -12,6 +12,8 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:postgres}
     password: ${SPRING_DATASOURCE_PASSWORD}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      keepalive-time: 30000
 
   jpa:
     open-in-view: false
@@ -115,4 +117,11 @@ fcm:
   service-account-key: classpath:firebase/firebase-service-account-key.json
 
 loki:
-  url: ""
+  url: ${LOKI_URL:}
+
+logging:
+  level:
+    "[com.backend.allreva]": INFO
+    "[org.springframework.web]": WARN
+    "[org.hibernate.SQL]": OFF
+    "[org.hibernate.type.descriptor.sql.BasicBinder]": OFF

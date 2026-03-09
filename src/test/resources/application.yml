@@ -8,10 +8,6 @@ url:
     domain-name: localhost
 
 spring:
-  datasource:
-    hikari:
-      keepalive-time: 30000
-
   jpa:
     open-in-view: false
     defer-datasource-initialization: true
