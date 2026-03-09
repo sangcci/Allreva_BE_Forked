@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 public class FcmSender implements NotificationSender {
 
     private final FcmClient fcmClient;
+    private final FcmTokenUtils fcmTokenUtils;
 
     @Value("${fcm.project-id}")
     private String projectId;
@@ -22,20 +23,18 @@ public class FcmSender implements NotificationSender {
     @Override
     public void sendMessage(final String target, final String title, final String message) {
         try {
-            String accessToken = FcmTokenUtils.getAccessToken();
+            String accessToken = fcmTokenUtils.getAccessToken();
             String authorizationHeader = "Bearer " + accessToken;
             FcmMessage fcmMessage = FcmMessage.from(target, false, title, message);
 
             fcmClient.sendMessage(authorizationHeader, fcmMessage, projectId);
 
-            log.debug("FCM 메시지 전송 성공 - title: {}", title);
+            log.debug("FCM message sent successfully - title: {}", title);
         } catch (CustomException e) {
-            // FcmTokenUtils에서 발생한 토큰 발급 실패
-            log.warn("FCM 토큰 발급 실패로 메시지 전송 불가 - title: {}", title);
+            log.warn("FCM message send failed due to token issue - title: {}", title);
             throw e;
         } catch (FeignException e) {
-            // FCM API 호출 실패
-            log.error("FCM API 호출 실패 - status: {}, title: {}", e.status(), title, e);
+            log.error("FCM API call failed - status: {}, title: {}", e.status(), title, e);
             throw new CustomException(NotificationErrorCode.FCM_SEND_FAILED, e);
         }
     }
