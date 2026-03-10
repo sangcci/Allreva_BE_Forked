@@ -38,7 +38,7 @@
             </http>
             <format>
                 <label>
-                    <pattern>app=${APP_NAME},env=${spring.profiles.active:-local},level=%level</pattern>
+                    <pattern>app=${APP_NAME},env=${spring.profiles.active:dev},level=%level</pattern>
                 </label>
                 <message>
                     <pattern>
