@@ -41,6 +41,8 @@ out/
 
 ### application-dev.yml ###
 /src/main/resources/application-dev.yml
+/src/main/resources/application-stag.yml
+/src/main/resources/application-prod.yml
 
 ### VS Code ###
 .vscode/

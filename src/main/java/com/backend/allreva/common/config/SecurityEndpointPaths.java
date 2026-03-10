@@ -11,6 +11,8 @@ public final class SecurityEndpointPaths {
         "/v3/api-docs/**",
         "/swagger-ui/**",
         "/swagger-resources/**",
+        // actuator
+        "/actuator/**",
         // auth
         "/api/v1/auth/**",
     };
