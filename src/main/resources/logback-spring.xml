@@ -68,7 +68,7 @@
 
     <!-- ==================== Root Logger ==================== -->
     <root level="INFO">
-        <springProfile name="test,dev,stag">
+        <springProfile name="test,dev,stag,prod">
             <appender-ref ref="CONSOLE"/>
         </springProfile>
         <springProfile name="dev">
@@ -81,7 +81,7 @@
 
     <!-- ==================== Application Logger ==================== -->
     <logger name="com.backend.allreva" level="INFO" additivity="false">
-        <springProfile name="test,dev,stag">
+        <springProfile name="test,dev,stag,prod">
             <appender-ref ref="CONSOLE"/>
         </springProfile>
         <springProfile name="dev">
