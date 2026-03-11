@@ -114,7 +114,7 @@ spotify:
 
 fcm:
   project-id: ${FCM_PROJECT_ID}
-  service-account-key: classpath:firebase/firebase-service-account-key.json
+  service-account-key: ${FCM_SERVICE_ACCOUNT_KEY_PATH}
 
 loki:
   url: ${LOKI_URL:}
