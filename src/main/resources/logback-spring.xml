@@ -66,30 +66,38 @@
         </appender>
     </springProfile>
 
-    <!-- ==================== Root Logger ==================== -->
-    <root level="INFO">
-        <springProfile name="test,dev,stag,prod">
+    <!-- ==================== Root Logger / Application Logger ==================== -->
+    <springProfile name="test">
+        <root level="INFO">
             <appender-ref ref="CONSOLE"/>
-        </springProfile>
-        <springProfile name="dev">
-            <appender-ref ref="FILE"/>
-        </springProfile>
-        <springProfile name="dev,stag,prod">
-            <appender-ref ref="ASYNC_LOKI"/>
-        </springProfile>
-    </root>
+        </root>
+        <logger name="com.backend.allreva" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+    </springProfile>
 
-    <!-- ==================== Application Logger ==================== -->
-    <logger name="com.backend.allreva" level="INFO" additivity="false">
-        <springProfile name="test,dev,stag,prod">
+    <springProfile name="dev">
+        <root level="INFO">
             <appender-ref ref="CONSOLE"/>
-        </springProfile>
-        <springProfile name="dev">
             <appender-ref ref="FILE"/>
-        </springProfile>
-        <springProfile name="dev,stag,prod">
             <appender-ref ref="ASYNC_LOKI"/>
-        </springProfile>
-    </logger>
+        </root>
+        <logger name="com.backend.allreva" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="ASYNC_LOKI"/>
+        </logger>
+    </springProfile>
+
+    <springProfile name="stag,prod">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ASYNC_LOKI"/>
+        </root>
+        <logger name="com.backend.allreva" level="INFO" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="ASYNC_LOKI"/>
+        </logger>
+    </springProfile>
 </configuration>
 
