@@ -50,7 +50,6 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class RentService {
 
     private final RentRepository rentRepository;
@@ -62,9 +61,19 @@ public class RentService {
     // Command
     // -------------------------
 
+    @Transactional
     public Long registerRent(final RentRegisterRequest request, final Long memberId) {
         Rent rent = request.toEntity(memberId);
         Rent savedRent = rentRepository.save(rent);
+
+        List<RentBoardingSlot> slots = request.rentBoardingDateRequests().stream()
+                .map(date -> RentBoardingSlot.builder()
+                        .rentId(savedRent.getId())
+                        .date(date)
+                        .recruitmentCount(request.recruitmentCount())
+                        .build())
+                .toList();
+        slots.forEach(rentBoardingSlotRepository::save);
 
         Events.raise(NotificationEvent.builder()
                 .type(NotificationType.RENT_REGISTERED)
@@ -78,6 +87,7 @@ public class RentService {
         return savedRent.getId();
     }
 
+    @Transactional
     public void updateRent(final RentUpdateRequest request, final Long memberId) {
         Rent rent = rentRepository
                 .findById(request.rentId())
@@ -116,8 +126,19 @@ public class RentService {
                 request.refundType(),
                 request.information(),
                 newBoardingInfos);
+
+        rentBoardingSlotRepository.deleteAllByRentId(request.rentId());
+        List<RentBoardingSlot> newSlots = request.rentBoardingDateRequests().stream()
+                .map(date -> RentBoardingSlot.builder()
+                        .rentId(request.rentId())
+                        .date(date)
+                        .recruitmentCount(request.recruitmentCount())
+                        .build())
+                .toList();
+        newSlots.forEach(rentBoardingSlotRepository::save);
     }
 
+    @Transactional
     public void closeRent(final RentIdRequest request, final Long memberId) {
         Rent rent = rentRepository
                 .findById(request.rentId())
@@ -138,6 +159,7 @@ public class RentService {
         rent.close();
     }
 
+    @Transactional
     public void deleteRent(final RentIdRequest request, final Long memberId) {
         Rent rent = rentRepository
                 .findById(request.rentId())
@@ -153,6 +175,7 @@ public class RentService {
     // Participant Command
     // -------------------------
 
+    @Transactional
     public Long applyRent(final RentJoinRequest request, final Long memberId) {
         if (rentParticipantRepository.exists(memberId, request.rentId(), request.boardingDate())) {
             throw new CustomException(RentErrorCode.RENT_JOIN_ALREADY_EXISTS);
@@ -168,6 +191,7 @@ public class RentService {
         return saved.getId();
     }
 
+    @Transactional
     public void updateRentJoin(final RentJoinUpdateRequest request, final Long memberId) {
         RentParticipant participant = rentParticipantRepository
                 .findById(request.rentParticipantId())
@@ -188,6 +212,7 @@ public class RentService {
                 request.boardingDate());
     }
 
+    @Transactional
     public void cancelRentJoin(final RentJoinIdRequest request, final Long memberId) {
         RentParticipant participant = rentParticipantRepository
                 .findById(request.rentParticipantId())

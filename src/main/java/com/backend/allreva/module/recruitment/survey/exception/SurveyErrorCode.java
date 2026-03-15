@@ -17,7 +17,9 @@ public enum SurveyErrorCode implements ErrorCode {
     SURVEY_EVENT_PUBLISHING_FAIL(
             HttpStatus.INTERNAL_SERVER_ERROR.value(), "SURVEY_EVENT_PUBLISHING_FAIL", "survey event 발행 실패"),
     SURVEY_EVENT_CONSUMING_FAIL(
-            HttpStatus.INTERNAL_SERVER_ERROR.value(), "SURVEY_EVENT_CONSUMING_FAIL", "survey event 소비 실패");
+            HttpStatus.INTERNAL_SERVER_ERROR.value(), "SURVEY_EVENT_CONSUMING_FAIL", "survey event 소비 실패"),
+    SURVEY_JOIN_ALREADY_EXISTS(HttpStatus.BAD_REQUEST.value(), "SURVEY_JOIN_ALREADY_EXISTS", "이미 해당 수요조사에 참여했습니다."),
+    SURVEY_JOIN_ACCESS_DENIED(HttpStatus.FORBIDDEN.value(), "SURVEY_JOIN_ACCESS_DENIED", "수요조사 참여에 대한 접근 권한이 없습니다.");
 
     private final int status;
     private final String code;
