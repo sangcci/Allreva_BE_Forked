@@ -18,4 +18,6 @@ public interface SurveyParticipantRepository {
             Long memberId, Long lastId, LocalDate lastBoardingDate, int pageSize);
 
     List<JoinSurveyResponse> findJoinSurveyList(Long memberId, Long lastId, int pageSize);
+
+    boolean existsByMemberIdAndSurveyId(Long memberId, Long surveyId);
 }

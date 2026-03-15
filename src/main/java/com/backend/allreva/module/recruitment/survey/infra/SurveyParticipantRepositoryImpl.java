@@ -142,6 +142,11 @@ public class SurveyParticipantRepositoryImpl implements SurveyParticipantReposit
                 "participationCount");
     }
 
+    @Override
+    public boolean existsByMemberIdAndSurveyId(final Long memberId, final Long surveyId) {
+        return surveyParticipantJpaRepository.existsByMemberIdAndSurveyId(memberId, surveyId);
+    }
+
     private BooleanExpression getJoinSurveyPagingCondition(final Long lastId) {
         if (lastId == null) {
             return null;

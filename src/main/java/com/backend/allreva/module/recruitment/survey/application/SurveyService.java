@@ -33,7 +33,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-@Transactional
 @RequiredArgsConstructor
 public class SurveyService {
 
@@ -42,6 +41,7 @@ public class SurveyService {
     private final ConcertRepository concertRepository;
 
     /** 수요조사 개설 */
+    @Transactional
     public Long openSurvey(final Long memberId, final OpenSurveyRequest request) {
         validateBoardingDates(request.concertId(), request.boardingDates());
 
@@ -70,6 +70,7 @@ public class SurveyService {
     }
 
     /** 수요조사 수정 */
+    @Transactional
     public void updateSurvey(final Long memberId, final UpdateSurveyRequest request) {
         Survey survey = findSurvey(request.surveyId());
 
@@ -86,6 +87,7 @@ public class SurveyService {
     }
 
     /** 수요조사 삭제 */
+    @Transactional
     public void removeSurvey(final Long memberId, final SurveyIdRequest surveyIdRequest) {
         Survey survey = findSurvey(surveyIdRequest.surveyId());
         survey.isWriter(memberId);
@@ -93,7 +95,12 @@ public class SurveyService {
     }
 
     /** 수요조사 참여 (응답 제출) */
+    @Transactional
     public Long joinSurvey(final Long memberId, final JoinSurveyRequest request) {
+        if (surveyParticipantRepository.existsByMemberIdAndSurveyId(memberId, request.surveyId())) {
+            throw new CustomException(SurveyErrorCode.SURVEY_JOIN_ALREADY_EXISTS);
+        }
+
         Survey survey = findSurvey(request.surveyId());
         survey.containsBoardingDate(request.boardingDate());
 
@@ -110,10 +117,14 @@ public class SurveyService {
     }
 
     /** 수요조사 참여 취소 */
+    @Transactional
     public void cancelJoin(final Long memberId, final Long participantId) {
         SurveyParticipant participant = surveyParticipantRepository
                 .findById(participantId)
                 .orElseThrow(() -> new CustomException(SurveyErrorCode.SURVEY_PARTICIPANT_NOT_FOUND));
+        if (!participant.getMemberId().equals(memberId)) {
+            throw new CustomException(SurveyErrorCode.SURVEY_JOIN_ACCESS_DENIED);
+        }
         surveyParticipantRepository.delete(participant);
     }
 
