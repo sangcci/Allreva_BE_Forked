@@ -52,3 +52,6 @@ out/
 .claude/
 docs/
 CLAUDE.md
+
+### Load Test ###
+load-test/

@@ -15,6 +15,8 @@ public final class SecurityEndpointPaths {
         "/actuator/**",
         // auth
         "/api/v1/auth/**",
+        // test (staging only - prod에서는 @Profile("!prod")로 컨트롤러 자체가 없음)
+        "/api/test/**",
     };
 
     public static final String[] ADMIN_LIST = {"/api/v1/admin/**"};
