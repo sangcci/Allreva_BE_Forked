@@ -23,7 +23,6 @@ import com.backend.allreva.module.recruitment.rent.domain.RentRepository;
 import com.backend.allreva.module.recruitment.rent.domain.participant.RentParticipantRepository;
 import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
 import com.backend.allreva.module.recruitment.rent.fixture.RentFixture;
-import com.backend.allreva.module.recruitment.rent.infra.jpa.RentBoardingInfoJpaRepository;
 import com.backend.allreva.module.recruitment.rent.infra.jpa.RentBoardingSlotJpaRepository;
 import com.backend.allreva.module.recruitment.rent.infra.jpa.RentJpaRepository;
 import com.backend.allreva.module.recruitment.rent.infra.jpa.RentParticipantJpaRepository;
@@ -59,9 +58,6 @@ class RentIntegrationTest extends IntegrationTestSupport {
     private RentJpaRepository rentJpaRepository;
 
     @Autowired
-    private RentBoardingInfoJpaRepository rentBoardingInfoJpaRepository;
-
-    @Autowired
     private RentBoardingSlotJpaRepository rentBoardingSlotJpaRepository;
 
     @Autowired
@@ -91,7 +87,6 @@ class RentIntegrationTest extends IntegrationTestSupport {
     void tearDown() {
         rentParticipantJpaRepository.deleteAll();
         rentBoardingSlotJpaRepository.deleteAll();
-        rentBoardingInfoJpaRepository.deleteAll();
         rentJpaRepository.deleteAll();
         concertJpaRepository.deleteAll();
         memberRepository.deleteAll();
@@ -123,16 +118,7 @@ class RentIntegrationTest extends IntegrationTestSupport {
             }
 
             @Test
-            @DisplayName("탑승 날짜 정보가 저장된다")
-            void it_saves_boarding_infos() {
-                var infos = rentBoardingInfoJpaRepository.findAll().stream()
-                        .filter(info -> info.getRent().getId().equals(savedRentId))
-                        .toList();
-                assertThat(infos).hasSize(2);
-            }
-
-            @Test
-            @DisplayName("탑승 슬롯이 생성된다")
+            @DisplayName("탑승 날짜 슬롯이 생성된다")
             void it_creates_boarding_slots() {
                 var slots = rentBoardingSlotRepository.findAllByRentId(savedRentId);
                 assertThat(slots).hasSize(2);
@@ -177,18 +163,8 @@ class RentIntegrationTest extends IntegrationTestSupport {
             }
 
             @Test
-            @DisplayName("탑승 날짜 정보가 교체된다")
-            void it_replaces_boarding_infos() {
-                var infos = rentBoardingInfoJpaRepository.findAll().stream()
-                        .filter(info -> info.getRent().getId().equals(savedRentId))
-                        .toList();
-                assertThat(infos).hasSize(1);
-                assertThat(infos.get(0).getDate()).isEqualTo(LocalDate.of(2030, 12, 1));
-            }
-
-            @Test
-            @DisplayName("탑승 슬롯이 동기화된다")
-            void it_syncs_boarding_slots() {
+            @DisplayName("탑승 날짜 슬롯이 교체된다")
+            void it_replaces_boarding_slots() {
                 var slots = rentBoardingSlotRepository.findAllByRentId(savedRentId);
                 assertThat(slots).hasSize(1);
                 assertThat(slots.get(0).getDate()).isEqualTo(LocalDate.of(2030, 12, 1));

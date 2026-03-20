@@ -1,7 +1,7 @@
 package com.backend.allreva.module.recruitment.rent.infra;
 
 import static com.backend.allreva.module.recruitment.rent.domain.QRent.rent;
-import static com.backend.allreva.module.recruitment.rent.domain.QRentBoardingInfo.rentBoardingInfo;
+import static com.backend.allreva.module.recruitment.rent.domain.QRentBoardingSlot.rentBoardingSlot;
 import static com.backend.allreva.module.recruitment.rent.domain.participant.QRentParticipant.rentParticipant;
 
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinCountResponse;
@@ -64,12 +64,12 @@ public class RentParticipantRepositoryImpl implements RentParticipantRepository 
                         RentJoinResponse.class,
                         rent.id,
                         rent.title,
-                        rentBoardingInfo.date,
+                        rentBoardingSlot.date,
                         rent.boardingArea,
                         rent.createdAt,
                         rent.endDate,
-                        rentBoardingInfo.recruitmentCount,
-                        rentBoardingInfo.passengerCount,
+                        rentBoardingSlot.recruitmentCount,
+                        rentBoardingSlot.passengerCount,
                         rent.isClosed,
                         rentParticipant.id,
                         rentParticipant.createdAt,
@@ -79,14 +79,13 @@ public class RentParticipantRepositoryImpl implements RentParticipantRepository 
                         rentParticipant.depositor.depositorTime,
                         rentParticipant.refundType))
                 .from(rent)
-                .join(rentBoardingInfo)
-                .on(rent.id.eq(rentBoardingInfo.rent.id))
+                .join(rentBoardingSlot)
+                .on(rent.id.eq(rentBoardingSlot.rentId))
                 .join(rentParticipant)
-                .on(rentBoardingInfo
-                        .rent
-                        .id
+                .on(rentBoardingSlot
+                        .rentId
                         .eq(rentParticipant.rentId)
-                        .and(rentBoardingInfo.date.eq(rentParticipant.boardingDate)))
+                        .and(rentBoardingSlot.date.eq(rentParticipant.boardingDate)))
                 .where(rentParticipant.memberId.eq(memberId))
                 .fetch();
     }

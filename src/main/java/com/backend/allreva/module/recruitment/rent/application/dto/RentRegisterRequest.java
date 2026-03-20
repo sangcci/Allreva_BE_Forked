@@ -2,7 +2,6 @@ package com.backend.allreva.module.recruitment.rent.application.dto;
 
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.module.recruitment.rent.domain.Rent;
-import com.backend.allreva.module.recruitment.rent.domain.RentBoardingInfo;
 import com.backend.allreva.module.recruitment.rent.domain.value.Bus;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusSize;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusType;
@@ -46,14 +45,7 @@ public record RentRegisterRequest(
         Image image) {
 
     public Rent toEntity(final Long memberId) {
-        List<RentBoardingInfo> rentBoardingInfos = rentBoardingDateRequests.stream()
-                .map(date -> RentBoardingInfo.builder()
-                        .date(date)
-                        .recruitmentCount(recruitmentCount)
-                        .build())
-                .toList();
-
-        Rent rent = Rent.builder()
+        return Rent.builder()
                 .memberId(memberId)
                 .concertId(concertId)
                 .title(title)
@@ -79,8 +71,5 @@ public record RentRegisterRequest(
                 .refundType(refundType)
                 .information(information)
                 .build();
-
-        rent.assignBoardingInfos(rentBoardingInfos);
-        return rent;
     }
 }

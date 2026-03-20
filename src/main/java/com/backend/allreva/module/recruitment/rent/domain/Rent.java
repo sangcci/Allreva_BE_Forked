@@ -9,7 +9,6 @@ import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
 import com.backend.allreva.module.recruitment.rent.domain.value.Region;
 import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
 import jakarta.persistence.AttributeOverride;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -18,11 +17,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -96,17 +92,8 @@ public class Rent extends BaseEntity {
     private String information;
 
     @Builder.Default
-    @OneToMany(mappedBy = "rent", cascade = CascadeType.ALL)
-    private List<RentBoardingInfo> boardingInfos = new ArrayList<>();
-
-    @Builder.Default
     @Column(nullable = false)
     private boolean isClosed = false;
-
-    public void assignBoardingInfos(List<RentBoardingInfo> boardingInfos) {
-        boardingInfos.forEach(boardingInfo -> boardingInfo.assignRent(this));
-        this.boardingInfos = boardingInfos;
-    }
 
     public void updateRent(
             final String boardingArea,
@@ -119,8 +106,7 @@ public class Rent extends BaseEntity {
             final LocalDate endDate,
             final String chatUrl,
             final RefundType refundType,
-            final String information,
-            final List<RentBoardingInfo> newBoardingInfos) {
+            final String information) {
         this.image = image;
         this.region = region;
         this.boardingArea = boardingArea;
@@ -132,7 +118,6 @@ public class Rent extends BaseEntity {
         this.chatUrl = chatUrl;
         this.refundType = refundType;
         this.information = information;
-        assignBoardingInfos(newBoardingInfos);
         this.isClosed = false;
     }
 

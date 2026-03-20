@@ -16,11 +16,7 @@ public interface RentRepository {
 
     Optional<Rent> findByIdAndMemberId(Long rentId, Long memberId);
 
-    Optional<RentBoardingInfo> findByIdAndBoardingDate(Long rentId, LocalDate date);
-
     Rent save(Rent rent);
-
-    void deleteBoardingInfoAllByRentId(Long rentId);
 
     void delete(Rent rent);
 
