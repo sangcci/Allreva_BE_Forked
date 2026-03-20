@@ -23,7 +23,6 @@ import com.backend.allreva.module.recruitment.rent.domain.RentRepository;
 import com.backend.allreva.module.recruitment.rent.domain.participant.RentParticipantRepository;
 import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
 import com.backend.allreva.module.recruitment.rent.fixture.RentFixture;
-import com.backend.allreva.module.recruitment.rent.infra.jpa.RentBoardingInfoJpaRepository;
 import com.backend.allreva.module.recruitment.rent.infra.jpa.RentBoardingSlotJpaRepository;
 import com.backend.allreva.module.recruitment.rent.infra.jpa.RentJpaRepository;
 import com.backend.allreva.module.recruitment.rent.infra.jpa.RentParticipantJpaRepository;
@@ -59,9 +58,6 @@ class RentIntegrationTest extends IntegrationTestSupport {
     private RentJpaRepository rentJpaRepository;
 
     @Autowired
-    private RentBoardingInfoJpaRepository rentBoardingInfoJpaRepository;
-
-    @Autowired
     private RentBoardingSlotJpaRepository rentBoardingSlotJpaRepository;
 
     @Autowired
@@ -91,7 +87,6 @@ class RentIntegrationTest extends IntegrationTestSupport {
     void tearDown() {
         rentParticipantJpaRepository.deleteAll();
         rentBoardingSlotJpaRepository.deleteAll();
-        rentBoardingInfoJpaRepository.deleteAll();
         rentJpaRepository.deleteAll();
         concertJpaRepository.deleteAll();
         memberRepository.deleteAll();
@@ -120,15 +115,6 @@ class RentIntegrationTest extends IntegrationTestSupport {
                 assertThat(rent.getTitle()).isEqualTo("테스트 차대절");
                 assertThat(rent.getMemberId()).isEqualTo(savedMember.getId());
                 assertThat(rent.getConcertId()).isEqualTo(concertId);
-            }
-
-            @Test
-            @DisplayName("탑승 날짜 정보가 저장된다")
-            void it_saves_boarding_infos() {
-                var infos = rentBoardingInfoJpaRepository.findAll().stream()
-                        .filter(info -> info.getRent().getId().equals(savedRentId))
-                        .toList();
-                assertThat(infos).hasSize(2);
             }
 
             @Test
@@ -174,16 +160,6 @@ class RentIntegrationTest extends IntegrationTestSupport {
                 var rent = rentRepository.findById(savedRentId).orElseThrow();
                 assertThat(rent.getBoardingArea()).isEqualTo("부산역 앞");
                 assertThat(rent.getUpTime()).isEqualTo("09:00");
-            }
-
-            @Test
-            @DisplayName("탑승 날짜 정보가 교체된다")
-            void it_replaces_boarding_infos() {
-                var infos = rentBoardingInfoJpaRepository.findAll().stream()
-                        .filter(info -> info.getRent().getId().equals(savedRentId))
-                        .toList();
-                assertThat(infos).hasSize(1);
-                assertThat(infos.get(0).getDate()).isEqualTo(LocalDate.of(2030, 12, 1));
             }
 
             @Test
