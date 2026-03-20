@@ -22,11 +22,9 @@ import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryRe
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
 import com.backend.allreva.module.recruitment.rent.domain.Rent;
-import com.backend.allreva.module.recruitment.rent.domain.RentBoardingInfo;
 import com.backend.allreva.module.recruitment.rent.domain.RentBoardingSlot;
 import com.backend.allreva.module.recruitment.rent.domain.RentBoardingSlotRepository;
 import com.backend.allreva.module.recruitment.rent.domain.RentRepository;
-import com.backend.allreva.module.recruitment.rent.domain.event.RentClosedEvent;
 import com.backend.allreva.module.recruitment.rent.domain.participant.RentParticipant;
 import com.backend.allreva.module.recruitment.rent.domain.participant.RentParticipantRepository;
 import com.backend.allreva.module.recruitment.rent.domain.value.Bus;
@@ -40,12 +38,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 
 @Slf4j
 @Service
@@ -95,16 +89,6 @@ public class RentService {
 
         rent.validateMine(memberId);
 
-        rentRepository.deleteBoardingInfoAllByRentId(request.rentId());
-
-        List<RentBoardingInfo> newBoardingInfos = request.rentBoardingDateRequests().stream()
-                .map(date -> RentBoardingInfo.builder()
-                        .rent(rent)
-                        .date(date)
-                        .recruitmentCount(request.recruitmentCount())
-                        .build())
-                .toList();
-
         rent.updateRent(
                 request.boardingArea(),
                 request.upTime(),
@@ -124,8 +108,7 @@ public class RentService {
                 request.endDate(),
                 request.chatUrl(),
                 request.refundType(),
-                request.information(),
-                newBoardingInfos);
+                request.information());
 
         rentBoardingSlotRepository.deleteAllByRentId(request.rentId());
         List<RentBoardingSlot> newSlots = request.rentBoardingDateRequests().stream()
@@ -145,17 +128,6 @@ public class RentService {
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
 
         rent.validateMine(memberId);
-        rent.close();
-    }
-
-    @Async
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void closeRent(RentClosedEvent event) {
-        Rent rent = rentRepository
-                .findById(event.getRentId())
-                .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
-
         rent.close();
     }
 
@@ -292,13 +264,13 @@ public class RentService {
 
     private RentAdminSummaryResponse getRentAdminSummary(
             final Long memberId, final LocalDate boardingDate, final Long rentId) {
-        return rentRepository
+        Rent rent = rentRepository
                 .findByIdAndMemberId(rentId, memberId)
-                .flatMap(rent -> rent.getBoardingInfos().stream()
-                        .filter(info -> info.getDate().equals(boardingDate))
-                        .map(info -> RentAdminSummaryResponse.from(rent, info))
-                        .findFirst())
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
+        RentBoardingSlot slot = rentBoardingSlotRepository
+                .findByRentIdAndDate(rentId, boardingDate)
+                .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
+        return RentAdminSummaryResponse.from(rent, slot);
     }
 
     private List<RentJoinDetailResponse> getRentJoinDetails(final LocalDate boardingDate, final Long rentId) {
