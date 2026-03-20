@@ -3,7 +3,7 @@ package com.backend.allreva.module.recruitment.rent.infra;
 import static com.backend.allreva.module.concert.concert.domain.QConcert.concert;
 import static com.backend.allreva.module.concert.place.domain.QConcertHall.concertHall;
 import static com.backend.allreva.module.recruitment.rent.domain.QRent.rent;
-import static com.backend.allreva.module.recruitment.rent.domain.QRentBoardingInfo.rentBoardingInfo;
+import static com.backend.allreva.module.recruitment.rent.domain.QRentBoardingSlot.rentBoardingSlot;
 
 import com.backend.allreva.module.recruitment.rent.application.dto.RentAdminSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse;
@@ -11,10 +11,8 @@ import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailRes
 import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
 import com.backend.allreva.module.recruitment.rent.domain.Rent;
-import com.backend.allreva.module.recruitment.rent.domain.RentBoardingInfo;
 import com.backend.allreva.module.recruitment.rent.domain.RentRepository;
 import com.backend.allreva.module.recruitment.rent.domain.value.Region;
-import com.backend.allreva.module.recruitment.rent.infra.jpa.RentBoardingInfoJpaRepository;
 import com.backend.allreva.module.recruitment.rent.infra.jpa.RentJpaRepository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
@@ -31,7 +29,6 @@ import org.springframework.stereotype.Repository;
 public class RentRepositoryImpl implements RentRepository {
 
     private final RentJpaRepository rentJpaRepository;
-    private final RentBoardingInfoJpaRepository rentBoardingInfoJpaRepository;
     private final JPAQueryFactory queryFactory;
 
     @Override
@@ -45,18 +42,8 @@ public class RentRepositoryImpl implements RentRepository {
     }
 
     @Override
-    public Optional<RentBoardingInfo> findByIdAndBoardingDate(final Long rentId, final LocalDate date) {
-        return rentBoardingInfoJpaRepository.findByRentIdAndDate(rentId, date);
-    }
-
-    @Override
     public Rent save(final Rent rentEntity) {
         return rentJpaRepository.save(rentEntity);
-    }
-
-    @Override
-    public void deleteBoardingInfoAllByRentId(final Long rentId) {
-        rentBoardingInfoJpaRepository.deleteAllByRentId(rentId);
     }
 
     @Override
@@ -98,19 +85,19 @@ public class RentRepositoryImpl implements RentRepository {
                         RentAdminSummaryResponse.class,
                         rent.id,
                         rent.title,
-                        rentBoardingInfo.date,
+                        rentBoardingSlot.date,
                         rent.boardingArea,
                         rent.createdAt,
                         rent.endDate,
-                        rentBoardingInfo.recruitmentCount,
-                        rentBoardingInfo.passengerCount,
+                        rentBoardingSlot.recruitmentCount,
+                        rentBoardingSlot.passengerCount,
                         rent.isClosed,
                         rent.bus.busSize,
                         rent.bus.busType,
                         rent.bus.maxPassenger))
                 .from(rent)
-                .join(rentBoardingInfo)
-                .on(rent.id.eq(rentBoardingInfo.rent.id))
+                .join(rentBoardingSlot)
+                .on(rent.id.eq(rentBoardingSlot.rentId))
                 .where(rent.memberId.eq(memberId), getPagingCondition(SortType.LATEST, lastId, null))
                 .orderBy(orderSpecifiers(SortType.LATEST))
                 .limit(pageSize)
@@ -119,7 +106,7 @@ public class RentRepositoryImpl implements RentRepository {
 
     @Override
     public Optional<RentDetailResponse> findRentDetail(final Long rentId) {
-        // Step 1: Fetch rent basic info including recruitmentCount from first boarding info
+        // Step 1: Fetch rent basic info including recruitmentCount from first boarding slot
         var tuple = queryFactory
                 .select(
                         concert.concertInfo.title,
@@ -137,15 +124,15 @@ public class RentRepositoryImpl implements RentRepository {
                         rent.price.roundPrice,
                         rent.price.upTimePrice,
                         rent.price.downTimePrice,
-                        rentBoardingInfo.recruitmentCount,
+                        rentBoardingSlot.recruitmentCount,
                         rent.endDate,
                         rent.chatUrl,
                         rent.refundType,
                         rent.information,
                         rent.isClosed)
                 .from(rent)
-                .join(rentBoardingInfo)
-                .on(rent.id.eq(rentBoardingInfo.rent.id))
+                .join(rentBoardingSlot)
+                .on(rent.id.eq(rentBoardingSlot.rentId))
                 .leftJoin(concert)
                 .on(rent.concertId.eq(concert.id))
                 .leftJoin(concertHall)
@@ -160,10 +147,10 @@ public class RentRepositoryImpl implements RentRepository {
         // Step 2: Fetch all boarding dates separately to avoid fetchFirst limitation with 1:N
         List<RentBoardingDateResponse> boardingDates = queryFactory
                 .select(Projections.constructor(
-                        RentBoardingDateResponse.class, rentBoardingInfo.date, rentBoardingInfo.passengerCount))
-                .from(rentBoardingInfo)
-                .where(rentBoardingInfo.rent.id.eq(rentId))
-                .orderBy(rentBoardingInfo.date.asc())
+                        RentBoardingDateResponse.class, rentBoardingSlot.date, rentBoardingSlot.passengerCount))
+                .from(rentBoardingSlot)
+                .where(rentBoardingSlot.rentId.eq(rentId))
+                .orderBy(rentBoardingSlot.date.asc())
                 .fetch();
 
         return Optional.of(new RentDetailResponse(
@@ -183,7 +170,7 @@ public class RentRepositoryImpl implements RentRepository {
                 tuple.get(rent.price.roundPrice),
                 tuple.get(rent.price.upTimePrice),
                 tuple.get(rent.price.downTimePrice),
-                tuple.get(rentBoardingInfo.recruitmentCount),
+                tuple.get(rentBoardingSlot.recruitmentCount),
                 tuple.get(rent.endDate),
                 tuple.get(rent.chatUrl),
                 tuple.get(rent.refundType),
