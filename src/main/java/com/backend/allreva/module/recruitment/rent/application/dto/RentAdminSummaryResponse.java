@@ -1,7 +1,7 @@
 package com.backend.allreva.module.recruitment.rent.application.dto;
 
 import com.backend.allreva.module.recruitment.rent.domain.Rent;
-import com.backend.allreva.module.recruitment.rent.domain.RentBoardingInfo;
+import com.backend.allreva.module.recruitment.rent.domain.RentBoardingSlot;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusSize;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusType;
 import java.time.LocalDate;
@@ -20,16 +20,16 @@ public record RentAdminSummaryResponse(
         BusSize busSize,
         BusType busType,
         int maxPassenger) {
-    public static RentAdminSummaryResponse from(final Rent rent, final RentBoardingInfo rentBoardingInfo) {
+    public static RentAdminSummaryResponse from(final Rent rent, final RentBoardingSlot slot) {
         return new RentAdminSummaryResponse(
                 rent.getId(),
                 rent.getTitle(),
-                rentBoardingInfo.getDate(),
+                slot.getDate(),
                 rent.getBoardingArea(),
                 rent.getCreatedAt(),
                 rent.getEndDate(),
-                rentBoardingInfo.getRecruitmentCount(),
-                rentBoardingInfo.getPassengerCount(),
+                slot.getRecruitmentCount(),
+                slot.getPassengerCount(),
                 rent.isClosed(),
                 rent.getBus().getBusSize(),
                 rent.getBus().getBusType(),
