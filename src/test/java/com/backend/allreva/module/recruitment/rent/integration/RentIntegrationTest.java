@@ -118,7 +118,7 @@ class RentIntegrationTest extends IntegrationTestSupport {
             }
 
             @Test
-            @DisplayName("탑승 슬롯이 생성된다")
+            @DisplayName("탑승 날짜 슬롯이 생성된다")
             void it_creates_boarding_slots() {
                 var slots = rentBoardingSlotRepository.findAllByRentId(savedRentId);
                 assertThat(slots).hasSize(2);
@@ -163,8 +163,8 @@ class RentIntegrationTest extends IntegrationTestSupport {
             }
 
             @Test
-            @DisplayName("탑승 슬롯이 동기화된다")
-            void it_syncs_boarding_slots() {
+            @DisplayName("탑승 날짜 슬롯이 교체된다")
+            void it_replaces_boarding_slots() {
                 var slots = rentBoardingSlotRepository.findAllByRentId(savedRentId);
                 assertThat(slots).hasSize(1);
                 assertThat(slots.get(0).getDate()).isEqualTo(LocalDate.of(2030, 12, 1));
