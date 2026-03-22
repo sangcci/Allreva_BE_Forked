@@ -30,7 +30,7 @@
         </appender>
     </springProfile>
 
-    <!-- ==================== Loki Appender (dev, stag, prod) ==================== -->
+    <!-- ==================== Loki Appender (stag, prod) ==================== -->
     <springProfile name="stag,prod">
         <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
             <http>
