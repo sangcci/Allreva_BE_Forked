@@ -49,5 +49,4 @@ public class RentBoardingSlot extends BaseEntity {
         this.recruitmentCount = recruitmentCount;
         this.passengerCount = 0;
     }
-
 }
