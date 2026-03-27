@@ -18,4 +18,15 @@ public interface RentBoardingSlotJpaRepository extends JpaRepository<RentBoardin
     @Modifying
     @Query("UPDATE RentBoardingSlot s SET s.deletedAt = CURRENT_TIMESTAMP WHERE s.rentId = :rentId")
     void deleteAllByRentId(@Param("rentId") Long rentId);
+
+    @Modifying
+    @Query("""
+        UPDATE RentBoardingSlot s
+        SET s.passengerCount = s.passengerCount + :count
+        WHERE s.rentId = :rentId
+          AND s.date = :boardingDate
+          AND s.passengerCount + :count <= s.recruitmentCount
+        """)
+    int incrementPassengerCount(
+            @Param("rentId") Long rentId, @Param("boardingDate") LocalDate boardingDate, @Param("count") int count);
 }

@@ -148,15 +148,16 @@ public class RentService {
     // -------------------------
 
     @Transactional
-    public Long applyRent(final RentJoinRequest request, final Long memberId) {
+    public Long joinRent(final RentJoinRequest request, final Long memberId) {
         if (rentParticipantRepository.exists(memberId, request.rentId(), request.boardingDate())) {
             throw new CustomException(RentErrorCode.RENT_JOIN_ALREADY_EXISTS);
         }
 
-        RentBoardingSlot slot = rentBoardingSlotRepository
-                .findByRentIdAndDate(request.rentId(), request.boardingDate())
-                .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
-        slot.addPassengerCount(request.passengerNum());
+        int updatedPassengerCount = rentBoardingSlotRepository.incrementPassengerCount(
+                request.rentId(), request.boardingDate(), request.passengerNum());
+        if (updatedPassengerCount == 0) {
+            throw new CustomException(RentErrorCode.SLOT_FULL);
+        }
 
         RentParticipant participant = request.toEntity(memberId);
         RentParticipant saved = rentParticipantRepository.save(participant);
