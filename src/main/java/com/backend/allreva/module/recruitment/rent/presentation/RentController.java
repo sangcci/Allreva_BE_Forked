@@ -113,21 +113,21 @@ public class RentController {
     // Participant Endpoints
     // -------------------------
 
-    @PostMapping("/apply")
-    public Response<Long> applyRent(
+    @PostMapping("/join")
+    public Response<Long> joinRent(
             @RequestBody final RentJoinRequest rentJoinRequest, @AuthMember final Member member) {
-        Long participantId = rentService.applyRent(rentJoinRequest, member.getId());
+        Long participantId = rentService.joinRent(rentJoinRequest, member.getId());
         return Response.onSuccess(participantId);
     }
 
-    @PatchMapping("/apply")
+    @PatchMapping("/join")
     public Response<Void> updateRentJoin(
             @RequestBody final RentJoinUpdateRequest rentJoinUpdateRequest, @AuthMember final Member member) {
         rentService.updateRentJoin(rentJoinUpdateRequest, member.getId());
         return Response.onSuccess();
     }
 
-    @DeleteMapping("/apply")
+    @DeleteMapping("/join")
     public Response<Void> cancelRentJoin(
             @RequestBody final RentJoinIdRequest rentJoinIdRequest, @AuthMember final Member member) {
         rentService.cancelRentJoin(rentJoinIdRequest, member.getId());

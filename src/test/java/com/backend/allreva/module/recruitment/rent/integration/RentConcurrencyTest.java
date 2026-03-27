@@ -89,7 +89,7 @@ class RentConcurrencyTest extends IntegrationTestSupport {
     }
 
     @Test
-    @DisplayName("5명이 동시에 신청하면 정원(3명)만 성공해야 한다")
+    @DisplayName("5명이 동시에 신청하면 3명만 성공해야 한다")
     void 동시_신청_시_정원_초과_방지() throws InterruptedException {
         // given
         ExecutorService executor = Executors.newFixedThreadPool(THREAD_COUNT);
@@ -106,8 +106,8 @@ class RentConcurrencyTest extends IntegrationTestSupport {
             executor.submit(() -> {
                 ready.countDown();
                 try {
-                    start.await(); // 모든 스레드가 동시에 출발
-                    rentService.applyRent(RentFixture.createRentJoinRequest(rentId, BOARDING_DATE, 1), memberId);
+                    start.await();
+                    rentService.joinRent(RentFixture.createRentJoinRequest(rentId, BOARDING_DATE, 1), memberId);
                     successCount.incrementAndGet();
                 } catch (Exception e) {
                     failCount.incrementAndGet();
@@ -117,9 +117,9 @@ class RentConcurrencyTest extends IntegrationTestSupport {
             });
         }
 
-        ready.await(); // 모든 스레드 준비 대기
-        start.countDown(); // 동시 출발
-        done.await(); // 모든 스레드 완료 대기
+        ready.await();
+        start.countDown();
+        done.await();
         executor.shutdown();
 
         // then
@@ -127,10 +127,8 @@ class RentConcurrencyTest extends IntegrationTestSupport {
                 .findByRentIdAndDate(rentId, BOARDING_DATE)
                 .orElseThrow();
 
-        System.out.println("failCount: " + failCount.get());
-        System.out.println("successCount: " + successCount.get());
-
         assertThat(successCount.get()).isEqualTo(RECRUITMENT_COUNT);
+        assertThat(failCount.get()).isEqualTo(THREAD_COUNT - RECRUITMENT_COUNT);
         assertThat(slot.getPassengerCount()).isEqualTo(RECRUITMENT_COUNT);
     }
 }
