@@ -1,8 +1,6 @@
 package com.backend.allreva.module.recruitment.rent.domain;
 
-import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.BaseEntity;
-import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -52,10 +50,4 @@ public class RentBoardingSlot extends BaseEntity {
         this.passengerCount = 0;
     }
 
-    public void addPassengerCount(int count) {
-        if (passengerCount + count > recruitmentCount) {
-            throw new CustomException(RentErrorCode.SLOT_FULL);
-        }
-        this.passengerCount += count;
-    }
 }
