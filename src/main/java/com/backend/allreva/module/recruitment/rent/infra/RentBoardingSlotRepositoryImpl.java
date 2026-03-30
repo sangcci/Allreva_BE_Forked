@@ -36,6 +36,11 @@ public class RentBoardingSlotRepositoryImpl implements RentBoardingSlotRepositor
     }
 
     @Override
+    public int incrementPassengerCount(final Long rentId, final LocalDate boardingDate, final int count) {
+        return rentBoardingSlotJpaRepository.incrementPassengerCount(rentId, boardingDate, count);
+    }
+
+    @Override
     public void deleteAllByRentId(final Long rentId) {
         rentBoardingSlotJpaRepository.deleteAllByRentId(rentId);
     }

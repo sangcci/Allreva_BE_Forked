@@ -302,7 +302,7 @@ class RentIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("참여자가 저장된다")
             void it_saves_participant() {
-                Long participantId = rentService.applyRent(
+                Long participantId = rentService.joinRent(
                         RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 2), savedMember.getId());
                 assertThat(participantId).isNotNull();
             }
@@ -310,7 +310,7 @@ class RentIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("슬롯의 탑승 인원이 증가한다")
             void it_increases_passenger_count() {
-                rentService.applyRent(
+                rentService.joinRent(
                         RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 3), savedMember.getId());
                 var slot = rentBoardingSlotRepository
                         .findByRentIdAndDate(savedRentId, TARGET_DATE)
@@ -325,14 +325,14 @@ class RentIntegrationTest extends IntegrationTestSupport {
 
             @BeforeEach
             void setUp() {
-                rentService.applyRent(
+                rentService.joinRent(
                         RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 2), savedMember.getId());
             }
 
             @Test
             @DisplayName("중복 신청 예외가 발생한다")
             void it_throws_already_exists() {
-                assertThatThrownBy(() -> rentService.applyRent(
+                assertThatThrownBy(() -> rentService.joinRent(
                                 RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 1), savedMember.getId()))
                         .isInstanceOf(CustomException.class)
                         .hasMessageContaining(RentErrorCode.RENT_JOIN_ALREADY_EXISTS.getMessage());
@@ -346,7 +346,7 @@ class RentIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("슬롯 초과 예외가 발생한다")
             void it_throws_slot_full() {
-                assertThatThrownBy(() -> rentService.applyRent(
+                assertThatThrownBy(() -> rentService.joinRent(
                                 RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 31), savedMember.getId()))
                         .isInstanceOf(CustomException.class)
                         .hasMessageContaining(RentErrorCode.SLOT_FULL.getMessage());

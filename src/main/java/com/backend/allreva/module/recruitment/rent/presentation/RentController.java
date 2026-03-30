@@ -18,6 +18,7 @@ import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryRe
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
 import com.backend.allreva.module.recruitment.rent.domain.value.Region;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
 import java.util.List;
@@ -43,26 +44,28 @@ public class RentController {
 
     @PostMapping
     public Response<Long> createRent(
-            @RequestBody final RentRegisterRequest rentRegisterRequest, @AuthMember final Member member) {
+            @RequestBody @Valid final RentRegisterRequest rentRegisterRequest, @AuthMember final Member member) {
         Long rentId = rentService.registerRent(rentRegisterRequest, member.getId());
         return Response.onSuccess(rentId);
     }
 
     @PatchMapping
     public Response<Void> updateRent(
-            @RequestBody final RentUpdateRequest rentUpdateRequest, @AuthMember final Member member) {
+            @RequestBody @Valid final RentUpdateRequest rentUpdateRequest, @AuthMember final Member member) {
         rentService.updateRent(rentUpdateRequest, member.getId());
         return Response.onSuccess();
     }
 
     @PatchMapping("/close")
-    public Response<Void> closeRent(@RequestBody final RentIdRequest rentIdRequest, @AuthMember final Member member) {
+    public Response<Void> closeRent(
+            @RequestBody @Valid final RentIdRequest rentIdRequest, @AuthMember final Member member) {
         rentService.closeRent(rentIdRequest, member.getId());
         return Response.onSuccess();
     }
 
     @DeleteMapping
-    public Response<Void> deleteRent(@RequestBody final RentIdRequest rentIdRequest, @AuthMember final Member member) {
+    public Response<Void> deleteRent(
+            @RequestBody @Valid final RentIdRequest rentIdRequest, @AuthMember final Member member) {
         rentService.deleteRent(rentIdRequest, member.getId());
         return Response.onSuccess();
     }
@@ -113,23 +116,23 @@ public class RentController {
     // Participant Endpoints
     // -------------------------
 
-    @PostMapping("/apply")
-    public Response<Long> applyRent(
-            @RequestBody final RentJoinRequest rentJoinRequest, @AuthMember final Member member) {
-        Long participantId = rentService.applyRent(rentJoinRequest, member.getId());
+    @PostMapping("/join")
+    public Response<Long> joinRent(
+            @RequestBody @Valid final RentJoinRequest rentJoinRequest, @AuthMember final Member member) {
+        Long participantId = rentService.joinRent(rentJoinRequest, member.getId());
         return Response.onSuccess(participantId);
     }
 
-    @PatchMapping("/apply")
+    @PatchMapping("/join")
     public Response<Void> updateRentJoin(
-            @RequestBody final RentJoinUpdateRequest rentJoinUpdateRequest, @AuthMember final Member member) {
+            @RequestBody @Valid final RentJoinUpdateRequest rentJoinUpdateRequest, @AuthMember final Member member) {
         rentService.updateRentJoin(rentJoinUpdateRequest, member.getId());
         return Response.onSuccess();
     }
 
-    @DeleteMapping("/apply")
+    @DeleteMapping("/join")
     public Response<Void> cancelRentJoin(
-            @RequestBody final RentJoinIdRequest rentJoinIdRequest, @AuthMember final Member member) {
+            @RequestBody @Valid final RentJoinIdRequest rentJoinIdRequest, @AuthMember final Member member) {
         rentService.cancelRentJoin(rentJoinIdRequest, member.getId());
         return Response.onSuccess();
     }

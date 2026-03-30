@@ -14,5 +14,7 @@ public interface RentBoardingSlotRepository {
 
     RentBoardingSlot save(RentBoardingSlot slot);
 
+    int incrementPassengerCount(Long rentId, LocalDate boardingDate, int count);
+
     void deleteAllByRentId(Long rentId);
 }

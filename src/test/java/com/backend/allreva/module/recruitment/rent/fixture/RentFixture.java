@@ -19,6 +19,11 @@ import lombok.NoArgsConstructor;
 public final class RentFixture {
 
     public static RentRegisterRequest createRentRegisterRequest(Long concertId, List<LocalDate> dates) {
+        return createRentRegisterRequest(concertId, dates, 30);
+    }
+
+    public static RentRegisterRequest createRentRegisterRequest(
+            Long concertId, List<LocalDate> dates, int recruitmentCount) {
         return new RentRegisterRequest(
                 concertId,
                 "테스트 차대절",
@@ -35,7 +40,7 @@ public final class RentFixture {
                 50000,
                 30000,
                 20000,
-                30,
+                recruitmentCount,
                 LocalDate.of(2030, 11, 30),
                 "https://chat.example.com",
                 RefundType.REFUND,
