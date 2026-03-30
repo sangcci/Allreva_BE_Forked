@@ -1,9 +1,11 @@
 package com.backend.allreva.module.recruitment.rent.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 
+import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.storage.upload.StorageUploadService;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
@@ -99,6 +101,7 @@ class RentConcurrencyTest extends IntegrationTestSupport {
 
         AtomicInteger successCount = new AtomicInteger(0);
         AtomicInteger failCount = new AtomicInteger(0);
+        AtomicInteger unexpectedCount = new AtomicInteger(0);
 
         // when
         for (int i = 0; i < THREAD_COUNT; i++) {
@@ -109,8 +112,10 @@ class RentConcurrencyTest extends IntegrationTestSupport {
                     start.await();
                     rentService.joinRent(RentFixture.createRentJoinRequest(rentId, BOARDING_DATE, 1), memberId);
                     successCount.incrementAndGet();
-                } catch (Exception e) {
+                } catch (CustomException e) {
                     failCount.incrementAndGet();
+                } catch (Exception e) {
+                    unexpectedCount.incrementAndGet();
                 } finally {
                     done.countDown();
                 }
@@ -127,8 +132,11 @@ class RentConcurrencyTest extends IntegrationTestSupport {
                 .findByRentIdAndDate(rentId, BOARDING_DATE)
                 .orElseThrow();
 
-        assertThat(successCount.get()).isEqualTo(RECRUITMENT_COUNT);
-        assertThat(failCount.get()).isEqualTo(THREAD_COUNT - RECRUITMENT_COUNT);
-        assertThat(slot.getPassengerCount()).isEqualTo(RECRUITMENT_COUNT);
+        assertThat(unexpectedCount.get()).isZero();
+        assertSoftly(soft -> {
+            soft.assertThat(successCount.get()).isEqualTo(RECRUITMENT_COUNT);
+            soft.assertThat(failCount.get()).isEqualTo(THREAD_COUNT - RECRUITMENT_COUNT);
+            soft.assertThat(slot.getPassengerCount()).isEqualTo(RECRUITMENT_COUNT);
+        });
     }
 }
