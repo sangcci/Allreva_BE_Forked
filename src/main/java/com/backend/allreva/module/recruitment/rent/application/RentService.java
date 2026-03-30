@@ -153,9 +153,9 @@ public class RentService {
             throw new CustomException(RentErrorCode.RENT_JOIN_ALREADY_EXISTS);
         }
 
-        int updatedPassengerCount = rentBoardingSlotRepository.incrementPassengerCount(
+        int updatedRowCount = rentBoardingSlotRepository.incrementPassengerCount(
                 request.rentId(), request.boardingDate(), request.passengerNum());
-        if (updatedPassengerCount == 0) {
+        if (updatedRowCount == 0) {
             throw new CustomException(RentErrorCode.SLOT_FULL);
         }
 
