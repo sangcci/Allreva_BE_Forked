@@ -373,8 +373,8 @@ class RentIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("모든 탑승 날짜가 반환된다")
             void it_returns_all_boarding_dates() {
-                RentDetailResponse detail = rentService.getRentDetail(savedRentId, null);
-                assertThat(detail.getBoardingDates()).hasSize(2);
+                RentDetailResponse detail = rentService.getRentDetail(savedRentId);
+                assertThat(detail.boardingDates()).hasSize(2);
             }
         }
 
@@ -385,7 +385,7 @@ class RentIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("NOT_FOUND 예외가 발생한다")
             void it_throws_not_found() {
-                assertThatThrownBy(() -> rentService.getRentDetail(999L, null))
+                assertThatThrownBy(() -> rentService.getRentDetail(999L))
                         .isInstanceOf(CustomException.class)
                         .hasMessageContaining(RentErrorCode.RENT_NOT_FOUND.getMessage());
             }

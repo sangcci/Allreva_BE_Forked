@@ -1,21 +1,13 @@
 package com.backend.allreva.module.recruitment.rent.infra;
 
-import static com.backend.allreva.module.concert.concert.domain.QConcert.concert;
-import static com.backend.allreva.module.concert.place.domain.QConcertHall.concertHall;
 import static com.backend.allreva.module.recruitment.rent.domain.QRent.rent;
-import static com.backend.allreva.module.recruitment.rent.domain.QRentBoardingSlot.rentBoardingSlot;
 
-import com.backend.allreva.module.recruitment.rent.application.dto.RentAdminSummaryResponse;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse.RentBoardingDateResponse;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
 import com.backend.allreva.module.recruitment.rent.domain.Rent;
 import com.backend.allreva.module.recruitment.rent.domain.RentRepository;
 import com.backend.allreva.module.recruitment.rent.domain.value.Region;
 import com.backend.allreva.module.recruitment.rent.infra.jpa.RentJpaRepository;
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
@@ -52,21 +44,14 @@ public class RentRepositoryImpl implements RentRepository {
     }
 
     @Override
-    public List<RentSummaryResponse> findRentSummaries(
+    public List<Rent> findAll(
             final Region region,
             final SortType sortType,
             final LocalDate lastEndDate,
             final Long lastId,
             final int pageSize) {
         return queryFactory
-                .select(Projections.constructor(
-                        RentSummaryResponse.class,
-                        rent.id,
-                        rent.title,
-                        rent.boardingArea,
-                        rent.endDate,
-                        rent.image.url))
-                .from(rent)
+                .selectFrom(rent)
                 .where(
                         rent.isClosed.eq(false),
                         getRegionCondition(region),
@@ -78,104 +63,18 @@ public class RentRepositoryImpl implements RentRepository {
     }
 
     @Override
-    public List<RentAdminSummaryResponse> findRentAdminSummaries(
-            final Long memberId, final Long lastId, final int pageSize) {
+    public List<Rent> findAllByIds(final List<Long> ids) {
+        return rentJpaRepository.findAllById(ids);
+    }
+
+    @Override
+    public List<Rent> findAllByMemberId(final Long memberId, final Long lastId, final int pageSize) {
         return queryFactory
-                .select(Projections.constructor(
-                        RentAdminSummaryResponse.class,
-                        rent.id,
-                        rent.title,
-                        rentBoardingSlot.date,
-                        rent.boardingArea,
-                        rent.createdAt,
-                        rent.endDate,
-                        rentBoardingSlot.recruitmentCount,
-                        rentBoardingSlot.passengerCount,
-                        rent.isClosed,
-                        rent.bus.busSize,
-                        rent.bus.busType,
-                        rent.bus.maxPassenger))
-                .from(rent)
-                .join(rentBoardingSlot)
-                .on(rent.id.eq(rentBoardingSlot.rentId))
+                .selectFrom(rent)
                 .where(rent.memberId.eq(memberId), getPagingCondition(SortType.LATEST, lastId, null))
                 .orderBy(orderSpecifiers(SortType.LATEST))
                 .limit(pageSize)
                 .fetch();
-    }
-
-    @Override
-    public Optional<RentDetailResponse> findRentDetail(final Long rentId) {
-        // Step 1: Fetch rent basic info including recruitmentCount from first boarding slot
-        var tuple = queryFactory
-                .select(
-                        concert.concertInfo.title,
-                        rent.image.url,
-                        rent.title,
-                        rent.artistName,
-                        rent.region,
-                        rent.boardingArea,
-                        concertHall.name,
-                        rent.upTime,
-                        rent.downTime,
-                        rent.bus.busSize,
-                        rent.bus.busType,
-                        rent.bus.maxPassenger,
-                        rent.price.roundPrice,
-                        rent.price.upTimePrice,
-                        rent.price.downTimePrice,
-                        rentBoardingSlot.recruitmentCount,
-                        rent.endDate,
-                        rent.chatUrl,
-                        rent.refundType,
-                        rent.information,
-                        rent.isClosed)
-                .from(rent)
-                .join(rentBoardingSlot)
-                .on(rent.id.eq(rentBoardingSlot.rentId))
-                .leftJoin(concert)
-                .on(rent.concertId.eq(concert.id))
-                .leftJoin(concertHall)
-                .on(concert.code.hallCode.eq(concertHall.id))
-                .where(rent.id.eq(rentId))
-                .fetchFirst();
-
-        if (tuple == null) {
-            return Optional.empty();
-        }
-
-        // Step 2: Fetch all boarding dates separately to avoid fetchFirst limitation with 1:N
-        List<RentBoardingDateResponse> boardingDates = queryFactory
-                .select(Projections.constructor(
-                        RentBoardingDateResponse.class, rentBoardingSlot.date, rentBoardingSlot.passengerCount))
-                .from(rentBoardingSlot)
-                .where(rentBoardingSlot.rentId.eq(rentId))
-                .orderBy(rentBoardingSlot.date.asc())
-                .fetch();
-
-        return Optional.of(new RentDetailResponse(
-                tuple.get(concert.concertInfo.title),
-                tuple.get(rent.image.url),
-                tuple.get(rent.title),
-                tuple.get(rent.artistName),
-                tuple.get(rent.region),
-                tuple.get(rent.boardingArea),
-                tuple.get(concertHall.name),
-                tuple.get(rent.upTime),
-                tuple.get(rent.downTime),
-                boardingDates,
-                tuple.get(rent.bus.busSize),
-                tuple.get(rent.bus.busType),
-                tuple.get(rent.bus.maxPassenger),
-                tuple.get(rent.price.roundPrice),
-                tuple.get(rent.price.upTimePrice),
-                tuple.get(rent.price.downTimePrice),
-                tuple.get(rentBoardingSlot.recruitmentCount),
-                tuple.get(rent.endDate),
-                tuple.get(rent.chatUrl),
-                tuple.get(rent.refundType),
-                tuple.get(rent.information),
-                tuple.get(rent.isClosed)));
     }
 
     private BooleanExpression getRegionCondition(final Region region) {

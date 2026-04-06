@@ -12,6 +12,8 @@ public interface RentBoardingSlotRepository {
 
     List<RentBoardingSlot> findAllByRentId(Long rentId);
 
+    List<RentBoardingSlot> findAllByRentIds(List<Long> rentIds);
+
     RentBoardingSlot save(RentBoardingSlot slot);
 
     int incrementPassengerCount(Long rentId, LocalDate boardingDate, int count);

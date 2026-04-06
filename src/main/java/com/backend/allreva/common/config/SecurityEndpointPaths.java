@@ -24,8 +24,17 @@ public final class SecurityEndpointPaths {
     public static final String[] USER_LIST = {
         // member
         "/api/v1/members/**",
-        // rent
-        "/api/v1/rents/**",
+        // rent - write (host)
+        "/api/v1/rents",
+        "/api/v1/rents/close",
+        // rent - host read
+        "/api/v1/rents/host/**",
+        // rent - participant
+        "/api/v1/rents/join/**",
+        // rent - member detail overlay
+        "/api/v1/rents/*/me",
+        // rent - deposit account (merge to host detail 예정)
+        "/api/v1/rents/*/deposit-account",
         // survey
         "/api/v1/surveys/**"
     };
@@ -33,7 +42,7 @@ public final class SecurityEndpointPaths {
     public static final String[] ANONYMOUS_LIST = {
         // member
         "/api/v1/members/register",
-        // rent
+        // rent - public read
         "/api/v1/rents/{id:\\d+}",
         "/api/v1/rents/main",
         "/api/v1/rents/list",

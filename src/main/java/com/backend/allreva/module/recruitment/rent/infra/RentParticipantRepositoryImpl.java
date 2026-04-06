@@ -1,11 +1,9 @@
 package com.backend.allreva.module.recruitment.rent.infra;
 
 import static com.backend.allreva.module.recruitment.rent.domain.QRent.rent;
-import static com.backend.allreva.module.recruitment.rent.domain.QRentBoardingSlot.rentBoardingSlot;
 import static com.backend.allreva.module.recruitment.rent.domain.participant.QRentParticipant.rentParticipant;
 
-import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinCountResponse;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.JoinedRentCountResponse;
 import com.backend.allreva.module.recruitment.rent.domain.participant.RentParticipant;
 import com.backend.allreva.module.recruitment.rent.domain.participant.RentParticipantRepository;
 import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
@@ -38,6 +36,12 @@ public class RentParticipantRepositoryImpl implements RentParticipantRepository 
     }
 
     @Override
+    public Optional<RentParticipant> findByMemberIdAndBoardingDateAndRentId(
+            final Long memberId, final LocalDate boardingDate, final Long rentId) {
+        return rentParticipantJpaRepository.findByMemberIdAndBoardingDateAndRentId(memberId, boardingDate, rentId);
+    }
+
+    @Override
     public void delete(final RentParticipant participant) {
         rentParticipantJpaRepository.delete(participant);
     }
@@ -48,7 +52,7 @@ public class RentParticipantRepositoryImpl implements RentParticipantRepository 
     }
 
     @Override
-    public List<RentParticipant> findByRentIdAndBoardingDate(final Long rentId, final LocalDate boardingDate) {
+    public List<RentParticipant> findAllByRentIdAndBoardingDate(final Long rentId, final LocalDate boardingDate) {
         return rentParticipantJpaRepository.findByRentIdAndBoardingDate(rentId, boardingDate);
     }
 
@@ -58,44 +62,16 @@ public class RentParticipantRepositoryImpl implements RentParticipantRepository 
     }
 
     @Override
-    public List<RentJoinResponse> findByMemberId(final Long memberId) {
-        return queryFactory
-                .select(Projections.constructor(
-                        RentJoinResponse.class,
-                        rent.id,
-                        rent.title,
-                        rentBoardingSlot.date,
-                        rent.boardingArea,
-                        rent.createdAt,
-                        rent.endDate,
-                        rentBoardingSlot.recruitmentCount,
-                        rentBoardingSlot.passengerCount,
-                        rent.isClosed,
-                        rentParticipant.id,
-                        rentParticipant.createdAt,
-                        rentParticipant.passengerNum,
-                        rentParticipant.boardingType,
-                        rentParticipant.depositor.depositorName,
-                        rentParticipant.depositor.depositorTime,
-                        rentParticipant.refundType))
-                .from(rent)
-                .join(rentBoardingSlot)
-                .on(rent.id.eq(rentBoardingSlot.rentId))
-                .join(rentParticipant)
-                .on(rentBoardingSlot
-                        .rentId
-                        .eq(rentParticipant.rentId)
-                        .and(rentBoardingSlot.date.eq(rentParticipant.boardingDate)))
-                .where(rentParticipant.memberId.eq(memberId))
-                .fetch();
+    public List<RentParticipant> findAllByMemberId(final Long memberId) {
+        return rentParticipantJpaRepository.findAllByMemberId(memberId);
     }
 
     @Override
-    public Optional<RentJoinCountResponse> findRentJoinCount(
+    public Optional<JoinedRentCountResponse> findJoinedRentCount(
             final Long memberId, final LocalDate boardingDate, final Long rentId) {
-        RentJoinCountResponse result = queryFactory
+        JoinedRentCountResponse result = queryFactory
                 .select(Projections.constructor(
-                        RentJoinCountResponse.class,
+                        JoinedRentCountResponse.class,
                         getRentBoardingCount(BoardingType.UP, "rentUpCount"),
                         getRentBoardingCount(BoardingType.DOWN, "rentDownCount"),
                         getRentBoardingCount(BoardingType.ROUND, "rentRoundCount"),

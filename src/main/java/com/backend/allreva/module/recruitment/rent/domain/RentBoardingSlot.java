@@ -6,7 +6,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import lombok.AccessLevel;
@@ -17,9 +16,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
-@Table(
-        name = "rent_boarding_slots",
-        indexes = @Index(name = "idx_rent_boarding_slots_rent_date", columnList = "rent_id, date"))
+@Table(name = "rent_boarding_slots")
 @SQLDelete(sql = "UPDATE rent_boarding_slots SET deleted_at = NOW() WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)

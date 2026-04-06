@@ -31,6 +31,11 @@ public class RentBoardingSlotRepositoryImpl implements RentBoardingSlotRepositor
     }
 
     @Override
+    public List<RentBoardingSlot> findAllByRentIds(final List<Long> rentIds) {
+        return rentBoardingSlotJpaRepository.findAllByRentIdIn(rentIds);
+    }
+
+    @Override
     public RentBoardingSlot save(final RentBoardingSlot slot) {
         return rentBoardingSlotJpaRepository.save(slot);
     }

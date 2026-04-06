@@ -15,6 +15,8 @@ public interface RentBoardingSlotJpaRepository extends JpaRepository<RentBoardin
 
     List<RentBoardingSlot> findAllByRentId(Long rentId);
 
+    List<RentBoardingSlot> findAllByRentIdIn(List<Long> rentIds);
+
     @Modifying
     @Query("UPDATE RentBoardingSlot s SET s.deletedAt = CURRENT_TIMESTAMP WHERE s.rentId = :rentId")
     void deleteAllByRentId(@Param("rentId") Long rentId);

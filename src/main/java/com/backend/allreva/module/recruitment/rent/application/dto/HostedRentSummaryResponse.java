@@ -7,7 +7,7 @@ import com.backend.allreva.module.recruitment.rent.domain.value.BusType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public record RentAdminSummaryResponse(
+public record HostedRentSummaryResponse(
         Long rentId,
         String title,
         LocalDate boardingDate,
@@ -20,8 +20,8 @@ public record RentAdminSummaryResponse(
         BusSize busSize,
         BusType busType,
         int maxPassenger) {
-    public static RentAdminSummaryResponse from(final Rent rent, final RentBoardingSlot slot) {
-        return new RentAdminSummaryResponse(
+    public static HostedRentSummaryResponse from(final Rent rent, final RentBoardingSlot slot) {
+        return new HostedRentSummaryResponse(
                 rent.getId(),
                 rent.getTitle(),
                 slot.getDate(),

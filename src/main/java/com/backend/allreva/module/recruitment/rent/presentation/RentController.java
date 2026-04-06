@@ -5,14 +5,16 @@ import com.backend.allreva.module.auth.security.AuthMember;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.recruitment.rent.application.RentService;
 import com.backend.allreva.module.recruitment.rent.application.dto.DepositAccountResponse;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentAdminDetailResponse;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentAdminSummaryResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.HostedRentDetailResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.HostedRentSummaryResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.JoinedRentDetailResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.JoinedRentResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentIdRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinIdRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinRequest;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinUpdateRequest;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentMeResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
@@ -42,8 +44,36 @@ public class RentController {
 
     private final RentService rentService;
 
+    // User EndPoints
+    @GetMapping("/main")
+    public Response<List<RentSummaryResponse>> getRentMainSummaries() {
+        return Response.onSuccess(rentService.getRentSummaries(null, SortType.LATEST, null, null, 3));
+    }
+
+    @GetMapping("/list")
+    public Response<List<RentSummaryResponse>> getRentSummaries(
+            @RequestParam(name = "region", required = false) final Region region,
+            @RequestParam(name = "sort", defaultValue = "LATEST") final SortType sortType,
+            @RequestParam(name = "lastId", required = false) final Long lastId,
+            @RequestParam(name = "lastEndDate", required = false) final LocalDate lastEndDate,
+            @RequestParam(name = "pageSize", defaultValue = "10") @Min(10) final int pageSize) {
+        return Response.onSuccess(rentService.getRentSummaries(region, sortType, lastEndDate, lastId, pageSize));
+    }
+
+    @GetMapping("/{id}")
+    public Response<RentDetailResponse> getRentDetail(@PathVariable final Long id) {
+        return Response.onSuccess(rentService.getRentDetail(id));
+    }
+
+    // User Endpoints
+    @GetMapping("/{id}/me")
+    public Response<RentMeResponse> getRentDetailMe(@PathVariable final Long id, @AuthMember final Member member) {
+        return Response.onSuccess(rentService.getRentDetailMe(id, member));
+    }
+
+    // Host Endpoints
     @PostMapping
-    public Response<Long> createRent(
+    public Response<Long> registerRent(
             @RequestBody @Valid final RentRegisterRequest rentRegisterRequest, @AuthMember final Member member) {
         Long rentId = rentService.registerRent(rentRegisterRequest, member.getId());
         return Response.onSuccess(rentId);
@@ -70,33 +100,12 @@ public class RentController {
         return Response.onSuccess();
     }
 
-    @GetMapping("/main")
-    public Response<List<RentSummaryResponse>> getRentMainSummaries() {
-        return Response.onSuccess(rentService.getRentMainSummaries());
-    }
-
-    @GetMapping("/list")
-    public Response<List<RentSummaryResponse>> getRentSummaries(
-            @RequestParam(name = "region", required = false) final Region region,
-            @RequestParam(name = "sort", defaultValue = "LATEST") final SortType sortType,
-            @RequestParam(name = "lastId", required = false) final Long lastId,
-            @RequestParam(name = "lastEndDate", required = false) final LocalDate lastEndDate,
-            @RequestParam(name = "pageSize", defaultValue = "10") @Min(10) final int pageSize) {
-        return Response.onSuccess(rentService.getRentSummaries(region, sortType, lastEndDate, lastId, pageSize));
-    }
-
-    @GetMapping("/register/list")
-    public Response<List<RentAdminSummaryResponse>> getRentAdminSummaries(
+    @GetMapping("/host/me/list")
+    public Response<List<HostedRentSummaryResponse>> getRentHostedRentSummaries(
             @AuthMember Member member,
             @RequestParam(name = "lastId", required = false) final Long lastId,
             @RequestParam(name = "pageSize", defaultValue = "10") @Min(10) final int pageSize) {
-        return Response.onSuccess(rentService.getRentAdminSummaries(member.getId(), lastId, pageSize));
-    }
-
-    @GetMapping("/{id}")
-    public Response<RentDetailResponse> getRentDetailById(
-            @PathVariable final Long id, @AuthMember final Member member) {
-        return Response.onSuccess(rentService.getRentDetail(id, member));
+        return Response.onSuccess(rentService.getRentHostSummaries(member.getId(), lastId, pageSize));
     }
 
     @GetMapping("/{id}/deposit-account")
@@ -104,18 +113,15 @@ public class RentController {
         return Response.onSuccess(rentService.getDepositAccount(id));
     }
 
-    @GetMapping("/{id}/register")
-    public Response<RentAdminDetailResponse> getRentAdminDetail(
+    @GetMapping("/host/me/{id}")
+    public Response<HostedRentDetailResponse> getHostedRentDetail(
             @PathVariable("id") final Long rentId,
             @RequestParam final LocalDate boardingDate,
             @AuthMember Member member) {
-        return Response.onSuccess(rentService.getRentAdminDetail(member.getId(), boardingDate, rentId));
+        return Response.onSuccess(rentService.getRentHostDetail(member.getId(), boardingDate, rentId));
     }
 
-    // -------------------------
     // Participant Endpoints
-    // -------------------------
-
     @PostMapping("/join")
     public Response<Long> joinRent(
             @RequestBody @Valid final RentJoinRequest rentJoinRequest, @AuthMember final Member member) {
@@ -137,8 +143,16 @@ public class RentController {
         return Response.onSuccess();
     }
 
-    @GetMapping("/join/list")
-    public Response<List<RentJoinResponse>> getRentJoinList(@AuthMember final Member member) {
-        return Response.onSuccess(rentService.getRentJoinList(member.getId()));
+    @GetMapping("/join/me/list")
+    public Response<List<JoinedRentResponse>> getJoinedRentSummeries(@AuthMember final Member member) {
+        return Response.onSuccess(rentService.getJoinedRentSummaries(member.getId()));
+    }
+
+    @GetMapping("/join/me/{id}")
+    public Response<JoinedRentDetailResponse> getJoinedRentDetail(
+            @PathVariable("id") final Long rentId,
+            @RequestParam final LocalDate boardingDate,
+            @AuthMember Member member) {
+        return Response.onSuccess(rentService.getJoinedRentDetail(member.getId(), boardingDate, rentId));
     }
 }
