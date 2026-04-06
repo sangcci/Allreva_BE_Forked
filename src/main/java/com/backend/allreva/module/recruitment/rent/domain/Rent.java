@@ -3,6 +3,7 @@ package com.backend.allreva.module.recruitment.rent.domain;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.BaseEntity;
 import com.backend.allreva.common.model.Image;
+import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
 import com.backend.allreva.module.recruitment.rent.domain.value.Bus;
 import com.backend.allreva.module.recruitment.rent.domain.value.Price;
 import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
@@ -65,8 +66,9 @@ public class Rent extends BaseEntity {
     @Column(nullable = false)
     private Region region;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String depositAccount;
+    private BoardingType boardingType;
 
     @Column(nullable = false)
     private String boardingArea;
@@ -119,6 +121,7 @@ public class Rent extends BaseEntity {
             final String downTime,
             final Image image,
             final Region region,
+            final BoardingType boardingType,
             final Bus bus,
             final Price price,
             final LocalDate endDate,
@@ -127,6 +130,7 @@ public class Rent extends BaseEntity {
             final String information) {
         this.image = image;
         this.region = region;
+        this.boardingType = boardingType;
         this.boardingArea = boardingArea;
         this.upTime = upTime;
         this.downTime = downTime;

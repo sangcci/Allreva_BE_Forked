@@ -2,7 +2,6 @@ package com.backend.allreva.module.recruitment.rent.domain.participant;
 
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.BaseEntity;
-import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
 import com.backend.allreva.module.recruitment.rent.domain.value.Depositor;
 import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
 import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
@@ -49,10 +48,6 @@ public class RentParticipant extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private BoardingType boardingType;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private RefundType refundType;
 
     @Column(nullable = false)
@@ -67,7 +62,6 @@ public class RentParticipant extends BaseEntity {
             Long memberId,
             Depositor depositor,
             int passengerNum,
-            BoardingType boardingType,
             RefundType refundType,
             String refundAccount,
             LocalDate boardingDate) {
@@ -75,7 +69,6 @@ public class RentParticipant extends BaseEntity {
         this.memberId = memberId;
         this.depositor = depositor;
         this.passengerNum = passengerNum;
-        this.boardingType = boardingType;
         this.refundType = refundType;
         this.refundAccount = refundAccount;
         this.boardingDate = boardingDate;
@@ -84,13 +77,11 @@ public class RentParticipant extends BaseEntity {
     public void update(
             Depositor depositor,
             int passengerNum,
-            BoardingType boardingType,
             RefundType refundType,
             String refundAccount,
             LocalDate boardingDate) {
         this.depositor = depositor;
         this.passengerNum = passengerNum;
-        this.boardingType = boardingType;
         this.refundType = refundType;
         this.refundAccount = refundAccount;
         this.boardingDate = boardingDate;

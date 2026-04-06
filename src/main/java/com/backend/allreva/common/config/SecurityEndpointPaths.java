@@ -33,8 +33,6 @@ public final class SecurityEndpointPaths {
         "/api/v1/rents/join/**",
         // rent - member detail overlay
         "/api/v1/rents/*/me",
-        // rent - deposit account (merge to host detail 예정)
-        "/api/v1/rents/*/deposit-account",
         // survey
         "/api/v1/surveys/**"
     };

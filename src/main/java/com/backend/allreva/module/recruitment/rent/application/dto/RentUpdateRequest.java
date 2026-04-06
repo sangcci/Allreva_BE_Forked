@@ -1,6 +1,7 @@
 package com.backend.allreva.module.recruitment.rent.application.dto;
 
 import com.backend.allreva.common.model.Image;
+import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusSize;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusType;
 import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
@@ -17,6 +18,7 @@ import java.util.List;
 public record RentUpdateRequest(
         @NotNull Long rentId,
         @NotNull Region region,
+        @NotNull BoardingType boardingType,
         @NotNull String boardingArea,
         @NotNull String upTime,
         @NotNull String downTime,

@@ -4,6 +4,4 @@ import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import java.util.List;
 
 public record HostedRentDetailResponse(
-        @JsonUnwrapped HostedRentSummaryResponse rentAdminSummaryResponse,
-        @JsonUnwrapped JoinedRentCountResponse rentJoinCountResponse,
-        List<JoinedRentDetailResponse> rentJoinDetailResponses) {}
+        @JsonUnwrapped HostedRentSummaryResponse rentSummary, List<JoinedRentDetailResponse> participants) {}

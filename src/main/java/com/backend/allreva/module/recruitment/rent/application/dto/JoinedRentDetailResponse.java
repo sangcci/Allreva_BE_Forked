@@ -1,7 +1,6 @@
 package com.backend.allreva.module.recruitment.rent.application.dto;
 
 import com.backend.allreva.module.recruitment.rent.domain.participant.RentParticipant;
-import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
 import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
 import java.time.LocalDateTime;
 
@@ -11,7 +10,6 @@ public record JoinedRentDetailResponse(
         String depositorName,
         String phone,
         int passengerNum,
-        BoardingType boardingType,
         String depositorTime,
         RefundType refundType,
         String rentAccount) {
@@ -23,7 +21,6 @@ public record JoinedRentDetailResponse(
                 participant.getDepositor().getDepositorName(),
                 participant.getDepositor().getPhone(),
                 participant.getPassengerNum(),
-                participant.getBoardingType(),
                 participant.getDepositor().getDepositorTime(),
                 participant.getRefundType(),
                 participant.getRefundAccount());

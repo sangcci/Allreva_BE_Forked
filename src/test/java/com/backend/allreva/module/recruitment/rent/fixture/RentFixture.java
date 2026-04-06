@@ -29,7 +29,7 @@ public final class RentFixture {
                 "테스트 차대절",
                 "테스트 아티스트",
                 Region.서울,
-                "국민은행 12345",
+                BoardingType.ROUND,
                 "서울역 앞",
                 "10:00",
                 "22:00",
@@ -52,6 +52,7 @@ public final class RentFixture {
         return new RentUpdateRequest(
                 rentId,
                 Region.서울,
+                BoardingType.ROUND,
                 "부산역 앞",
                 "09:00",
                 "23:00",
@@ -78,7 +79,6 @@ public final class RentFixture {
         return RentJoinRequest.builder()
                 .rentId(rentId)
                 .boardingDate(date)
-                .boardingType(BoardingType.ROUND)
                 .passengerNum(passengerNum)
                 .depositorName("홍길동")
                 .depositorTime("12:00")

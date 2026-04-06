@@ -4,7 +4,6 @@ import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.module.auth.security.AuthMember;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.recruitment.rent.application.RentService;
-import com.backend.allreva.module.recruitment.rent.application.dto.DepositAccountResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.HostedRentDetailResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.HostedRentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.JoinedRentDetailResponse;
@@ -106,11 +105,6 @@ public class RentController {
             @RequestParam(name = "lastId", required = false) final Long lastId,
             @RequestParam(name = "pageSize", defaultValue = "10") @Min(10) final int pageSize) {
         return Response.onSuccess(rentService.getRentHostSummaries(member.getId(), lastId, pageSize));
-    }
-
-    @GetMapping("/{id}/deposit-account")
-    public Response<DepositAccountResponse> getDepositAccountById(@PathVariable final Long id) {
-        return Response.onSuccess(rentService.getDepositAccount(id));
     }
 
     @GetMapping("/host/me/{id}")

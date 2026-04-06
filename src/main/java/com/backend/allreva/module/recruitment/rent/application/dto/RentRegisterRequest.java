@@ -2,6 +2,7 @@ package com.backend.allreva.module.recruitment.rent.application.dto;
 
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.module.recruitment.rent.domain.Rent;
+import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
 import com.backend.allreva.module.recruitment.rent.domain.value.Bus;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusSize;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusType;
@@ -23,7 +24,7 @@ public record RentRegisterRequest(
         @NotBlank String title,
         @NotNull String artistName,
         @NotNull Region region,
-        @NotNull String depositAccount,
+        @NotNull BoardingType boardingType,
         @NotNull String boardingArea,
         @NotNull String upTime,
         @NotNull String downTime,
@@ -52,7 +53,7 @@ public record RentRegisterRequest(
                 .image(image)
                 .artistName(artistName)
                 .region(region)
-                .depositAccount(depositAccount)
+                .boardingType(boardingType)
                 .boardingArea(boardingArea)
                 .upTime(upTime)
                 .downTime(downTime)
