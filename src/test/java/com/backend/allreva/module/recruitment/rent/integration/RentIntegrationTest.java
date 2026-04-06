@@ -18,7 +18,6 @@ import com.backend.allreva.module.recruitment.rent.application.RentService;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
-import com.backend.allreva.module.recruitment.rent.domain.RentBoardingSlotRepository;
 import com.backend.allreva.module.recruitment.rent.domain.RentRepository;
 import com.backend.allreva.module.recruitment.rent.domain.participant.RentParticipantRepository;
 import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
@@ -47,9 +46,6 @@ class RentIntegrationTest extends IntegrationTestSupport {
 
     @Autowired
     private RentRepository rentRepository;
-
-    @Autowired
-    private RentBoardingSlotRepository rentBoardingSlotRepository;
 
     @Autowired
     private RentParticipantRepository rentParticipantRepository;
@@ -120,7 +116,7 @@ class RentIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("탑승 날짜 슬롯이 생성된다")
             void it_creates_boarding_slots() {
-                var slots = rentBoardingSlotRepository.findAllByRentId(savedRentId);
+                var slots = rentRepository.findById(savedRentId).orElseThrow().getBoardingSlots();
                 assertThat(slots).hasSize(2);
                 slots.forEach(slot -> {
                     assertThat(slot.getRecruitmentCount()).isEqualTo(30);
@@ -165,7 +161,7 @@ class RentIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("탑승 날짜 슬롯이 교체된다")
             void it_replaces_boarding_slots() {
-                var slots = rentBoardingSlotRepository.findAllByRentId(savedRentId);
+                var slots = rentRepository.findById(savedRentId).orElseThrow().getBoardingSlots();
                 assertThat(slots).hasSize(1);
                 assertThat(slots.get(0).getDate()).isEqualTo(LocalDate.of(2030, 12, 1));
                 assertThat(slots.get(0).getRecruitmentCount()).isEqualTo(20);
@@ -312,8 +308,9 @@ class RentIntegrationTest extends IntegrationTestSupport {
             void it_increases_passenger_count() {
                 rentService.joinRent(
                         RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 3), savedMember.getId());
-                var slot = rentBoardingSlotRepository
-                        .findByRentIdAndDate(savedRentId, TARGET_DATE)
+                var slot = rentRepository.findById(savedRentId).orElseThrow().getBoardingSlots().stream()
+                        .filter(s -> s.getDate().equals(TARGET_DATE))
+                        .findFirst()
                         .orElseThrow();
                 assertThat(slot.getPassengerCount()).isEqualTo(3);
             }

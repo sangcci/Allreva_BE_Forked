@@ -3,7 +3,6 @@ package com.backend.allreva.module.recruitment.rent.application.dto;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.recruitment.rent.domain.Rent;
-import com.backend.allreva.module.recruitment.rent.domain.RentBoardingSlot;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusSize;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusType;
 import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
@@ -35,9 +34,8 @@ public record RentDetailResponse(
         String information,
         boolean isClosed) {
 
-    public static RentDetailResponse from(
-            final Rent rent, final List<RentBoardingSlot> slots, final Concert concert, final ConcertHall concertHall) {
-        List<RentBoardingDateResponse> boardingDates = slots.stream()
+    public static RentDetailResponse from(final Rent rent, final Concert concert, final ConcertHall concertHall) {
+        List<RentBoardingDateResponse> boardingDates = rent.getBoardingSlots().stream()
                 .map(slot -> new RentBoardingDateResponse(slot.getDate(), slot.getPassengerCount()))
                 .toList();
 
@@ -58,7 +56,9 @@ public record RentDetailResponse(
                 rent.getPrice().getRoundPrice(),
                 rent.getPrice().getUpTimePrice(),
                 rent.getPrice().getDownTimePrice(),
-                slots.isEmpty() ? 0 : slots.get(0).getRecruitmentCount(),
+                rent.getBoardingSlots().isEmpty()
+                        ? 0
+                        : rent.getBoardingSlots().get(0).getRecruitmentCount(),
                 rent.getEndDate(),
                 rent.getChatUrl(),
                 rent.getRefundType(),

@@ -2,7 +2,6 @@ package com.backend.allreva.module.recruitment.rent.infra.jpa;
 
 import com.backend.allreva.module.recruitment.rent.domain.RentBoardingSlot;
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -13,19 +12,11 @@ public interface RentBoardingSlotJpaRepository extends JpaRepository<RentBoardin
 
     Optional<RentBoardingSlot> findByRentIdAndDate(Long rentId, LocalDate date);
 
-    List<RentBoardingSlot> findAllByRentId(Long rentId);
-
-    List<RentBoardingSlot> findAllByRentIdIn(List<Long> rentIds);
-
-    @Modifying
-    @Query("UPDATE RentBoardingSlot s SET s.deletedAt = CURRENT_TIMESTAMP WHERE s.rentId = :rentId")
-    void deleteAllByRentId(@Param("rentId") Long rentId);
-
     @Modifying
     @Query("""
         UPDATE RentBoardingSlot s
         SET s.passengerCount = s.passengerCount + :count
-        WHERE s.rentId = :rentId
+        WHERE s.rent.id = :rentId
           AND s.date = :boardingDate
           AND s.passengerCount + :count <= s.recruitmentCount
         """)

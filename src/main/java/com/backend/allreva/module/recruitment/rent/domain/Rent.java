@@ -9,6 +9,7 @@ import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
 import com.backend.allreva.module.recruitment.rent.domain.value.Region;
 import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -17,8 +18,11 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -94,6 +98,20 @@ public class Rent extends BaseEntity {
     @Builder.Default
     @Column(nullable = false)
     private boolean isClosed = false;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "rent", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RentBoardingSlot> boardingSlots = new ArrayList<>();
+
+    public void addBoardingSlot(final RentBoardingSlot slot) {
+        boardingSlots.add(slot);
+        slot.assignRent(this);
+    }
+
+    public void replaceBoardingSlots(final List<RentBoardingSlot> newSlots) {
+        boardingSlots.clear();
+        newSlots.forEach(this::addBoardingSlot);
+    }
 
     public void updateRent(
             final String boardingArea,

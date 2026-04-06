@@ -6,33 +6,39 @@ import com.backend.allreva.module.recruitment.rent.domain.value.BusSize;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusType;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record HostedRentSummaryResponse(
         Long rentId,
         String title,
-        LocalDate boardingDate,
         String boardingArea,
         LocalDateTime rentStartDate,
         LocalDate rentEndDate,
-        int recruitmentCount,
-        int participationCount,
         boolean isClosed,
         BusSize busSize,
         BusType busType,
-        int maxPassenger) {
-    public static HostedRentSummaryResponse from(final Rent rent, final RentBoardingSlot slot) {
+        int maxPassenger,
+        List<BoardingSlotSummary> boardingSlots) {
+
+    public static HostedRentSummaryResponse from(final Rent rent) {
+        List<BoardingSlotSummary> slots =
+                rent.getBoardingSlots().stream().map(BoardingSlotSummary::from).toList();
         return new HostedRentSummaryResponse(
                 rent.getId(),
                 rent.getTitle(),
-                slot.getDate(),
                 rent.getBoardingArea(),
                 rent.getCreatedAt(),
                 rent.getEndDate(),
-                slot.getRecruitmentCount(),
-                slot.getPassengerCount(),
                 rent.isClosed(),
                 rent.getBus().getBusSize(),
                 rent.getBus().getBusType(),
-                rent.getBus().getMaxPassenger());
+                rent.getBus().getMaxPassenger(),
+                slots);
+    }
+
+    public record BoardingSlotSummary(LocalDate boardingDate, int recruitmentCount, int passengerCount) {
+        public static BoardingSlotSummary from(final RentBoardingSlot slot) {
+            return new BoardingSlotSummary(slot.getDate(), slot.getRecruitmentCount(), slot.getPassengerCount());
+        }
     }
 }
