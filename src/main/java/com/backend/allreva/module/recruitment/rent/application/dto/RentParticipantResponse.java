@@ -4,7 +4,7 @@ import com.backend.allreva.module.recruitment.rent.domain.participant.RentPartic
 import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
 import java.time.LocalDateTime;
 
-public record JoinedRentDetailResponse(
+public record RentParticipantResponse(
         Long rentParticipantId,
         LocalDateTime applyDate,
         String depositorName,
@@ -14,8 +14,8 @@ public record JoinedRentDetailResponse(
         RefundType refundType,
         String rentAccount) {
 
-    public static JoinedRentDetailResponse from(final RentParticipant participant) {
-        return new JoinedRentDetailResponse(
+    public static RentParticipantResponse from(final RentParticipant participant) {
+        return new RentParticipantResponse(
                 participant.getId(),
                 participant.getCreatedAt(),
                 participant.getDepositor().getDepositorName(),

@@ -9,15 +9,14 @@ import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import com.backend.allreva.module.notification.domain.event.NotificationEvent;
 import com.backend.allreva.module.notification.domain.value.NotificationType;
-import com.backend.allreva.module.recruitment.rent.application.dto.HostedRentDetailResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.HostedRentSummaryResponse;
-import com.backend.allreva.module.recruitment.rent.application.dto.JoinedRentDetailResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.JoinedRentResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentIdRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinIdRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinUpdateRequest;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentParticipantResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
@@ -161,9 +160,8 @@ public class RentService {
     }
 
     @Transactional(readOnly = true)
-    public HostedRentDetailResponse getRentHostDetail(
+    public List<RentParticipantResponse> getRentHostDetail(
             final Long memberId, final LocalDate boardingDate, final Long rentId) {
-        // valid not found
         Rent rent = rentRepository
                 .findByIdAndMemberId(rentId, memberId)
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
@@ -172,14 +170,9 @@ public class RentService {
                 .findFirst()
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
 
-        // find data
-        List<JoinedRentDetailResponse> joinDetails =
-                rentParticipantRepository.findAllByRentIdAndBoardingDate(rentId, boardingDate).stream()
-                        .map(JoinedRentDetailResponse::from)
-                        .toList();
-
-        // mapping
-        return new HostedRentDetailResponse(HostedRentSummaryResponse.from(rent), joinDetails);
+        return rentParticipantRepository.findAllByRentIdAndBoardingDate(rentId, boardingDate).stream()
+                .map(RentParticipantResponse::from)
+                .toList();
     }
 
     // Participant
@@ -251,11 +244,11 @@ public class RentService {
     }
 
     @Transactional(readOnly = true)
-    public JoinedRentDetailResponse getJoinedRentDetail(
+    public RentParticipantResponse getJoinedRentDetail(
             final Long memberId, final LocalDate boardingDate, final Long rentId) {
         return rentParticipantRepository
                 .findByMemberIdAndBoardingDateAndRentId(memberId, boardingDate, rentId)
-                .map(JoinedRentDetailResponse::from)
+                .map(RentParticipantResponse::from)
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
     }
 }

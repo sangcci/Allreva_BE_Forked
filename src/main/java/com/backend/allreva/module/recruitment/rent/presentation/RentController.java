@@ -4,15 +4,14 @@ import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.module.auth.security.AuthMember;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.recruitment.rent.application.RentService;
-import com.backend.allreva.module.recruitment.rent.application.dto.HostedRentDetailResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.HostedRentSummaryResponse;
-import com.backend.allreva.module.recruitment.rent.application.dto.JoinedRentDetailResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.JoinedRentResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentIdRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinIdRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinUpdateRequest;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentParticipantResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
@@ -95,7 +94,7 @@ public class RentController {
     }
 
     @GetMapping("/me/hosted/{id}")
-    public Response<HostedRentDetailResponse> getHostedRentDetail(
+    public Response<List<RentParticipantResponse>> getHostedRentDetail(
             @PathVariable("id") final Long rentId,
             @RequestParam final LocalDate boardingDate,
             @AuthMember Member member) {
@@ -133,7 +132,7 @@ public class RentController {
     }
 
     @GetMapping("/me/joined/{id}")
-    public Response<JoinedRentDetailResponse> getJoinedRentDetail(
+    public Response<RentParticipantResponse> getJoinedRentDetail(
             @PathVariable("id") final Long rentId,
             @RequestParam final LocalDate boardingDate,
             @AuthMember Member member) {
