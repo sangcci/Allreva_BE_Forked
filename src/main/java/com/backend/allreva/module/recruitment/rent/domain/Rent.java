@@ -5,11 +5,10 @@ import com.backend.allreva.common.model.BaseEntity;
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
 import com.backend.allreva.module.recruitment.rent.domain.value.Bus;
-import com.backend.allreva.module.recruitment.rent.domain.value.Price;
-import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
-import com.backend.allreva.module.recruitment.rent.domain.value.Region;
+import com.backend.allreva.module.recruitment.rent.domain.value.Route;
 import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
 import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -62,38 +61,37 @@ public class Rent extends BaseEntity {
     @Column(nullable = false)
     private String artistName;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Region region;
+    private String region;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BoardingType boardingType;
 
-    @Column(nullable = false)
-    private String boardingArea;
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "boardingArea", column = @Column(name = "up_boarding_area")),
+        @AttributeOverride(name = "dropOffArea", column = @Column(name = "up_drop_off_area")),
+        @AttributeOverride(name = "time", column = @Column(name = "up_time"))
+    })
+    private Route upRoute;
 
-    @Column(nullable = false)
-    private String upTime;
-
-    @Column(nullable = false)
-    private String downTime;
+    @Embedded
+    @AttributeOverrides({
+        @AttributeOverride(name = "boardingArea", column = @Column(name = "down_boarding_area")),
+        @AttributeOverride(name = "dropOffArea", column = @Column(name = "down_drop_off_area")),
+        @AttributeOverride(name = "time", column = @Column(name = "down_time"))
+    })
+    private Route downRoute;
 
     @Embedded
     private Bus bus;
 
-    @Embedded
-    private Price price;
+    @Column(nullable = false)
+    private int price;
 
-    @Column(name = "eddate", nullable = false)
+    @Column(nullable = false)
     private LocalDate endDate;
-
-    @Column(nullable = false)
-    private String chatUrl;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private RefundType refundType;
 
     private String information;
 
@@ -116,29 +114,23 @@ public class Rent extends BaseEntity {
     }
 
     public void updateRent(
-            final String boardingArea,
-            final String upTime,
-            final String downTime,
             final Image image,
-            final Region region,
+            final String region,
             final BoardingType boardingType,
+            final Route upRoute,
+            final Route downRoute,
             final Bus bus,
-            final Price price,
+            final int price,
             final LocalDate endDate,
-            final String chatUrl,
-            final RefundType refundType,
             final String information) {
         this.image = image;
         this.region = region;
         this.boardingType = boardingType;
-        this.boardingArea = boardingArea;
-        this.upTime = upTime;
-        this.downTime = downTime;
+        this.upRoute = upRoute;
+        this.downRoute = downRoute;
         this.bus = bus;
         this.price = price;
         this.endDate = endDate;
-        this.chatUrl = chatUrl;
-        this.refundType = refundType;
         this.information = information;
         this.isClosed = false;
     }

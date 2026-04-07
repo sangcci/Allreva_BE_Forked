@@ -129,7 +129,7 @@ class RentConcurrencyTest extends IntegrationTestSupport {
 
         // then
         var slot = rentBoardingSlotJpaRepository
-                .findByRentIdAndDate(rentId, BOARDING_DATE)
+                .findByRent_IdAndDate(rentId, BOARDING_DATE)
                 .orElseThrow();
 
         assertThat(unexpectedCount.get()).isZero();

@@ -3,10 +3,10 @@ package com.backend.allreva.module.recruitment.rent.application.dto;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.recruitment.rent.domain.Rent;
+import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusSize;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusType;
-import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
-import com.backend.allreva.module.recruitment.rent.domain.value.Region;
+import com.backend.allreva.module.recruitment.rent.domain.value.Route;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -15,22 +15,17 @@ public record RentDetailResponse(
         String imageUrl,
         String title,
         String artistName,
-        Region region,
-        String boardingArea,
-        String dropOffArea,
-        String upTime,
-        String downTime,
+        String region,
+        BoardingType boardingType,
+        Route upRoute,
+        Route downRoute,
         List<RentBoardingDateResponse> boardingDates,
         BusSize busSize,
         BusType busType,
         int maxPassenger,
-        int roundPrice,
-        int upTimePrice,
-        int downTimePrice,
+        int price,
         int recruitmentCount,
         LocalDate endDate,
-        String chatUrl,
-        RefundType refundType,
         String information,
         boolean isClosed) {
 
@@ -45,23 +40,18 @@ public record RentDetailResponse(
                 rent.getTitle(),
                 rent.getArtistName(),
                 rent.getRegion(),
-                rent.getBoardingArea(),
-                concertHall != null ? concertHall.getName() : null,
-                rent.getUpTime(),
-                rent.getDownTime(),
+                rent.getBoardingType(),
+                rent.getUpRoute(),
+                rent.getDownRoute(),
                 boardingDates,
                 rent.getBus().getBusSize(),
                 rent.getBus().getBusType(),
                 rent.getBus().getMaxPassenger(),
-                rent.getPrice().getRoundPrice(),
-                rent.getPrice().getUpTimePrice(),
-                rent.getPrice().getDownTimePrice(),
+                rent.getPrice(),
                 rent.getBoardingSlots().isEmpty()
                         ? 0
                         : rent.getBoardingSlots().get(0).getRecruitmentCount(),
                 rent.getEndDate(),
-                rent.getChatUrl(),
-                rent.getRefundType(),
                 rent.getInformation(),
                 rent.isClosed());
     }

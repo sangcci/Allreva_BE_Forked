@@ -1,6 +1,5 @@
 package com.backend.allreva.module.recruitment.rent.domain.value;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -13,14 +12,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Embeddable
-public class Price {
+public class Route {
 
-    @Column(nullable = false)
-    private int roundPrice;
-
-    @Column(nullable = false)
-    private int upTimePrice;
-
-    @Column(nullable = false)
-    private int downTimePrice;
+    private String boardingArea;
+    private String dropOffArea;
+    private String time;
 }

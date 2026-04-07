@@ -5,7 +5,6 @@ import static com.backend.allreva.module.recruitment.rent.domain.QRent.rent;
 import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
 import com.backend.allreva.module.recruitment.rent.domain.Rent;
 import com.backend.allreva.module.recruitment.rent.domain.RentRepository;
-import com.backend.allreva.module.recruitment.rent.domain.value.Region;
 import com.backend.allreva.module.recruitment.rent.infra.jpa.RentJpaRepository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -29,8 +28,8 @@ public class RentRepositoryImpl implements RentRepository {
     }
 
     @Override
-    public Optional<Rent> findByIdAndMemberId(final Long rentId, final Long memberId) {
-        return rentJpaRepository.findByIdAndMemberId(rentId, memberId);
+    public Optional<Rent> findByIdAndMemberId(final Long id, final Long memberId) {
+        return rentJpaRepository.findByIdAndMemberId(id, memberId);
     }
 
     @Override
@@ -45,7 +44,7 @@ public class RentRepositoryImpl implements RentRepository {
 
     @Override
     public List<Rent> findAll(
-            final Region region,
+            final String region,
             final SortType sortType,
             final LocalDate lastEndDate,
             final Long lastId,
@@ -77,7 +76,7 @@ public class RentRepositoryImpl implements RentRepository {
                 .fetch();
     }
 
-    private BooleanExpression getRegionCondition(final Region region) {
+    private BooleanExpression getRegionCondition(final String region) {
         return region == null ? null : rent.region.eq(region);
     }
 

@@ -5,10 +5,8 @@ import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.storage.upload.StorageUploadService;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
-import com.backend.allreva.module.concert.concert.exception.ConcertErrorCode;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
-import com.backend.allreva.module.concert.place.exception.ConcertHallErrorCode;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.notification.domain.event.NotificationEvent;
 import com.backend.allreva.module.notification.domain.value.NotificationType;
@@ -34,8 +32,6 @@ import com.backend.allreva.module.recruitment.rent.domain.participant.RentPartic
 import com.backend.allreva.module.recruitment.rent.domain.participant.RentParticipantRepository;
 import com.backend.allreva.module.recruitment.rent.domain.value.Bus;
 import com.backend.allreva.module.recruitment.rent.domain.value.Depositor;
-import com.backend.allreva.module.recruitment.rent.domain.value.Price;
-import com.backend.allreva.module.recruitment.rent.domain.value.Region;
 import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -63,7 +59,7 @@ public class RentService {
     // Anonymous
     @Transactional(readOnly = true)
     public List<RentSummaryResponse> getRentSummaries(
-            final Region region,
+            final String region,
             final SortType sortType,
             final LocalDate lastEndDate,
             final Long lastId,
@@ -76,12 +72,12 @@ public class RentService {
     @Transactional(readOnly = true)
     public RentDetailResponse getRentDetail(final Long id) {
         Rent rent = rentRepository.findById(id).orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
-        Concert concert = concertRepository
-                .findById(rent.getConcertId())
-                .orElseThrow(() -> new CustomException(ConcertErrorCode.CONCERT_NOT_FOUND));
-        ConcertHall concertHall = concertHallRepository
-                .findById(concert.getCode().getHallCode())
-                .orElseThrow(() -> new CustomException(ConcertHallErrorCode.CONCERT_HALL_SEARCH_NOTFOUND));
+        Concert concert = concertRepository.findById(rent.getConcertId()).orElse(null);
+        ConcertHall concertHall = concert != null
+                ? concertHallRepository
+                        .findById(concert.getCode().getHallCode())
+                        .orElse(null)
+                : null;
         return RentDetailResponse.from(rent, concert, concertHall);
     }
 
@@ -125,25 +121,18 @@ public class RentService {
         rent.validateMine(memberId);
 
         rent.updateRent(
-                request.boardingArea(),
-                request.upTime(),
-                request.downTime(),
                 request.image(),
                 request.region(),
                 request.boardingType(),
+                request.upRoute(),
+                request.downRoute(),
                 Bus.builder()
                         .busSize(request.busSize())
                         .busType(request.busType())
                         .maxPassenger(request.maxPassenger())
                         .build(),
-                Price.builder()
-                        .roundPrice(request.roundPrice())
-                        .upTimePrice(request.upTimePrice())
-                        .downTimePrice(request.downTimePrice())
-                        .build(),
+                request.price(),
                 request.endDate(),
-                request.chatUrl(),
-                request.refundType(),
                 request.information());
 
         List<RentBoardingSlot> newSlots = request.rentBoardingDateRequests().stream()
@@ -188,6 +177,7 @@ public class RentService {
     @Transactional(readOnly = true)
     public HostedRentDetailResponse getRentHostDetail(
             final Long memberId, final LocalDate boardingDate, final Long rentId) {
+        // valid not found
         Rent rent = rentRepository
                 .findByIdAndMemberId(rentId, memberId)
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
@@ -196,11 +186,13 @@ public class RentService {
                 .findFirst()
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
 
+        // find data
         List<JoinedRentDetailResponse> joinDetails =
                 rentParticipantRepository.findAllByRentIdAndBoardingDate(rentId, boardingDate).stream()
                         .map(JoinedRentDetailResponse::from)
                         .toList();
 
+        // mapping
         return new HostedRentDetailResponse(HostedRentSummaryResponse.from(rent), joinDetails);
     }
 

@@ -6,9 +6,7 @@ import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
 import com.backend.allreva.module.recruitment.rent.domain.value.Bus;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusSize;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusType;
-import com.backend.allreva.module.recruitment.rent.domain.value.Price;
-import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
-import com.backend.allreva.module.recruitment.rent.domain.value.Region;
+import com.backend.allreva.module.recruitment.rent.domain.value.Route;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
@@ -23,11 +21,10 @@ public record RentRegisterRequest(
         @NotNull Long concertId,
         @NotBlank String title,
         @NotNull String artistName,
-        @NotNull Region region,
+        @NotNull String region,
         @NotNull BoardingType boardingType,
-        @NotNull String boardingArea,
-        @NotNull String upTime,
-        @NotNull String downTime,
+        Route upRoute,
+        Route downRoute,
 
         @NotEmpty(message = "날짜는 하루 이상 선택되어야 합니다.") @JsonProperty("boardingDates")
         List<LocalDate> rentBoardingDateRequests,
@@ -35,13 +32,9 @@ public record RentRegisterRequest(
         @NotNull BusSize busSize,
         @NotNull BusType busType,
         @Min(value = 1, message = "탑승 인원 수는 1명 이상이어야 합니다.") int maxPassenger,
-        @PositiveOrZero int roundPrice,
-        @PositiveOrZero int upTimePrice,
-        @PositiveOrZero int downTimePrice,
+        @PositiveOrZero int price,
         @Min(value = 1, message = "모집 인원 수는 1명 이상이어야 합니다.") int recruitmentCount,
         @FutureOrPresent(message = "마감 기한은 과거일 수 없습니다.") LocalDate endDate,
-        String chatUrl,
-        @NotNull RefundType refundType,
         String information,
         Image image) {
 
@@ -54,22 +47,15 @@ public record RentRegisterRequest(
                 .artistName(artistName)
                 .region(region)
                 .boardingType(boardingType)
-                .boardingArea(boardingArea)
-                .upTime(upTime)
-                .downTime(downTime)
+                .upRoute(upRoute)
+                .downRoute(downRoute)
                 .bus(Bus.builder()
                         .busSize(busSize)
                         .busType(busType)
                         .maxPassenger(maxPassenger)
                         .build())
-                .price(Price.builder()
-                        .roundPrice(roundPrice)
-                        .upTimePrice(upTimePrice)
-                        .downTimePrice(downTimePrice)
-                        .build())
+                .price(price)
                 .endDate(endDate)
-                .chatUrl(chatUrl)
-                .refundType(refundType)
                 .information(information)
                 .build();
     }

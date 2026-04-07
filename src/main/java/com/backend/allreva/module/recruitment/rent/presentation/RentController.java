@@ -18,7 +18,6 @@ import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterR
 import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
-import com.backend.allreva.module.recruitment.rent.domain.value.Region;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
@@ -51,7 +50,7 @@ public class RentController {
 
     @GetMapping("/list")
     public Response<List<RentSummaryResponse>> getRentSummaries(
-            @RequestParam(name = "region", required = false) final Region region,
+            @RequestParam(name = "region", required = false) final String region,
             @RequestParam(name = "sort", defaultValue = "LATEST") final SortType sortType,
             @RequestParam(name = "lastId", required = false) final Long lastId,
             @RequestParam(name = "lastEndDate", required = false) final LocalDate lastEndDate,

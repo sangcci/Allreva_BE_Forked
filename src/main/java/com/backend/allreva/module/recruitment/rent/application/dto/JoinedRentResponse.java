@@ -4,6 +4,7 @@ import com.backend.allreva.module.recruitment.rent.domain.Rent;
 import com.backend.allreva.module.recruitment.rent.domain.RentBoardingSlot;
 import com.backend.allreva.module.recruitment.rent.domain.participant.RentParticipant;
 import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
+import com.backend.allreva.module.recruitment.rent.domain.value.Route;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -11,7 +12,8 @@ public record JoinedRentResponse(
         Long rentId,
         String title,
         LocalDate rentBoardingDate,
-        String boardingArea,
+        Route upRoute,
+        Route downRoute,
         LocalDateTime rentStartDate,
         LocalDate rentEndDate,
         int recruitmentCount,
@@ -30,7 +32,8 @@ public record JoinedRentResponse(
                 rent.getId(),
                 rent.getTitle(),
                 slot.getDate(),
-                rent.getBoardingArea(),
+                rent.getUpRoute(),
+                rent.getDownRoute(),
                 rent.getCreatedAt(),
                 rent.getEndDate(),
                 slot.getRecruitmentCount(),

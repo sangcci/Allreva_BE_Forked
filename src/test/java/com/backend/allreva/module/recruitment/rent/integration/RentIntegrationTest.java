@@ -116,7 +116,7 @@ class RentIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("탑승 날짜 슬롯이 생성된다")
             void it_creates_boarding_slots() {
-                var slots = rentRepository.findById(savedRentId).orElseThrow().getBoardingSlots();
+                var slots = rentBoardingSlotJpaRepository.findAllByRent_Id(savedRentId);
                 assertThat(slots).hasSize(2);
                 slots.forEach(slot -> {
                     assertThat(slot.getRecruitmentCount()).isEqualTo(30);
@@ -154,14 +154,14 @@ class RentIntegrationTest extends IntegrationTestSupport {
             @DisplayName("차대절 필드가 수정된다")
             void it_updates_rent_fields() {
                 var rent = rentRepository.findById(savedRentId).orElseThrow();
-                assertThat(rent.getBoardingArea()).isEqualTo("부산역 앞");
-                assertThat(rent.getUpTime()).isEqualTo("09:00");
+                assertThat(rent.getUpRoute().getBoardingArea()).isEqualTo("부산역 앞");
+                assertThat(rent.getUpRoute().getTime()).isEqualTo("09:00");
             }
 
             @Test
             @DisplayName("탑승 날짜 슬롯이 교체된다")
             void it_replaces_boarding_slots() {
-                var slots = rentRepository.findById(savedRentId).orElseThrow().getBoardingSlots();
+                var slots = rentBoardingSlotJpaRepository.findAllByRent_Id(savedRentId);
                 assertThat(slots).hasSize(1);
                 assertThat(slots.get(0).getDate()).isEqualTo(LocalDate.of(2030, 12, 1));
                 assertThat(slots.get(0).getRecruitmentCount()).isEqualTo(20);
@@ -308,9 +308,8 @@ class RentIntegrationTest extends IntegrationTestSupport {
             void it_increases_passenger_count() {
                 rentService.joinRent(
                         RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 3), savedMember.getId());
-                var slot = rentRepository.findById(savedRentId).orElseThrow().getBoardingSlots().stream()
-                        .filter(s -> s.getDate().equals(TARGET_DATE))
-                        .findFirst()
+                var slot = rentBoardingSlotJpaRepository
+                        .findByRent_IdAndDate(savedRentId, TARGET_DATE)
                         .orElseThrow();
                 assertThat(slot.getPassengerCount()).isEqualTo(3);
             }

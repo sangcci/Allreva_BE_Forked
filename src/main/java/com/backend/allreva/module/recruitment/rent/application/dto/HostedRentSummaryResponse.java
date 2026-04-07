@@ -2,8 +2,10 @@ package com.backend.allreva.module.recruitment.rent.application.dto;
 
 import com.backend.allreva.module.recruitment.rent.domain.Rent;
 import com.backend.allreva.module.recruitment.rent.domain.RentBoardingSlot;
+import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusSize;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusType;
+import com.backend.allreva.module.recruitment.rent.domain.value.Route;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,7 +13,9 @@ import java.util.List;
 public record HostedRentSummaryResponse(
         Long rentId,
         String title,
-        String boardingArea,
+        BoardingType boardingType,
+        Route upRoute,
+        Route downRoute,
         LocalDateTime rentStartDate,
         LocalDate rentEndDate,
         boolean isClosed,
@@ -26,7 +30,9 @@ public record HostedRentSummaryResponse(
         return new HostedRentSummaryResponse(
                 rent.getId(),
                 rent.getTitle(),
-                rent.getBoardingArea(),
+                rent.getBoardingType(),
+                rent.getUpRoute(),
+                rent.getDownRoute(),
                 rent.getCreatedAt(),
                 rent.getEndDate(),
                 rent.isClosed(),
