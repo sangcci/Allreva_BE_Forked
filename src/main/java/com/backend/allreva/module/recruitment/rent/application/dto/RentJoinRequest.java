@@ -1,5 +1,6 @@
 package com.backend.allreva.module.recruitment.rent.application.dto;
 
+import com.backend.allreva.module.recruitment.rent.domain.Rent;
 import com.backend.allreva.module.recruitment.rent.domain.participant.RentParticipant;
 import com.backend.allreva.module.recruitment.rent.domain.value.Depositor;
 import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
@@ -30,9 +31,9 @@ public record RentJoinRequest(
         @NotNull RefundType refundType,
         @NotBlank String refundAccount) {
 
-    public RentParticipant toEntity(final Long memberId) {
+    public RentParticipant toEntity(final Rent rent, final Long memberId) {
         return RentParticipant.builder()
-                .rentId(rentId)
+                .rent(rent)
                 .memberId(memberId)
                 .depositor(Depositor.builder()
                         .depositorName(depositorName)

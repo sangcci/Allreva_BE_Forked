@@ -36,9 +36,7 @@ import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -209,7 +207,10 @@ public class RentService {
             throw new CustomException(RentErrorCode.SLOT_FULL);
         }
 
-        RentParticipant participant = request.toEntity(memberId);
+        Rent rent = rentRepository
+                .findById(request.rentId())
+                .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
+        RentParticipant participant = request.toEntity(rent, memberId);
         RentParticipant saved = rentParticipantRepository.save(participant);
         return saved.getId();
     }
@@ -246,25 +247,18 @@ public class RentService {
     }
 
     @Transactional(readOnly = true)
-    public List<JoinedRentResponse> getJoinedRentSummaries(final Long memberId) {
-        List<RentParticipant> participants = rentParticipantRepository.findAllByMemberId(memberId);
-
-        List<Long> rentIds =
-                participants.stream().map(RentParticipant::getRentId).distinct().toList();
-        Map<Long, Rent> rentsById =
-                rentRepository.findAllByIds(rentIds).stream().collect(Collectors.toMap(Rent::getId, r -> r));
+    public List<JoinedRentResponse> getJoinedRentSummaries(final Long memberId, final Long lastId, final int pageSize) {
+        List<RentParticipant> participants = rentParticipantRepository.findAllByMemberId(memberId, lastId, pageSize);
 
         return participants.stream()
                 .map(participant -> {
-                    Rent rent = rentsById.get(participant.getRentId());
-                    if (rent == null) return null;
+                    Rent rent = participant.getRent();
                     RentBoardingSlot slot = rent.getBoardingSlots().stream()
                             .filter(s -> s.getDate().equals(participant.getBoardingDate()))
                             .findFirst()
                             .orElse(null);
                     return JoinedRentResponse.from(participant, rent, slot);
                 })
-                .filter(response -> response != null)
                 .toList();
     }
 

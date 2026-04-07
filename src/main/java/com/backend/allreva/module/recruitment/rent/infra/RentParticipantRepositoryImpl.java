@@ -1,8 +1,13 @@
 package com.backend.allreva.module.recruitment.rent.infra;
 
+import static com.backend.allreva.module.recruitment.rent.domain.QRent.rent;
+import static com.backend.allreva.module.recruitment.rent.domain.participant.QRentParticipant.rentParticipant;
+
 import com.backend.allreva.module.recruitment.rent.domain.participant.RentParticipant;
 import com.backend.allreva.module.recruitment.rent.domain.participant.RentParticipantRepository;
 import com.backend.allreva.module.recruitment.rent.infra.jpa.RentParticipantJpaRepository;
+import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +19,7 @@ import org.springframework.stereotype.Repository;
 public class RentParticipantRepositoryImpl implements RentParticipantRepository {
 
     private final RentParticipantJpaRepository rentParticipantJpaRepository;
+    private final JPAQueryFactory queryFactory;
 
     @Override
     public RentParticipant save(final RentParticipant participant) {
@@ -28,7 +34,7 @@ public class RentParticipantRepositoryImpl implements RentParticipantRepository 
     @Override
     public Optional<RentParticipant> findByMemberIdAndBoardingDateAndRentId(
             final Long memberId, final LocalDate boardingDate, final Long rentId) {
-        return rentParticipantJpaRepository.findByMemberIdAndBoardingDateAndRentId(memberId, boardingDate, rentId);
+        return rentParticipantJpaRepository.findByMemberIdAndBoardingDateAndRent_Id(memberId, boardingDate, rentId);
     }
 
     @Override
@@ -38,21 +44,32 @@ public class RentParticipantRepositoryImpl implements RentParticipantRepository 
 
     @Override
     public boolean exists(final Long memberId, final Long rentId, final LocalDate boardingDate) {
-        return rentParticipantJpaRepository.existsByMemberIdAndRentIdAndBoardingDate(memberId, rentId, boardingDate);
+        return rentParticipantJpaRepository.existsByMemberIdAndRent_IdAndBoardingDate(memberId, rentId, boardingDate);
     }
 
     @Override
     public List<RentParticipant> findAllByRentIdAndBoardingDate(final Long rentId, final LocalDate boardingDate) {
-        return rentParticipantJpaRepository.findByRentIdAndBoardingDate(rentId, boardingDate);
+        return rentParticipantJpaRepository.findByRent_IdAndBoardingDate(rentId, boardingDate);
     }
 
     @Override
     public List<LocalDate> findAppliedBoardingDates(final Long memberId, final Long rentId) {
-        return rentParticipantJpaRepository.findBoardingDateByMemberIdAndRentId(memberId, rentId);
+        return rentParticipantJpaRepository.findBoardingDateByMemberIdAndRent_Id(memberId, rentId);
     }
 
     @Override
-    public List<RentParticipant> findAllByMemberId(final Long memberId) {
-        return rentParticipantJpaRepository.findAllByMemberId(memberId);
+    public List<RentParticipant> findAllByMemberId(final Long memberId, final Long lastId, final int pageSize) {
+        return queryFactory
+                .selectFrom(rentParticipant)
+                .join(rentParticipant.rent, rent)
+                .fetchJoin()
+                .where(rentParticipant.memberId.eq(memberId), getCursorCondition(lastId))
+                .orderBy(rentParticipant.id.desc())
+                .limit(pageSize)
+                .fetch();
+    }
+
+    private BooleanExpression getCursorCondition(final Long lastId) {
+        return lastId == null ? null : rentParticipant.id.lt(lastId);
     }
 }

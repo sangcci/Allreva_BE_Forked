@@ -98,7 +98,7 @@ public class RentController {
         return Response.onSuccess();
     }
 
-    @GetMapping("/host/me/list")
+    @GetMapping("/me/hosted")
     public Response<List<HostedRentSummaryResponse>> getRentHostedRentSummaries(
             @AuthMember Member member,
             @RequestParam(name = "lastId", required = false) final Long lastId,
@@ -106,7 +106,7 @@ public class RentController {
         return Response.onSuccess(rentService.getRentHostSummaries(member.getId(), lastId, pageSize));
     }
 
-    @GetMapping("/host/me/{id}")
+    @GetMapping("/me/hosted/{id}")
     public Response<HostedRentDetailResponse> getHostedRentDetail(
             @PathVariable("id") final Long rentId,
             @RequestParam final LocalDate boardingDate,
@@ -136,12 +136,15 @@ public class RentController {
         return Response.onSuccess();
     }
 
-    @GetMapping("/join/me/list")
-    public Response<List<JoinedRentResponse>> getJoinedRentSummeries(@AuthMember final Member member) {
-        return Response.onSuccess(rentService.getJoinedRentSummaries(member.getId()));
+    @GetMapping("/me/joined")
+    public Response<List<JoinedRentResponse>> getJoinedRentSummeries(
+            @AuthMember final Member member,
+            @RequestParam(name = "lastId", required = false) final Long lastId,
+            @RequestParam(name = "pageSize", defaultValue = "10") @Min(10) final int pageSize) {
+        return Response.onSuccess(rentService.getJoinedRentSummaries(member.getId(), lastId, pageSize));
     }
 
-    @GetMapping("/join/me/{id}")
+    @GetMapping("/me/joined/{id}")
     public Response<JoinedRentDetailResponse> getJoinedRentDetail(
             @PathVariable("id") final Long rentId,
             @RequestParam final LocalDate boardingDate,
