@@ -53,11 +53,6 @@ public class RentParticipantRepositoryImpl implements RentParticipantRepository 
     }
 
     @Override
-    public List<LocalDate> findAppliedBoardingDates(final Long memberId, final Long rentId) {
-        return rentParticipantJpaRepository.findBoardingDateByMemberIdAndRent_Id(memberId, rentId);
-    }
-
-    @Override
     public List<RentParticipant> findAllByMemberId(final Long memberId, final Long lastId, final int pageSize) {
         return queryFactory
                 .selectFrom(rentParticipant)

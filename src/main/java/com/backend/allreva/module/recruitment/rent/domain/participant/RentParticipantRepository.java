@@ -19,7 +19,5 @@ public interface RentParticipantRepository {
 
     List<RentParticipant> findAllByRentIdAndBoardingDate(Long rentId, LocalDate boardingDate);
 
-    List<LocalDate> findAppliedBoardingDates(Long memberId, Long rentId);
-
     List<RentParticipant> findAllByMemberId(Long memberId, Long lastId, int pageSize);
 }

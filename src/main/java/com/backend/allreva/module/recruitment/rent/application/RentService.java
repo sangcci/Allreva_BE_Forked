@@ -7,7 +7,6 @@ import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
-import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.notification.domain.event.NotificationEvent;
 import com.backend.allreva.module.notification.domain.value.NotificationType;
 import com.backend.allreva.module.recruitment.rent.application.dto.HostedRentDetailResponse;
@@ -19,7 +18,6 @@ import com.backend.allreva.module.recruitment.rent.application.dto.RentIdRequest
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinIdRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinUpdateRequest;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentMeResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
@@ -34,9 +32,7 @@ import com.backend.allreva.module.recruitment.rent.domain.value.Bus;
 import com.backend.allreva.module.recruitment.rent.domain.value.Depositor;
 import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -77,14 +73,6 @@ public class RentService {
                         .orElse(null)
                 : null;
         return RentDetailResponse.from(rent, concert, concertHall);
-    }
-
-    // User
-    @Transactional(readOnly = true)
-    public RentMeResponse getRentDetailMe(final Long id, final Member member) {
-        Set<LocalDate> appliedDates =
-                new HashSet<>(rentParticipantRepository.findAppliedBoardingDates(member.getId(), id));
-        return new RentMeResponse(appliedDates, member.getRefundAccount());
     }
 
     // Host

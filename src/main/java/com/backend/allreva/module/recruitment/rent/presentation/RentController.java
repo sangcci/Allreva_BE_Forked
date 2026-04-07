@@ -13,7 +13,6 @@ import com.backend.allreva.module.recruitment.rent.application.dto.RentIdRequest
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinIdRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinUpdateRequest;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentMeResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
@@ -42,12 +41,7 @@ public class RentController {
 
     private final RentService rentService;
 
-    // User EndPoints
-    @GetMapping("/main")
-    public Response<List<RentSummaryResponse>> getRentMainSummaries() {
-        return Response.onSuccess(rentService.getRentSummaries(null, SortType.LATEST, null, null, 3));
-    }
-
+    // Anonymous EndPoints
     @GetMapping("/list")
     public Response<List<RentSummaryResponse>> getRentSummaries(
             @RequestParam(name = "region", required = false) final String region,
@@ -61,12 +55,6 @@ public class RentController {
     @GetMapping("/{id}")
     public Response<RentDetailResponse> getRentDetail(@PathVariable final Long id) {
         return Response.onSuccess(rentService.getRentDetail(id));
-    }
-
-    // User Endpoints
-    @GetMapping("/{id}/me")
-    public Response<RentMeResponse> getRentDetailMe(@PathVariable final Long id, @AuthMember final Member member) {
-        return Response.onSuccess(rentService.getRentDetailMe(id, member));
     }
 
     // Host Endpoints
