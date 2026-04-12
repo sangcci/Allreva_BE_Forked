@@ -2,7 +2,9 @@ package com.backend.allreva.module.recruitment.rent.fixture;
 
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentIdRequest;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinIdRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinRequest;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
@@ -95,5 +97,14 @@ public final class RentFixture {
                 .refundType(RefundType.REFUND)
                 .refundAccount("국민은행 99999")
                 .build();
+    }
+
+    public static RentJoinUpdateRequest createRentJoinUpdateRequest(final Long participantId, final LocalDate date) {
+        return new RentJoinUpdateRequest(
+                participantId, date, 3, "수정된홍길동", "15:00", "010-9999-8888", RefundType.REFUND, "신한은행 11111");
+    }
+
+    public static RentJoinIdRequest createRentJoinIdRequest(final Long participantId) {
+        return new RentJoinIdRequest(participantId);
     }
 }

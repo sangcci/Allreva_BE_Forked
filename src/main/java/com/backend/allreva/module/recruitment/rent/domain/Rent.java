@@ -28,6 +28,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -100,6 +101,7 @@ public class Rent extends BaseEntity {
     private boolean isClosed = false;
 
     @Builder.Default
+    @BatchSize(size = 100)
     @OneToMany(mappedBy = "rent", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RentBoardingSlot> boardingSlots = new ArrayList<>();
 

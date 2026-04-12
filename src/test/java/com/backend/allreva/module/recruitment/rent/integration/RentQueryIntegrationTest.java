@@ -1,0 +1,468 @@
+package com.backend.allreva.module.recruitment.rent.integration;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
+
+import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.common.storage.upload.StorageUploadService;
+import com.backend.allreva.module.concert.concert.domain.Concert;
+import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
+import com.backend.allreva.module.concert.concert.infra.jpa.ConcertJpaRepository;
+import com.backend.allreva.module.member.domain.Member;
+import com.backend.allreva.module.member.domain.MemberRepository;
+import com.backend.allreva.module.member.fixture.MemberFixture;
+import com.backend.allreva.module.recruitment.rent.application.RentService;
+import com.backend.allreva.module.recruitment.rent.application.dto.HostedRentSummaryResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.JoinedRentResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentParticipantResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
+import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
+import com.backend.allreva.module.recruitment.rent.fixture.RentFixture;
+import com.backend.allreva.module.recruitment.rent.infra.jpa.RentBoardingSlotJpaRepository;
+import com.backend.allreva.module.recruitment.rent.infra.jpa.RentJpaRepository;
+import com.backend.allreva.module.recruitment.rent.infra.jpa.RentParticipantJpaRepository;
+import com.backend.allreva.support.IntegrationTestSupport;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+
+@Slf4j
+@DisplayName("Rent Query Integration 테스트")
+class RentQueryIntegrationTest extends IntegrationTestSupport {
+
+    // rent 1개당 slot 3개 (날짜: 12-01, 12-02, 12-03)
+    private static final List<LocalDate> SLOT_DATES =
+            List.of(LocalDate.of(2030, 12, 1), LocalDate.of(2030, 12, 2), LocalDate.of(2030, 12, 3));
+
+    @Autowired
+    private RentService rentService;
+
+    @Autowired
+    private RentJpaRepository rentJpaRepository;
+
+    @Autowired
+    private RentBoardingSlotJpaRepository rentBoardingSlotJpaRepository;
+
+    @Autowired
+    private RentParticipantJpaRepository rentParticipantJpaRepository;
+
+    @Autowired
+    private ConcertJpaRepository concertJpaRepository;
+
+    @Autowired
+    private MemberRepository memberRepository;
+
+    @MockBean
+    private StorageUploadService storageUploadService;
+
+    private Member savedMember;
+    private Long concertId;
+
+    @BeforeEach
+    void setUp() {
+        savedMember = memberRepository.save(MemberFixture.createTestMember());
+        Concert concert = concertJpaRepository.save(ConcertFixture.createTestConcert());
+        concertId = concert.getId();
+        doNothing().when(storageUploadService).deleteImage(any());
+    }
+
+    @AfterEach
+    void tearDown() {
+        rentParticipantJpaRepository.deleteAll();
+        rentBoardingSlotJpaRepository.deleteAll();
+        rentJpaRepository.deleteAll();
+        concertJpaRepository.deleteAll();
+        memberRepository.deleteAll();
+    }
+
+    @Nested
+    @DisplayName("getRentDetail 테스트")
+    class Describe_getRentDetail {
+
+        private Long savedRentId;
+
+        @BeforeEach
+        void setUp() {
+            savedRentId = rentService.registerRent(
+                    RentFixture.createRentRegisterRequest(concertId, SLOT_DATES), savedMember.getId());
+        }
+
+        @Nested
+        @DisplayName("concert가 있는 차대절 조회 시")
+        class Context_with_concert {
+
+            @Test
+            @DisplayName("탑승 날짜 3개와 concert 정보가 포함된 상세가 반환된다")
+            void it_returns_detail_with_concert_info() {
+                RentDetailResponse detail = rentService.getRentDetail(savedRentId);
+                assertThat(detail.boardingDates()).hasSize(3);
+            }
+        }
+
+        @Nested
+        @DisplayName("존재하지 않는 차대절 조회 시")
+        class Context_not_found {
+
+            @Test
+            @DisplayName("NOT_FOUND 예외가 발생한다")
+            void it_throws_not_found() {
+                assertThatThrownBy(() -> rentService.getRentDetail(999L))
+                        .isInstanceOf(CustomException.class)
+                        .hasMessageContaining(RentErrorCode.RENT_NOT_FOUND.getMessage());
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("getRentSummaries 테스트")
+    class Describe_getRentSummaries {
+
+        @Nested
+        @DisplayName("rent 15개(slot 3개씩)가 있는 경우")
+        class Context_with_enough_data {
+
+            @BeforeEach
+            void setUp() {
+                // rent 15개 등록, 각 rent마다 slot 3개
+                for (int i = 0; i < 15; i++) {
+                    rentService.registerRent(
+                            RentFixture.createRentRegisterRequest(concertId, SLOT_DATES), savedMember.getId());
+                }
+            }
+
+            @Test
+            @DisplayName("pageSize=10으로 조회하면 10개가 반환된다")
+            void it_includes_open_rents() {
+                List<RentSummaryResponse> result = rentService.getRentSummaries(null, SortType.LATEST, null, null, 10);
+                assertThat(result).hasSize(10);
+            }
+
+            @Test
+            @DisplayName("마감된 차대절은 목록에 포함되지 않는다")
+            void it_excludes_closed_rents() {
+                // 15개 중 1개 마감
+                List<RentSummaryResponse> all = rentService.getRentSummaries(null, SortType.LATEST, null, null, 15);
+                Long firstRentId = all.get(0).rentId();
+                rentService.closeRent(RentFixture.createRentIdRequest(firstRentId), savedMember.getId());
+
+                List<RentSummaryResponse> result = rentService.getRentSummaries(null, SortType.LATEST, null, null, 15);
+                assertThat(result).hasSize(14);
+                assertThat(result).noneMatch(r -> r.rentId().equals(firstRentId));
+            }
+
+            @Test
+            @DisplayName("커서 기반으로 다음 페이지를 조회할 수 있다")
+            void it_paginates_with_cursor() {
+                // 1페이지: 최신순 10개
+                List<RentSummaryResponse> firstPage =
+                        rentService.getRentSummaries(null, SortType.LATEST, null, null, 10);
+                assertThat(firstPage).hasSize(10);
+
+                // 2페이지: 마지막 rentId를 커서로
+                Long lastId = firstPage.get(firstPage.size() - 1).rentId();
+                List<RentSummaryResponse> secondPage =
+                        rentService.getRentSummaries(null, SortType.LATEST, null, lastId, 10);
+                assertThat(secondPage).hasSize(5);
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("getRentHostSummaries 테스트")
+    class Describe_getRentHostSummaries {
+
+        @Nested
+        @DisplayName("본인 rent 15개(slot 3개씩)와 타인 rent 5개가 있는 경우")
+        class Context_has_own_rents {
+
+            private Member otherMember;
+
+            @BeforeEach
+            void setUp() {
+                // 본인 rent 15개
+                for (int i = 0; i < 15; i++) {
+                    rentService.registerRent(
+                            RentFixture.createRentRegisterRequest(concertId, SLOT_DATES), savedMember.getId());
+                }
+                // 타인 rent 5개
+                otherMember = memberRepository.save(MemberFixture.createTestMember());
+                for (int i = 0; i < 5; i++) {
+                    rentService.registerRent(
+                            RentFixture.createRentRegisterRequest(concertId, SLOT_DATES), otherMember.getId());
+                }
+            }
+
+            @Test
+            @DisplayName("본인이 주최한 차대절만 반환되고 타인 차대절은 포함되지 않는다")
+            void it_returns_only_own_rents() {
+                List<HostedRentSummaryResponse> result =
+                        rentService.getRentHostSummaries(savedMember.getId(), null, 20);
+                assertThat(result).hasSize(15);
+            }
+
+            @Test
+            @DisplayName("pageSize=10으로 조회하면 10개가 반환된다")
+            void it_paginates_first_page() {
+                List<HostedRentSummaryResponse> result =
+                        rentService.getRentHostSummaries(savedMember.getId(), null, 10);
+                assertThat(result).hasSize(10);
+            }
+
+            @Test
+            @DisplayName("커서 기반으로 다음 페이지를 조회할 수 있다")
+            void it_paginates_with_cursor() {
+                // 1페이지
+                List<HostedRentSummaryResponse> firstPage =
+                        rentService.getRentHostSummaries(savedMember.getId(), null, 10);
+                assertThat(firstPage).hasSize(10);
+
+                // 2페이지: 마지막 rentId를 커서로
+                Long lastId = firstPage.get(firstPage.size() - 1).rentId();
+                List<HostedRentSummaryResponse> secondPage =
+                        rentService.getRentHostSummaries(savedMember.getId(), lastId, 10);
+                assertThat(secondPage).hasSize(5);
+            }
+        }
+
+        @Nested
+        @DisplayName("등록한 차대절이 없는 경우")
+        class Context_no_rents {
+
+            @Test
+            @DisplayName("빈 목록이 반환된다")
+            void it_returns_empty_list() {
+                List<HostedRentSummaryResponse> result =
+                        rentService.getRentHostSummaries(savedMember.getId(), null, 10);
+                assertThat(result).isEmpty();
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("getRentHostDetail 테스트")
+    class Describe_getRentHostDetail {
+
+        private Long savedRentId;
+        private static final LocalDate TARGET_DATE = LocalDate.of(2030, 12, 1);
+
+        @BeforeEach
+        void setUp() {
+            savedRentId = rentService.registerRent(
+                    RentFixture.createRentRegisterRequest(concertId, SLOT_DATES), savedMember.getId());
+        }
+
+        @Nested
+        @DisplayName("본인이 주최한 차대절의 특정 날짜 조회 시")
+        class Context_valid_request {
+
+            @BeforeEach
+            void setUp() {
+                // member2, member3이 TARGET_DATE에 각각 참여
+                Member member2 = memberRepository.save(MemberFixture.createTestMember());
+                Member member3 = memberRepository.save(MemberFixture.createTestMember());
+                rentService.joinRent(RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 1), member2.getId());
+                rentService.joinRent(RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 1), member3.getId());
+            }
+
+            @Test
+            @DisplayName("해당 날짜의 참여자 목록이 반환된다")
+            void it_returns_participants_of_date() {
+                List<RentParticipantResponse> result =
+                        rentService.getRentHostDetail(savedMember.getId(), TARGET_DATE, savedRentId);
+                assertThat(result).hasSize(2);
+            }
+
+            @Test
+            @DisplayName("다른 날짜의 참여자는 포함되지 않는다")
+            void it_excludes_other_date_participants() {
+                LocalDate otherDate = LocalDate.of(2030, 12, 2);
+                List<RentParticipantResponse> result =
+                        rentService.getRentHostDetail(savedMember.getId(), otherDate, savedRentId);
+                assertThat(result).isEmpty();
+            }
+        }
+
+        @Nested
+        @DisplayName("타인의 차대절 조회 시")
+        class Context_other_member_rent {
+
+            @Test
+            @DisplayName("NOT_FOUND 예외가 발생한다")
+            void it_throws_not_found() {
+                Member otherMember = memberRepository.save(MemberFixture.createTestMember());
+                assertThatThrownBy(() -> rentService.getRentHostDetail(otherMember.getId(), TARGET_DATE, savedRentId))
+                        .isInstanceOf(CustomException.class)
+                        .hasMessageContaining(RentErrorCode.RENT_NOT_FOUND.getMessage());
+            }
+        }
+
+        @Nested
+        @DisplayName("slot에 없는 날짜 조회 시")
+        class Context_invalid_date {
+
+            @Test
+            @DisplayName("NOT_FOUND 예외가 발생한다")
+            void it_throws_not_found() {
+                LocalDate invalidDate = LocalDate.of(2030, 12, 31);
+                assertThatThrownBy(() -> rentService.getRentHostDetail(savedMember.getId(), invalidDate, savedRentId))
+                        .isInstanceOf(CustomException.class)
+                        .hasMessageContaining(RentErrorCode.RENT_NOT_FOUND.getMessage());
+            }
+        }
+    }
+
+    @Nested
+    @DisplayName("getJoinedRentSummaries 테스트")
+    class Describe_getJoinedRentSummaries {
+
+        // rent 5개 × slot 3개(12-01, 12-02, 12-03) = 15 slot
+        // savedMember: 15 slot 전체 참여 (15건)
+        // otherMember: 15 slot 전체 참여 (15건, savedMember 조회 결과에 포함되면 안 됨)
+        private final List<Long> rentIds = new ArrayList<>();
+        private Member otherMember;
+
+        @BeforeEach
+        void setUp() {
+            otherMember = memberRepository.save(MemberFixture.createTestMember());
+
+            for (int i = 0; i < 5; i++) {
+                Long rentId = rentService.registerRent(
+                        RentFixture.createRentRegisterRequest(concertId, SLOT_DATES), savedMember.getId());
+                rentIds.add(rentId);
+
+                for (LocalDate date : SLOT_DATES) {
+                    rentService.joinRent(
+                            RentFixture.createRentJoinRequest(rentId, date, 1), savedMember.getId());
+                    rentService.joinRent(
+                            RentFixture.createRentJoinRequest(rentId, date, 1), otherMember.getId());
+                }
+            }
+        }
+
+        @Test
+        @DisplayName("pageSize=10으로 조회하면 10개가 반환된다")
+        void it_returns_first_page() {
+            List<JoinedRentResponse> result = rentService.getJoinedRentSummaries(savedMember.getId(), null, 10);
+            assertThat(result).hasSize(10);
+        }
+
+        @Test
+        @DisplayName("커서 기반으로 다음 페이지를 조회할 수 있다 (1페이지=10건, 2페이지=5건)")
+        void it_paginates_with_cursor() {
+            List<JoinedRentResponse> firstPage = rentService.getJoinedRentSummaries(savedMember.getId(), null, 10);
+            assertThat(firstPage).hasSize(10);
+
+            Long lastParticipantId = firstPage.get(firstPage.size() - 1).rentParticipantId();
+            List<JoinedRentResponse> secondPage =
+                    rentService.getJoinedRentSummaries(savedMember.getId(), lastParticipantId, 10);
+            assertThat(secondPage).hasSize(5);
+        }
+
+        @Test
+        @DisplayName("slot 정보(recruitmentCount=30, participateCount=2)가 정확히 매핑된다")
+        void it_maps_slot_info_correctly() {
+            // savedMember + otherMember 각 1명씩 동일 slot 참여 → participateCount=2
+            List<JoinedRentResponse> result = rentService.getJoinedRentSummaries(savedMember.getId(), null, 1);
+            JoinedRentResponse response = result.get(0);
+            assertThat(response.recruitmentCount()).isEqualTo(30);
+            assertThat(response.participateCount()).isEqualTo(2);
+        }
+
+        @Test
+        @DisplayName("rent별이 아닌 slot별로 반환된다 (rent 5개 × slot 3개 = 15건)")
+        void it_returns_per_slot_not_per_rent() {
+            List<JoinedRentResponse> result = rentService.getJoinedRentSummaries(savedMember.getId(), null, 20);
+            assertThat(result).hasSize(15);
+            rentIds.forEach(rentId -> {
+                long count = result.stream().filter(r -> r.rentId().equals(rentId)).count();
+                assertThat(count).isEqualTo(3);
+            });
+        }
+
+        @Test
+        @DisplayName("타인의 참여 내역이 포함되지 않는다 (otherMember도 15건, savedMember 것과 격리)")
+        void it_isolates_by_member() {
+            List<JoinedRentResponse> savedMemberResult =
+                    rentService.getJoinedRentSummaries(savedMember.getId(), null, 20);
+            List<JoinedRentResponse> otherMemberResult =
+                    rentService.getJoinedRentSummaries(otherMember.getId(), null, 20);
+
+            assertThat(savedMemberResult).hasSize(15);
+            assertThat(otherMemberResult).hasSize(15);
+            assertThat(savedMemberResult)
+                    .extracting(JoinedRentResponse::rentParticipantId)
+                    .doesNotContainAnyElementsOf(
+                            otherMemberResult.stream()
+                                    .map(JoinedRentResponse::rentParticipantId)
+                                    .toList());
+        }
+    }
+
+    @Nested
+    @DisplayName("getJoinedRentDetail 테스트")
+    class Describe_getJoinedRentDetail {
+
+        private Long savedRentId;
+        private static final LocalDate TARGET_DATE = LocalDate.of(2030, 12, 1);
+
+        @BeforeEach
+        void setUp() {
+            savedRentId = rentService.registerRent(
+                    RentFixture.createRentRegisterRequest(concertId, SLOT_DATES), savedMember.getId());
+            rentService.joinRent(RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 2), savedMember.getId());
+        }
+
+        @Nested
+        @DisplayName("본인 참여 내역 상세 조회 시")
+        class Context_valid_request {
+
+            @Test
+            @DisplayName("참여 상세가 반환된다")
+            void it_returns_participant_detail() {
+                RentParticipantResponse result =
+                        rentService.getJoinedRentDetail(savedMember.getId(), TARGET_DATE, savedRentId);
+                assertThat(result.depositorName()).isEqualTo("홍길동");
+                assertThat(result.passengerNum()).isEqualTo(2);
+            }
+        }
+
+        @Nested
+        @DisplayName("존재하지 않는 참여 내역 조회 시")
+        class Context_not_found {
+
+            @Test
+            @DisplayName("NOT_FOUND 예외가 발생한다")
+            void it_throws_not_found() {
+                assertThatThrownBy(() -> rentService.getJoinedRentDetail(savedMember.getId(), TARGET_DATE, 999L))
+                        .isInstanceOf(CustomException.class)
+                        .hasMessageContaining(RentErrorCode.RENT_NOT_FOUND.getMessage());
+            }
+        }
+
+        @Nested
+        @DisplayName("타인의 참여 내역 조회 시")
+        class Context_other_member_access {
+
+            @Test
+            @DisplayName("NOT_FOUND 예외가 발생한다")
+            void it_throws_not_found_for_other_member() {
+                Member otherMember = memberRepository.save(MemberFixture.createTestMember());
+                assertThatThrownBy(() -> rentService.getJoinedRentDetail(otherMember.getId(), TARGET_DATE, savedRentId))
+                        .isInstanceOf(CustomException.class)
+                        .hasMessageContaining(RentErrorCode.RENT_NOT_FOUND.getMessage());
+            }
+        }
+    }
+}
