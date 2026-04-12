@@ -343,10 +343,8 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
                 rentIds.add(rentId);
 
                 for (LocalDate date : SLOT_DATES) {
-                    rentService.joinRent(
-                            RentFixture.createRentJoinRequest(rentId, date, 1), savedMember.getId());
-                    rentService.joinRent(
-                            RentFixture.createRentJoinRequest(rentId, date, 1), otherMember.getId());
+                    rentService.joinRent(RentFixture.createRentJoinRequest(rentId, date, 1), savedMember.getId());
+                    rentService.joinRent(RentFixture.createRentJoinRequest(rentId, date, 1), otherMember.getId());
                 }
             }
         }
@@ -386,7 +384,8 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             List<JoinedRentResponse> result = rentService.getJoinedRentSummaries(savedMember.getId(), null, 20);
             assertThat(result).hasSize(15);
             rentIds.forEach(rentId -> {
-                long count = result.stream().filter(r -> r.rentId().equals(rentId)).count();
+                long count =
+                        result.stream().filter(r -> r.rentId().equals(rentId)).count();
                 assertThat(count).isEqualTo(3);
             });
         }
@@ -403,10 +402,9 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             assertThat(otherMemberResult).hasSize(15);
             assertThat(savedMemberResult)
                     .extracting(JoinedRentResponse::rentParticipantId)
-                    .doesNotContainAnyElementsOf(
-                            otherMemberResult.stream()
-                                    .map(JoinedRentResponse::rentParticipantId)
-                                    .toList());
+                    .doesNotContainAnyElementsOf(otherMemberResult.stream()
+                            .map(JoinedRentResponse::rentParticipantId)
+                            .toList());
         }
     }
 

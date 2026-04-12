@@ -17,9 +17,7 @@ public record RentJoinRequest(
         @NotNull Long rentId,
         @NotNull LocalDate boardingDate,
 
-        @NotNull
-        @Min(value = 1, message = "탑승 인원 수는 1명 이상이어야 합니다.")
-        @Max(value = 45, message = "탑승 인원 수는 45명 이하여야 합니다.")
+        @Min(value = 1, message = "탑승 인원 수는 1명 이상이어야 합니다.") @Max(value = 45, message = "탑승 인원 수는 45명 이하여야 합니다.")
         int passengerNum,
 
         @NotBlank String depositorName,

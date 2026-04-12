@@ -7,6 +7,7 @@ import com.backend.allreva.common.web.response.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -28,11 +29,12 @@ public class CustomControllerAdvice {
         log.info("user validation error: {}", e.getMessage(), e);
         StringBuilder errorMessage = new StringBuilder();
 
-        for (FieldError fieldError : e.getBindingResult().getFieldErrors()) {
+        for (ObjectError error : e.getBindingResult().getAllErrors()) {
+            String field = (error instanceof FieldError fe) ? fe.getField() : error.getObjectName();
             errorMessage
-                    .append(fieldError.getField())
+                    .append(field)
                     .append(": ")
-                    .append(fieldError.getDefaultMessage())
+                    .append(error.getDefaultMessage())
                     .append("\n");
         }
 
