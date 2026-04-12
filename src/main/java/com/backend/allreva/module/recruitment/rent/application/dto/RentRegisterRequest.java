@@ -2,13 +2,14 @@ package com.backend.allreva.module.recruitment.rent.application.dto;
 
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.module.recruitment.rent.domain.Rent;
+import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
 import com.backend.allreva.module.recruitment.rent.domain.value.Bus;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusSize;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusType;
-import com.backend.allreva.module.recruitment.rent.domain.value.Price;
-import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
-import com.backend.allreva.module.recruitment.rent.domain.value.Region;
+import com.backend.allreva.module.recruitment.rent.domain.value.Route;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -21,12 +22,11 @@ import java.util.List;
 public record RentRegisterRequest(
         @NotNull Long concertId,
         @NotBlank String title,
-        @NotNull String artistName,
-        @NotNull Region region,
-        @NotNull String depositAccount,
-        @NotNull String boardingArea,
-        @NotNull String upTime,
-        @NotNull String downTime,
+        @NotBlank String artistName,
+        @NotBlank String region,
+        @NotNull BoardingType boardingType,
+        @Valid Route upRoute,
+        @Valid Route downRoute,
 
         @NotEmpty(message = "날짜는 하루 이상 선택되어야 합니다.") @JsonProperty("boardingDates")
         List<LocalDate> rentBoardingDateRequests,
@@ -34,15 +34,29 @@ public record RentRegisterRequest(
         @NotNull BusSize busSize,
         @NotNull BusType busType,
         @Min(value = 1, message = "탑승 인원 수는 1명 이상이어야 합니다.") int maxPassenger,
-        @PositiveOrZero int roundPrice,
-        @PositiveOrZero int upTimePrice,
-        @PositiveOrZero int downTimePrice,
+        @PositiveOrZero int price,
         @Min(value = 1, message = "모집 인원 수는 1명 이상이어야 합니다.") int recruitmentCount,
         @FutureOrPresent(message = "마감 기한은 과거일 수 없습니다.") LocalDate endDate,
-        String chatUrl,
-        @NotNull RefundType refundType,
         String information,
         Image image) {
+
+    @AssertTrue(message = "상행 경로는 필수입니다.")
+    private boolean isUpRouteValid() {
+        if (boardingType == null) return true;
+        if (boardingType == BoardingType.UP || boardingType == BoardingType.ROUND) {
+            return upRoute != null;
+        }
+        return true;
+    }
+
+    @AssertTrue(message = "하행 경로는 필수입니다.")
+    private boolean isDownRouteValid() {
+        if (boardingType == null) return true;
+        if (boardingType == BoardingType.DOWN || boardingType == BoardingType.ROUND) {
+            return downRoute != null;
+        }
+        return true;
+    }
 
     public Rent toEntity(final Long memberId) {
         return Rent.builder()
@@ -52,23 +66,16 @@ public record RentRegisterRequest(
                 .image(image)
                 .artistName(artistName)
                 .region(region)
-                .depositAccount(depositAccount)
-                .boardingArea(boardingArea)
-                .upTime(upTime)
-                .downTime(downTime)
+                .boardingType(boardingType)
+                .upRoute(upRoute)
+                .downRoute(downRoute)
                 .bus(Bus.builder()
                         .busSize(busSize)
                         .busType(busType)
                         .maxPassenger(maxPassenger)
                         .build())
-                .price(Price.builder()
-                        .roundPrice(roundPrice)
-                        .upTimePrice(upTimePrice)
-                        .downTimePrice(downTimePrice)
-                        .build())
+                .price(price)
                 .endDate(endDate)
-                .chatUrl(chatUrl)
-                .refundType(refundType)
                 .information(information)
                 .build();
     }

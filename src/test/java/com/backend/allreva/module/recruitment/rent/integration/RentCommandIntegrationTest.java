@@ -15,10 +15,6 @@ import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.member.domain.MemberRepository;
 import com.backend.allreva.module.member.fixture.MemberFixture;
 import com.backend.allreva.module.recruitment.rent.application.RentService;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
-import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
-import com.backend.allreva.module.recruitment.rent.domain.RentBoardingSlotRepository;
 import com.backend.allreva.module.recruitment.rent.domain.RentRepository;
 import com.backend.allreva.module.recruitment.rent.domain.participant.RentParticipantRepository;
 import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
@@ -37,8 +33,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-@DisplayName("Rent Integration 테스트")
-class RentIntegrationTest extends IntegrationTestSupport {
+@DisplayName("Rent Command Integration 테스트")
+class RentCommandIntegrationTest extends IntegrationTestSupport {
 
     private static final List<LocalDate> BOARDING_DATES = List.of(LocalDate.of(2030, 12, 1), LocalDate.of(2030, 12, 2));
 
@@ -47,9 +43,6 @@ class RentIntegrationTest extends IntegrationTestSupport {
 
     @Autowired
     private RentRepository rentRepository;
-
-    @Autowired
-    private RentBoardingSlotRepository rentBoardingSlotRepository;
 
     @Autowired
     private RentParticipantRepository rentParticipantRepository;
@@ -120,7 +113,7 @@ class RentIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("탑승 날짜 슬롯이 생성된다")
             void it_creates_boarding_slots() {
-                var slots = rentBoardingSlotRepository.findAllByRentId(savedRentId);
+                var slots = rentBoardingSlotJpaRepository.findAllByRent_Id(savedRentId);
                 assertThat(slots).hasSize(2);
                 slots.forEach(slot -> {
                     assertThat(slot.getRecruitmentCount()).isEqualTo(30);
@@ -158,14 +151,14 @@ class RentIntegrationTest extends IntegrationTestSupport {
             @DisplayName("차대절 필드가 수정된다")
             void it_updates_rent_fields() {
                 var rent = rentRepository.findById(savedRentId).orElseThrow();
-                assertThat(rent.getBoardingArea()).isEqualTo("부산역 앞");
-                assertThat(rent.getUpTime()).isEqualTo("09:00");
+                assertThat(rent.getUpRoute().getBoardingArea()).isEqualTo("부산역 앞");
+                assertThat(rent.getUpRoute().getTime()).isEqualTo("09:00");
             }
 
             @Test
             @DisplayName("탑승 날짜 슬롯이 교체된다")
             void it_replaces_boarding_slots() {
-                var slots = rentBoardingSlotRepository.findAllByRentId(savedRentId);
+                var slots = rentBoardingSlotJpaRepository.findAllByRent_Id(savedRentId);
                 assertThat(slots).hasSize(1);
                 assertThat(slots.get(0).getDate()).isEqualTo(LocalDate.of(2030, 12, 1));
                 assertThat(slots.get(0).getRecruitmentCount()).isEqualTo(20);
@@ -283,8 +276,8 @@ class RentIntegrationTest extends IntegrationTestSupport {
     }
 
     @Nested
-    @DisplayName("applyRent 테스트")
-    class Describe_applyRent {
+    @DisplayName("joinRent 테스트")
+    class Describe_joinRent {
 
         private Long savedRentId;
         private static final LocalDate TARGET_DATE = LocalDate.of(2030, 12, 1);
@@ -312,8 +305,8 @@ class RentIntegrationTest extends IntegrationTestSupport {
             void it_increases_passenger_count() {
                 rentService.joinRent(
                         RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 3), savedMember.getId());
-                var slot = rentBoardingSlotRepository
-                        .findByRentIdAndDate(savedRentId, TARGET_DATE)
+                var slot = rentBoardingSlotJpaRepository
+                        .findByRent_IdAndDate(savedRentId, TARGET_DATE)
                         .orElseThrow();
                 assertThat(slot.getPassengerCount()).isEqualTo(3);
             }
@@ -355,56 +348,111 @@ class RentIntegrationTest extends IntegrationTestSupport {
     }
 
     @Nested
-    @DisplayName("getRentDetail 테스트")
-    class Describe_getRentDetail {
+    @DisplayName("updateRentJoin 테스트")
+    class Describe_updateRentJoin {
 
         private Long savedRentId;
+        private Long participantId;
+        private static final LocalDate TARGET_DATE = LocalDate.of(2030, 12, 1);
 
         @BeforeEach
         void setUp() {
             savedRentId = rentService.registerRent(
                     RentFixture.createRentRegisterRequest(concertId, BOARDING_DATES), savedMember.getId());
+            participantId = rentService.joinRent(
+                    RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 2), savedMember.getId());
         }
 
         @Nested
-        @DisplayName("여러 탑승 날짜가 있는 경우")
-        class Context_multiple_dates {
+        @DisplayName("본인 참여 내역 수정 시")
+        class Context_own_participant {
+
+            @BeforeEach
+            void setUp() {
+                rentService.updateRentJoin(
+                        RentFixture.createRentJoinUpdateRequest(participantId, TARGET_DATE), savedMember.getId());
+            }
 
             @Test
-            @DisplayName("모든 탑승 날짜가 반환된다")
-            void it_returns_all_boarding_dates() {
-                RentDetailResponse detail = rentService.getRentDetail(savedRentId, null);
-                assertThat(detail.getBoardingDates()).hasSize(2);
+            @DisplayName("참여 정보가 수정된다")
+            void it_updates_participant_fields() {
+                var participant =
+                        rentParticipantJpaRepository.findById(participantId).orElseThrow();
+                assertThat(participant.getDepositor().getDepositorName()).isEqualTo("수정된홍길동");
+                assertThat(participant.getPassengerNum()).isEqualTo(3);
             }
         }
 
         @Nested
-        @DisplayName("존재하지 않는 차대절 조회 시")
-        class Context_not_found {
+        @DisplayName("타인의 참여 내역 수정 시")
+        class Context_other_member {
+
+            private Member otherMember;
+
+            @BeforeEach
+            void setUp() {
+                otherMember = memberRepository.save(MemberFixture.createTestMember());
+            }
 
             @Test
-            @DisplayName("NOT_FOUND 예외가 발생한다")
-            void it_throws_not_found() {
-                assertThatThrownBy(() -> rentService.getRentDetail(999L, null))
+            @DisplayName("접근 거부 예외가 발생한다")
+            void it_throws_access_denied() {
+                assertThatThrownBy(() -> rentService.updateRentJoin(
+                                RentFixture.createRentJoinUpdateRequest(participantId, TARGET_DATE),
+                                otherMember.getId()))
                         .isInstanceOf(CustomException.class)
-                        .hasMessageContaining(RentErrorCode.RENT_NOT_FOUND.getMessage());
+                        .hasMessageContaining(RentErrorCode.RENT_PARTICIPANT_ACCESS_DENIED.getMessage());
             }
         }
     }
 
     @Nested
-    @DisplayName("getRentSummaries 테스트")
-    class Describe_getRentSummaries {
+    @DisplayName("cancelRentJoin 테스트")
+    class Describe_cancelRentJoin {
 
-        @Test
-        @DisplayName("마감된 차대절은 목록에 포함되지 않는다")
-        void it_excludes_closed_rents() {
-            Long rentId = rentService.registerRent(
+        private Long savedRentId;
+        private Long participantId;
+        private static final LocalDate TARGET_DATE = LocalDate.of(2030, 12, 1);
+
+        @BeforeEach
+        void setUp() {
+            savedRentId = rentService.registerRent(
                     RentFixture.createRentRegisterRequest(concertId, BOARDING_DATES), savedMember.getId());
-            rentService.closeRent(RentFixture.createRentIdRequest(rentId), savedMember.getId());
+            participantId = rentService.joinRent(
+                    RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 2), savedMember.getId());
+        }
 
-            List<RentSummaryResponse> summaries = rentService.getRentSummaries(null, SortType.LATEST, null, null, 10);
-            assertThat(summaries).isEmpty();
+        @Nested
+        @DisplayName("본인 참여 취소 시")
+        class Context_own_participant {
+
+            @Test
+            @DisplayName("참여자가 삭제된다")
+            void it_deletes_participant() {
+                rentService.cancelRentJoin(RentFixture.createRentJoinIdRequest(participantId), savedMember.getId());
+                assertThat(rentParticipantJpaRepository.findById(participantId)).isEmpty();
+            }
+        }
+
+        @Nested
+        @DisplayName("타인의 참여 취소 시")
+        class Context_other_member {
+
+            private Member otherMember;
+
+            @BeforeEach
+            void setUp() {
+                otherMember = memberRepository.save(MemberFixture.createTestMember());
+            }
+
+            @Test
+            @DisplayName("접근 거부 예외가 발생한다")
+            void it_throws_access_denied() {
+                assertThatThrownBy(() -> rentService.cancelRentJoin(
+                                RentFixture.createRentJoinIdRequest(participantId), otherMember.getId()))
+                        .isInstanceOf(CustomException.class)
+                        .hasMessageContaining(RentErrorCode.RENT_PARTICIPANT_ACCESS_DENIED.getMessage());
+            }
         }
     }
 }

@@ -1,7 +1,7 @@
 package com.backend.allreva.module.recruitment.rent.application.dto;
 
+import com.backend.allreva.module.recruitment.rent.domain.Rent;
 import com.backend.allreva.module.recruitment.rent.domain.participant.RentParticipant;
-import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
 import com.backend.allreva.module.recruitment.rent.domain.value.Depositor;
 import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
 import jakarta.validation.constraints.Max;
@@ -16,11 +16,8 @@ import lombok.Builder;
 public record RentJoinRequest(
         @NotNull Long rentId,
         @NotNull LocalDate boardingDate,
-        @NotNull BoardingType boardingType,
 
-        @NotNull
-        @Min(value = 1, message = "탑승 인원 수는 1명 이상이어야 합니다.")
-        @Max(value = 45, message = "탑승 인원 수는 45명 이하여야 합니다.")
+        @Min(value = 1, message = "탑승 인원 수는 1명 이상이어야 합니다.") @Max(value = 45, message = "탑승 인원 수는 45명 이하여야 합니다.")
         int passengerNum,
 
         @NotBlank String depositorName,
@@ -32,16 +29,15 @@ public record RentJoinRequest(
         @NotNull RefundType refundType,
         @NotBlank String refundAccount) {
 
-    public RentParticipant toEntity(final Long memberId) {
+    public RentParticipant toEntity(final Rent rent, final Long memberId) {
         return RentParticipant.builder()
-                .rentId(rentId)
+                .rent(rent)
                 .memberId(memberId)
                 .depositor(Depositor.builder()
                         .depositorName(depositorName)
                         .depositorTime(depositorTime)
                         .phone(phone)
                         .build())
-                .boardingType(boardingType)
                 .passengerNum(passengerNum)
                 .refundType(refundType)
                 .refundAccount(refundAccount)

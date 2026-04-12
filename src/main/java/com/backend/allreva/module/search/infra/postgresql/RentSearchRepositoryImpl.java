@@ -45,7 +45,7 @@ public class RentSearchRepositoryImpl implements RentSearchRepository {
     private List<RentThumbnail> fetchRents(BooleanExpression condition, BooleanExpression cursor, int fetchSize) {
         return queryFactory
                 .select(Projections.constructor(
-                        RentThumbnail.class, rent.id, rent.title, rent.boardingArea, rent.image.url, rent.endDate))
+                        RentThumbnail.class, rent.id, rent.title, rent.region, rent.image.url, rent.endDate))
                 .from(rent)
                 .where(condition, cursor)
                 .orderBy(rent.id.desc())

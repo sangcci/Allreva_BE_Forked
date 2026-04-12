@@ -2,14 +2,16 @@ package com.backend.allreva.module.recruitment.rent.fixture;
 
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentIdRequest;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinIdRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinRequest;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusSize;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusType;
 import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
-import com.backend.allreva.module.recruitment.rent.domain.value.Region;
+import com.backend.allreva.module.recruitment.rent.domain.value.Route;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.AccessLevel;
@@ -17,6 +19,17 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RentFixture {
+
+    private static final Route UP_ROUTE = Route.builder()
+            .boardingArea("서울역 앞")
+            .dropOffArea("공연장 B건물")
+            .time("10:00")
+            .build();
+    private static final Route DOWN_ROUTE = Route.builder()
+            .boardingArea("공연장 정문")
+            .dropOffArea("서울역 앞")
+            .time("22:00")
+            .build();
 
     public static RentRegisterRequest createRentRegisterRequest(Long concertId, List<LocalDate> dates) {
         return createRentRegisterRequest(concertId, dates, 30);
@@ -28,22 +41,17 @@ public final class RentFixture {
                 concertId,
                 "테스트 차대절",
                 "테스트 아티스트",
-                Region.서울,
-                "국민은행 12345",
-                "서울역 앞",
-                "10:00",
-                "22:00",
+                "서울",
+                BoardingType.ROUND,
+                UP_ROUTE,
+                DOWN_ROUTE,
                 dates,
                 BusSize.LARGE,
                 BusType.STANDARD,
                 45,
                 50000,
-                30000,
-                20000,
                 recruitmentCount,
                 LocalDate.of(2030, 11, 30),
-                "https://chat.example.com",
-                RefundType.REFUND,
                 "테스트 차대절 정보",
                 new Image("https://example.com/rent.jpg"));
     }
@@ -51,21 +59,25 @@ public final class RentFixture {
     public static RentUpdateRequest createRentUpdateRequest(Long rentId, List<LocalDate> dates) {
         return new RentUpdateRequest(
                 rentId,
-                Region.서울,
-                "부산역 앞",
-                "09:00",
-                "23:00",
+                "서울",
+                BoardingType.ROUND,
+                Route.builder()
+                        .boardingArea("부산역 앞")
+                        .dropOffArea("공연장 C건물")
+                        .time("09:00")
+                        .build(),
+                Route.builder()
+                        .boardingArea("공연장 정문")
+                        .dropOffArea("부산역 앞")
+                        .time("23:00")
+                        .build(),
                 dates,
                 BusSize.MEDIUM,
                 BusType.DELUXE,
                 40,
                 60000,
-                35000,
-                25000,
                 20,
                 LocalDate.of(2030, 11, 30),
-                "https://chat.example.com",
-                RefundType.REFUND,
                 "수정된 차대절 정보",
                 new Image("https://example.com/rent-updated.jpg"));
     }
@@ -78,7 +90,6 @@ public final class RentFixture {
         return RentJoinRequest.builder()
                 .rentId(rentId)
                 .boardingDate(date)
-                .boardingType(BoardingType.ROUND)
                 .passengerNum(passengerNum)
                 .depositorName("홍길동")
                 .depositorTime("12:00")
@@ -86,5 +97,14 @@ public final class RentFixture {
                 .refundType(RefundType.REFUND)
                 .refundAccount("국민은행 99999")
                 .build();
+    }
+
+    public static RentJoinUpdateRequest createRentJoinUpdateRequest(final Long participantId, final LocalDate date) {
+        return new RentJoinUpdateRequest(
+                participantId, date, 3, "수정된홍길동", "15:00", "010-9999-8888", RefundType.REFUND, "신한은행 11111");
+    }
+
+    public static RentJoinIdRequest createRentJoinIdRequest(final Long participantId) {
+        return new RentJoinIdRequest(participantId);
     }
 }

@@ -48,10 +48,19 @@ out/
 .vscode/
 /src/main/resources/CD.yml
 
-### Claude Code ###
+### AI Tools ###
 .claude/
+.superpowers/
+.cursor/
+.copilot/
+.aider*
 docs/
 CLAUDE.md
+AGENTS.md
+GEMINI.md
 
 ### Load Test ###
 load-test/
+
+### Query Optimization Test ###
+query-optimization-test/

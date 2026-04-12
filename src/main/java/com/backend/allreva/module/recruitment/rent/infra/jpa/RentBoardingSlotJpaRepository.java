@@ -11,19 +11,15 @@ import org.springframework.data.repository.query.Param;
 
 public interface RentBoardingSlotJpaRepository extends JpaRepository<RentBoardingSlot, Long> {
 
-    Optional<RentBoardingSlot> findByRentIdAndDate(Long rentId, LocalDate date);
+    List<RentBoardingSlot> findAllByRent_Id(Long rentId);
 
-    List<RentBoardingSlot> findAllByRentId(Long rentId);
-
-    @Modifying
-    @Query("UPDATE RentBoardingSlot s SET s.deletedAt = CURRENT_TIMESTAMP WHERE s.rentId = :rentId")
-    void deleteAllByRentId(@Param("rentId") Long rentId);
+    Optional<RentBoardingSlot> findByRent_IdAndDate(Long rentId, LocalDate date);
 
     @Modifying
     @Query("""
         UPDATE RentBoardingSlot s
         SET s.passengerCount = s.passengerCount + :count
-        WHERE s.rentId = :rentId
+        WHERE s.rent.id = :rentId
           AND s.date = :boardingDate
           AND s.passengerCount + :count <= s.recruitmentCount
         """)

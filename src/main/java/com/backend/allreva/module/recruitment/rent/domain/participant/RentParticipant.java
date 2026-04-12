@@ -2,7 +2,7 @@ package com.backend.allreva.module.recruitment.rent.domain.participant;
 
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.BaseEntity;
-import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
+import com.backend.allreva.module.recruitment.rent.domain.Rent;
 import com.backend.allreva.module.recruitment.rent.domain.value.Depositor;
 import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
 import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
@@ -11,9 +11,12 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
 import lombok.AccessLevel;
@@ -35,8 +38,9 @@ public class RentParticipant extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Long rentId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rent_id", nullable = false)
+    private Rent rent;
 
     @Column(nullable = false)
     private Long memberId;
@@ -46,10 +50,6 @@ public class RentParticipant extends BaseEntity {
 
     @Column(nullable = false)
     private int passengerNum;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private BoardingType boardingType;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -63,19 +63,17 @@ public class RentParticipant extends BaseEntity {
 
     @Builder
     private RentParticipant(
-            Long rentId,
+            Rent rent,
             Long memberId,
             Depositor depositor,
             int passengerNum,
-            BoardingType boardingType,
             RefundType refundType,
             String refundAccount,
             LocalDate boardingDate) {
-        this.rentId = rentId;
+        this.rent = rent;
         this.memberId = memberId;
         this.depositor = depositor;
         this.passengerNum = passengerNum;
-        this.boardingType = boardingType;
         this.refundType = refundType;
         this.refundAccount = refundAccount;
         this.boardingDate = boardingDate;
@@ -84,16 +82,18 @@ public class RentParticipant extends BaseEntity {
     public void update(
             Depositor depositor,
             int passengerNum,
-            BoardingType boardingType,
             RefundType refundType,
             String refundAccount,
             LocalDate boardingDate) {
         this.depositor = depositor;
         this.passengerNum = passengerNum;
-        this.boardingType = boardingType;
         this.refundType = refundType;
         this.refundAccount = refundAccount;
         this.boardingDate = boardingDate;
+    }
+
+    public Long getRentId() {
+        return rent.getId();
     }
 
     public void validateMine(Long memberId) {
