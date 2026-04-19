@@ -25,4 +25,15 @@ public interface RentBoardingSlotJpaRepository extends JpaRepository<RentBoardin
         """)
     int incrementPassengerCount(
             @Param("rentId") Long rentId, @Param("boardingDate") LocalDate boardingDate, @Param("count") int count);
+
+    @Modifying
+    @Query("""
+        UPDATE RentBoardingSlot s
+        SET s.passengerCount = s.passengerCount - :count
+        WHERE s.rent.id = :rentId
+          AND s.date = :boardingDate
+          AND s.passengerCount - :count >= 0
+        """)
+    int decrementPassengerCount(
+            @Param("rentId") Long rentId, @Param("boardingDate") LocalDate boardingDate, @Param("count") int count);
 }

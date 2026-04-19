@@ -224,6 +224,16 @@ public class RentService {
 
         participant.validateMine(memberId);
 
+        int updated = rentBoardingSlotRepository.decrementPassengerCount(
+                participant.getRent().getId(), participant.getBoardingDate(), participant.getPassengerNum());
+        if (updated == 0) {
+            log.warn(
+                    "passengerCount decrement skipped: rentId={}, boardingDate={}, passengerNum={}",
+                    participant.getRent().getId(),
+                    participant.getBoardingDate(),
+                    participant.getPassengerNum());
+        }
+
         rentParticipantRepository.delete(participant);
     }
 

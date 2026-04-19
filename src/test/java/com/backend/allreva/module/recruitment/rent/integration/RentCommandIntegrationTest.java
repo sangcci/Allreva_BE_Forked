@@ -432,6 +432,25 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
                 rentService.cancelRentJoin(RentFixture.createRentJoinIdRequest(participantId), savedMember.getId());
                 assertThat(rentParticipantJpaRepository.findById(participantId)).isEmpty();
             }
+
+            @Test
+            @DisplayName("탑승 슬롯의 passengerCount가 감소한다")
+            void it_decreases_passenger_count() {
+                // given: joinRent에서 passengerNum=2로 신청했으므로 passengerCount=2
+                var slotBefore = rentBoardingSlotJpaRepository
+                        .findByRent_IdAndDate(savedRentId, TARGET_DATE)
+                        .orElseThrow();
+                assertThat(slotBefore.getPassengerCount()).isEqualTo(2);
+
+                // when
+                rentService.cancelRentJoin(RentFixture.createRentJoinIdRequest(participantId), savedMember.getId());
+
+                // then
+                var slotAfter = rentBoardingSlotJpaRepository
+                        .findByRent_IdAndDate(savedRentId, TARGET_DATE)
+                        .orElseThrow();
+                assertThat(slotAfter.getPassengerCount()).isZero();
+            }
         }
 
         @Nested
