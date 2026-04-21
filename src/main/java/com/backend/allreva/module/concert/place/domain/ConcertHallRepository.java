@@ -1,6 +1,7 @@
 package com.backend.allreva.module.concert.place.domain;
 
 import com.backend.allreva.module.concert.place.application.dto.ConcertHallDetailResponse;
+import java.util.List;
 import java.util.Optional;
 
 public interface ConcertHallRepository {
@@ -12,6 +13,8 @@ public interface ConcertHallRepository {
     ConcertHallDetailResponse findDetailByHallCode(String hallCode);
 
     Optional<ConcertHall> findById(String id);
+
+    List<String> findAllIds();
 
     void deleteAll();
 }

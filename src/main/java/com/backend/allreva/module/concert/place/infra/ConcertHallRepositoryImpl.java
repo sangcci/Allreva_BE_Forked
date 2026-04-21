@@ -9,6 +9,7 @@ import com.backend.allreva.module.concert.place.infra.jpa.ConcertHallJpaReposito
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -38,6 +39,11 @@ public class ConcertHallRepositoryImpl implements ConcertHallRepository {
     @Override
     public void deleteAll() {
         jpa.deleteAll();
+    }
+
+    @Override
+    public List<String> findAllIds() {
+        return jpa.findAllIds();
     }
 
     @Override
