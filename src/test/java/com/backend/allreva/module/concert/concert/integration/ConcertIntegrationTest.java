@@ -48,63 +48,21 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
         class Context_공연_ID로_조회 {
 
             @Test
-            @DisplayName("조회수가 1 증가하고 상세 정보가 반환된다")
-            void 조회수가_증가하고_상세정보가_반환된다() {
+            @DisplayName("상세 정보가 반환된다")
+            void 상세정보가_반환된다() {
                 // given
                 ConcertHall hall = concertHallRepository.save(createTestConcertHall());
                 Concert concert = concertRepository.save(createConcertWithHallCode(hall.getId()));
                 Long concertId = concert.getId();
-                long initialViewCount = concert.getViewCount();
 
                 // when
                 ConcertDetailResponse result = concertService.findDetailById(concertId);
 
                 // then
-                Concert updatedConcert = concertRepository.findById(concertId).orElseThrow();
                 assertSoftly(softly -> {
                     softly.assertThat(result).isNotNull();
                     softly.assertThat(result.hallCode()).isNotNull();
-                    softly.assertThat(updatedConcert.getViewCount()).isEqualTo(initialViewCount + 1);
                 });
-            }
-        }
-
-        @Nested
-        @DisplayName("조회수를 증가시킬 때")
-        class Context_조회수_증가 {
-
-            @Test
-            @DisplayName("공연의 조회수가 1 증가한다")
-            void 공연의_조회수가_1_증가한다() {
-                // given
-                Concert concert = concertRepository.save(createTestConcert());
-                Long concertId = concert.getId();
-                long initialViewCount = concert.getViewCount();
-
-                // when
-                concertService.increaseViewCount(concertId);
-
-                // then
-                Concert updatedConcert = concertRepository.findById(concertId).orElseThrow();
-                assertThat(updatedConcert.getViewCount()).isEqualTo(initialViewCount + 1);
-            }
-
-            @Test
-            @DisplayName("여러 번 조회하면 조회수가 누적된다")
-            void 여러_번_조회하면_조회수가_누적된다() {
-                // given
-                Concert concert = concertRepository.save(createTestConcert());
-                Long concertId = concert.getId();
-                long initialViewCount = concert.getViewCount();
-
-                // when
-                concertService.increaseViewCount(concertId);
-                concertService.increaseViewCount(concertId);
-                concertService.increaseViewCount(concertId);
-
-                // then
-                Concert updatedConcert = concertRepository.findById(concertId).orElseThrow();
-                assertThat(updatedConcert.getViewCount()).isEqualTo(initialViewCount + 3);
             }
         }
     }

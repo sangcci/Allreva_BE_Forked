@@ -11,7 +11,7 @@ public interface ConcertJpaRepository extends JpaRepository<Concert, Long> {
 
     boolean existsByCodeConcertCode(String concertCode);
 
-    Concert findByCodeConcertCode(String concertCode);
+    Optional<Concert> findByCodeConcertCode(String concertCode);
 
     @Query(
             "SELECT c.concertInfo.dateInfo.startDate AS startDate, c.concertInfo.dateInfo.endDate AS endDate FROM Concert c WHERE c.id = :concertId")

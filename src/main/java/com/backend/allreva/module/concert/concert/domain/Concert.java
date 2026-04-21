@@ -37,8 +37,6 @@ public class Concert extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private long viewCount;
-
     @Embedded
     private Code code;
 
@@ -92,10 +90,5 @@ public class Concert extends BaseEntity {
         this.poster = poster;
         this.detailImages = detailImages != null ? detailImages : this.detailImages;
         this.sellers = sellers != null ? sellers : this.sellers;
-        this.viewCount = 0L;
-    }
-
-    public void addViewCount(final int count) {
-        this.viewCount += count;
     }
 }

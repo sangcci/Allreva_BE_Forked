@@ -128,7 +128,7 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
     private OrderSpecifier<?> mainSortOrder(final SortDirection sortDirection) {
         return switch (sortDirection) {
             case DATE -> concert.concertInfo.dateInfo.startDate.desc();
-            case VIEWS -> concert.viewCount.desc();
+            case VIEWS -> concert.id.desc();
             default -> concert.id.desc();
         };
     }

@@ -33,9 +33,9 @@ public class HallService {
             unless = "#result == null",
             cacheManager = "relatedConcertCacheManager")
     public List<RelatedConcertResponse> getRelatedConcert(
-            final String hallCode, final Long lastId, final Long lastViewCount, final int pageSize) {
+            final String hallCode, final Long lastId, final int pageSize) {
         try {
-            return concertRepository.findRelatedConcertsByHall(hallCode, lastId, lastViewCount, pageSize);
+            return concertRepository.findRelatedConcertsByHall(hallCode, lastId, pageSize);
         } catch (Exception e) {
             throw new CustomException(ConcertHallErrorCode.RELATED_CONCERT_EXCEPTION);
         }

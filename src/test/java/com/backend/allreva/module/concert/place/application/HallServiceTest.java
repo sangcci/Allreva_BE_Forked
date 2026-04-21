@@ -95,27 +95,23 @@ class HallServiceTest {
                 // given
                 String hallCode = "FC001";
                 Long lastId = 0L;
-                Long lastViewCount = 0L;
                 int pageSize = 10;
 
                 List<RelatedConcertResponse> expectedConcerts = List.of(new RelatedConcertResponse(
-                        1L, "아이유 콘서트", LocalDate.of(2030, 12, 1), LocalDate.of(2030, 12, 31), "poster1.jpg", 100L));
+                        1L, "아이유 콘서트", LocalDate.of(2030, 12, 1), LocalDate.of(2030, 12, 31), "poster1.jpg"));
 
-                given(concertRepository.findRelatedConcertsByHall(anyString(), anyLong(), anyLong(), anyInt()))
+                given(concertRepository.findRelatedConcertsByHall(anyString(), anyLong(), anyInt()))
                         .willReturn(expectedConcerts);
 
                 // when
-                List<RelatedConcertResponse> result =
-                        hallService.getRelatedConcert(hallCode, lastId, lastViewCount, pageSize);
+                List<RelatedConcertResponse> result = hallService.getRelatedConcert(hallCode, lastId, pageSize);
 
                 // then
                 assertSoftly(softly -> {
                     softly.assertThat(result).hasSize(1);
                     softly.assertThat(result.get(0).title()).isEqualTo("아이유 콘서트");
-                    softly.assertThat(result.get(0).viewCount()).isEqualTo(100L);
                 });
-                verify(concertRepository, times(1))
-                        .findRelatedConcertsByHall(hallCode, lastId, lastViewCount, pageSize);
+                verify(concertRepository, times(1)).findRelatedConcertsByHall(hallCode, lastId, pageSize);
             }
 
             @Test
@@ -123,11 +119,11 @@ class HallServiceTest {
             void 조회_중_예외가_발생하면_CustomException이_발생한다() {
                 // given
                 String hallCode = "FC001";
-                given(concertRepository.findRelatedConcertsByHall(anyString(), anyLong(), anyLong(), anyInt()))
+                given(concertRepository.findRelatedConcertsByHall(anyString(), anyLong(), anyInt()))
                         .willThrow(new RuntimeException("Database error"));
 
                 // when & then
-                assertThatThrownBy(() -> hallService.getRelatedConcert(hallCode, 0L, 0L, 10))
+                assertThatThrownBy(() -> hallService.getRelatedConcert(hallCode, 0L, 10))
                         .isInstanceOf(CustomException.class)
                         .hasFieldOrPropertyWithValue("errorCode", ConcertHallErrorCode.RELATED_CONCERT_EXCEPTION);
             }

@@ -15,7 +15,7 @@ public interface ConcertRepository {
 
     boolean existsByCodeConcertCode(String concertCode);
 
-    Concert findByCodeConcertCode(String concertCode);
+    Optional<Concert> findByCodeConcertCode(String concertCode);
 
     Optional<ConcertDateInfoResponse> findStartDateAndEndDateById(Long concertId);
 
@@ -23,8 +23,7 @@ public interface ConcertRepository {
 
     List<ConcertThumbnail> getConcertMainThumbnails();
 
-    List<RelatedConcertResponse> findRelatedConcertsByHall(
-            String hallCode, Long lastId, Long lastViewCount, int pageSize);
+    List<RelatedConcertResponse> findRelatedConcertsByHall(String hallCode, Long lastId, int pageSize);
 
     void deleteAll();
 

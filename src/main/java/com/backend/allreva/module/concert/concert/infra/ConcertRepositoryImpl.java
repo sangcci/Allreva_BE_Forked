@@ -45,7 +45,7 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     }
 
     @Override
-    public Concert findByCodeConcertCode(final String concertCode) {
+    public Optional<Concert> findByCodeConcertCode(final String concertCode) {
         return jpa.findByCodeConcertCode(concertCode);
     }
 
@@ -88,7 +88,7 @@ public class ConcertRepositoryImpl implements ConcertRepository {
 
     @Override
     public List<RelatedConcertResponse> findRelatedConcertsByHall(
-            final String hallCode, final Long lastId, final Long lastViewCount, final int pageSize) {
+            final String hallCode, final Long lastId, final int pageSize) {
         return queryFactory
                 .select(Projections.constructor(
                         RelatedConcertResponse.class,
@@ -96,11 +96,10 @@ public class ConcertRepositoryImpl implements ConcertRepository {
                         concert.concertInfo.title,
                         concert.concertInfo.dateInfo.startDate,
                         concert.concertInfo.dateInfo.endDate,
-                        concert.poster.url,
-                        concert.viewCount))
+                        concert.poster.url))
                 .from(concert)
-                .where(eqHallCode(hallCode), ltCursor(lastId, lastViewCount))
-                .orderBy(concert.viewCount.desc(), concert.id.desc())
+                .where(eqHallCode(hallCode), ltId(lastId))
+                .orderBy(concert.id.desc())
                 .limit(pageSize)
                 .fetch();
     }
@@ -119,12 +118,7 @@ public class ConcertRepositoryImpl implements ConcertRepository {
         return hallCode != null ? concert.code.hallCode.eq(hallCode) : null;
     }
 
-    private BooleanExpression ltCursor(final Long lastId, final Long lastViewCount) {
-        if (lastViewCount == null || lastId == null) {
-            return null;
-        }
-        return concert.viewCount
-                .lt(lastViewCount)
-                .or(concert.viewCount.eq(lastViewCount).and(concert.id.lt(lastId)));
+    private BooleanExpression ltId(final Long lastId) {
+        return lastId != null ? concert.id.lt(lastId) : null;
     }
 }

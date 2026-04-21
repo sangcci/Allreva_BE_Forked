@@ -67,8 +67,9 @@ public class ConcertSyncScheduler {
 
     // 기존 공연 정보 업데이트
     private void updateConcert(Concert newConcert) {
-        Concert existingConcert =
-                concertRepository.findByCodeConcertCode(newConcert.getCode().getConcertCode());
+        Concert existingConcert = concertRepository
+                .findByCodeConcertCode(newConcert.getCode().getConcertCode())
+                .orElseThrow();
         existingConcert.updateFrom(
                 newConcert.getCode(),
                 newConcert.getConcertInfo(),
