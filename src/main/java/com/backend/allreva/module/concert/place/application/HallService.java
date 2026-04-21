@@ -14,19 +14,20 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
-@Slf4j
 public class HallService {
 
     private final ConcertHallRepository concertHallRepository;
     private final ConcertRepository concertRepository;
 
+    @Transactional(readOnly = true)
     public ConcertHallDetailResponse findDetailByHallCode(final String hallCode) {
         return concertHallRepository.findDetailByHallCode(hallCode);
     }
 
+    @Transactional(readOnly = true)
     @Cacheable(
             cacheNames = "relatedConcert",
             key = "#hallCode + '_' + #lastId + '_' + #pageSize",
