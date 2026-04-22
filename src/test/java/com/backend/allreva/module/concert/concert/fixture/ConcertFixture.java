@@ -90,4 +90,52 @@ public final class ConcertFixture {
         ReflectionTestUtils.setField(concert, "id", id);
         return concert;
     }
+
+    public static Concert createCompletedConcert(final String concertCode) {
+        return Concert.builder()
+                .code(Code.builder()
+                        .concertCode(concertCode)
+                        .hallCode("FC001114-1")
+                        .build())
+                .concertInfo(ConcertInfo.builder()
+                        .title("종료된 공연")
+                        .performStatus(ConcertStatus.COMPLETED)
+                        .dateInfo(DateInfo.builder()
+                                .startDate(LocalDate.of(2025, 1, 1))
+                                .endDate(LocalDate.of(2025, 3, 1))
+                                .timeTable("토 19:00")
+                                .build())
+                        .host("소속사")
+                        .price("VIP 150,000원")
+                        .build())
+                .episodes(List.of())
+                .poster(new Image("https://poster.jpg"))
+                .detailImages(List.of())
+                .sellers(Set.of())
+                .build();
+    }
+
+    public static Concert createInProgressConcert(final String concertCode) {
+        return Concert.builder()
+                .code(Code.builder()
+                        .concertCode(concertCode)
+                        .hallCode("FC001114-1")
+                        .build())
+                .concertInfo(ConcertInfo.builder()
+                        .title("진행 중인 공연")
+                        .performStatus(ConcertStatus.IN_PROGRESS)
+                        .dateInfo(DateInfo.builder()
+                                .startDate(LocalDate.now().minusDays(10))
+                                .endDate(LocalDate.now().plusDays(10))
+                                .timeTable("토 19:00")
+                                .build())
+                        .host("소속사")
+                        .price("VIP 150,000원")
+                        .build())
+                .episodes(List.of())
+                .poster(new Image("https://poster.jpg"))
+                .detailImages(List.of())
+                .sellers(Set.of())
+                .build();
+    }
 }
