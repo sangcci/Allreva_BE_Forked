@@ -79,13 +79,13 @@ url:
     domain: ${BACKEND_DOMAIN:localhost:8080}
   front:
     protocol: http
-    domain: ${FRONTEND_DOMAIN:localhost:3000}
+    domain: ${FRONTEND_DOMAIN:localhost:5173}
     domain-name: ${FRONTEND_DOMAIN_NAME:localhost}
 
 oauth2:
   kakao:
-    local-redirect-uri: ${KAKAO_LOCAL_REDIRECT_URI:http://localhost:3000/signup/callback}
-    redirect-uri: ${KAKAO_REDIRECT_URI:https://allreva.store/signup/callback}
+    local-redirect-uri: ${KAKAO_LOCAL_REDIRECT_URI:http://localhost:5173/auth/callback}
+    redirect-uri: ${KAKAO_REDIRECT_URI:http://localhost:5173/auth/callback}
     client-id: ${KAKAO_CLIENT_ID}
     client-secret: ${KAKAO_CLIENT_SECRET}
     api-url: https://kapi.kakao.com
