@@ -10,9 +10,9 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+@RequiredArgsConstructor
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class ConcertHallSyncScheduler {
 
     private static final int KOPIS_RATE_LIMIT_MILLIS = 100;
