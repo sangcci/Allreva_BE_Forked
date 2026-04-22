@@ -1,19 +1,15 @@
 package com.backend.allreva.module.concert.concert.application;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import com.backend.allreva.module.concert.concert.application.port.ConcertDataSyncPort;
 import com.backend.allreva.module.concert.concert.domain.Concert;
-import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,95 +30,65 @@ class ConcertSyncSchedulerTest {
     private ConcertDataSyncPort concertDataSyncPort;
 
     @Mock
-    private ConcertRepository concertRepository;
+    private ConcertHallRepository concertHallRepository;
 
     @Mock
-    private ConcertHallRepository concertHallRepository;
+    private ConcertSyncService concertSyncService;
 
     @Nested
     @DisplayName("공연 정보 동기화")
     class Describe_공연_정보_동기화 {
 
         @Nested
-        @DisplayName("DB에 없는 새 공연 코드일 때")
-        class Context_신규_공연일_때 {
+        @DisplayName("여러 공演 코드가 조회될 때")
+        class Context_여러_공연_코드일_때 {
 
             @Test
-            @DisplayName("공연 정보를 저장한다")
-            void 신규_공연_정보를_저장한다() {
+            @DisplayName("각 공연 코드마다 ConcertSyncService.processConcertUpsert를 호출한다")
+            void 각_공연마다_processConcertUpsert를_호출한다() {
                 // given
                 String hallId = "FC001114-1";
-                String concertCode = "PF001";
-                Concert newConcert = ConcertFixture.createInProgressConcert(concertCode);
+                String concertCode1 = "PF001";
+                String concertCode2 = "PF002";
+                Concert concert1 = ConcertFixture.createInProgressConcert(concertCode1);
+                Concert concert2 = ConcertFixture.createInProgressConcert(concertCode2);
 
                 given(concertHallRepository.findAllIds()).willReturn(List.of(hallId));
                 given(concertDataSyncPort.fetchDailyConcertCodes(anyString(), anyString(), anyString(), anyString()))
-                        .willReturn(List.of(concertCode));
-                given(concertDataSyncPort.fetchConcertDetail(hallId, concertCode))
-                        .willReturn(newConcert);
-                given(concertRepository.findByCodeConcertCode(concertCode)).willReturn(Optional.empty());
+                        .willReturn(List.of(concertCode1, concertCode2));
+                given(concertDataSyncPort.fetchConcertDetail(hallId, concertCode1))
+                        .willReturn(concert1);
+                given(concertDataSyncPort.fetchConcertDetail(hallId, concertCode2))
+                        .willReturn(concert2);
 
                 // when
                 scheduler.fetchDailyConcertInfoList("20260421");
 
                 // then
-                verify(concertRepository, times(1)).save(newConcert);
+                verify(concertSyncService, times(1)).processConcertUpsert(concert1);
+                verify(concertSyncService, times(1)).processConcertUpsert(concert2);
             }
         }
 
         @Nested
-        @DisplayName("기존 공연이 COMPLETED 상태일 때")
-        class Context_COMPLETED_공연일_때 {
+        @DisplayName("공연 코드가 없을 때")
+        class Context_공연_코드_없을_때 {
 
             @Test
-            @DisplayName("공연 정보를 업데이트하지 않는다")
-            void COMPLETED_공연은_업데이트하지_않는다() {
+            @DisplayName("processConcertUpsert를 호출하지 않는다")
+            void 공演_코드_없으면_upsert_호출하지_않는다() {
                 // given
                 String hallId = "FC001114-1";
-                String concertCode = "PF002";
-                Concert completedConcert = ConcertFixture.createCompletedConcert(concertCode);
-                Concert newData = ConcertFixture.createCompletedConcert(concertCode);
 
                 given(concertHallRepository.findAllIds()).willReturn(List.of(hallId));
                 given(concertDataSyncPort.fetchDailyConcertCodes(anyString(), anyString(), anyString(), anyString()))
-                        .willReturn(List.of(concertCode));
-                given(concertDataSyncPort.fetchConcertDetail(hallId, concertCode))
-                        .willReturn(newData);
-                given(concertRepository.findByCodeConcertCode(concertCode)).willReturn(Optional.of(completedConcert));
+                        .willReturn(List.of());
 
                 // when
                 scheduler.fetchDailyConcertInfoList("20260421");
 
                 // then
-                verify(concertRepository, never()).save(any());
-            }
-        }
-
-        @Nested
-        @DisplayName("기존 공연이 IN_PROGRESS 상태일 때")
-        class Context_IN_PROGRESS_공연일_때 {
-
-            @Test
-            @DisplayName("공연 정보를 업데이트한다")
-            void IN_PROGRESS_공연은_업데이트한다() {
-                // given
-                String hallId = "FC001114-1";
-                String concertCode = "PF003";
-                Concert existingConcert = ConcertFixture.createInProgressConcert(concertCode);
-                Concert newData = ConcertFixture.createInProgressConcert(concertCode);
-
-                given(concertHallRepository.findAllIds()).willReturn(List.of(hallId));
-                given(concertDataSyncPort.fetchDailyConcertCodes(anyString(), anyString(), anyString(), anyString()))
-                        .willReturn(List.of(concertCode));
-                given(concertDataSyncPort.fetchConcertDetail(hallId, concertCode))
-                        .willReturn(newData);
-                given(concertRepository.findByCodeConcertCode(concertCode)).willReturn(Optional.of(existingConcert));
-
-                // when
-                scheduler.fetchDailyConcertInfoList("20260421");
-
-                // then
-                verify(concertRepository, times(1)).save(existingConcert);
+                verify(concertSyncService, times(0)).processConcertUpsert(org.mockito.ArgumentMatchers.any());
             }
         }
     }
