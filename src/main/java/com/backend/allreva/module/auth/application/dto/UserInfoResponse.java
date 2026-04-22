@@ -5,7 +5,6 @@ import lombok.Builder;
 
 @Builder
 public record UserInfoResponse(
-        boolean isUser,
         String email,
         String nickname,
         String profileImageUrl,
