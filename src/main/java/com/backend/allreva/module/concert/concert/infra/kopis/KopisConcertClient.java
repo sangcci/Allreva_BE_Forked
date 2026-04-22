@@ -1,16 +1,15 @@
 package com.backend.allreva.module.concert.concert.infra.kopis;
 
-import com.backend.allreva.common.config.OpenFeignConfig;
+import com.backend.allreva.common.config.KopisFeignConfig;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-/** Kopis(공연예술통합전산망) Concert API 클라이언트 공연 정보를 조회하는 외부 API 호출 인터페이스 */
 @FeignClient(
         name = "kopisConcertClient",
         url = "https://www.kopis.or.kr/openApi/restful",
-        configuration = OpenFeignConfig.ClientXmlDecoder.class)
+        configuration = KopisFeignConfig.class)
 public interface KopisConcertClient {
 
     /**
