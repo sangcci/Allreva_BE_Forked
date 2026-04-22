@@ -24,11 +24,11 @@ public final class MemberFixture {
         return member;
     }
 
-    public static Member createTestMember() {
+    public static Member createTestMember(final String email, final LoginProvider loginProvider) {
         return Member.builder()
-                .email(new Email("example@example.com"))
+                .email(new Email(email))
                 .memberRole(MemberRole.USER)
-                .loginProvider(LoginProvider.GOOGLE)
+                .loginProvider(loginProvider)
                 .nickname("JohnDoe")
                 .introduce("Hello, I'm John.")
                 .profileImageUrl("http://example.com/profile.jpg")
