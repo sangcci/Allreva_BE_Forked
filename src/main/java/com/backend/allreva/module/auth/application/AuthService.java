@@ -5,12 +5,12 @@ import com.backend.allreva.common.model.Email;
 import com.backend.allreva.module.auth.application.dto.UserInfo;
 import com.backend.allreva.module.auth.application.dto.UserInfoResponse;
 import com.backend.allreva.module.auth.exception.JwtErrorCode;
+import com.backend.allreva.module.member.application.MemberService;
+import com.backend.allreva.module.member.application.dto.OAuthRegisterRequest;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.member.domain.MemberRepository;
 import com.backend.allreva.module.member.domain.value.LoginProvider;
-import com.backend.allreva.module.member.domain.value.MemberRole;
 import com.backend.allreva.module.member.exception.MemberErrorCode;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +23,7 @@ public class AuthService {
     private final OAuth2LoginService oAuth2LoginService;
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     /**
      * 카카오 로그인을 검증합니다.
@@ -37,26 +38,10 @@ public class AuthService {
         LoginProvider loginProvider = userInfo.loginProvider();
         Member member = memberRepository
                 .findByEmailAndLoginProvider(emailVO, loginProvider)
-                .orElseGet(() -> createMember(userInfo));
+                .orElseGet(() -> memberService.registerByOAuth(new OAuthRegisterRequest(
+                        userInfo.email(), userInfo.loginProvider(), userInfo.profileImageUrl())));
 
         return getMemberInfo(member);
-    }
-
-    private Member createMember(final UserInfo userInfo) {
-        Member member = Member.builder()
-                .email(Email.builder().email(userInfo.email()).build())
-                .loginProvider(userInfo.loginProvider())
-                .memberRole(MemberRole.USER)
-                .nickname(generateUniqueNickname())
-                .introduce("")
-                .profileImageUrl(userInfo.profileImageUrl())
-                .build();
-        member.setDefaultRefundAccount();
-        return memberRepository.save(member);
-    }
-
-    private String generateUniqueNickname() {
-        return "user-" + UUID.randomUUID().toString().replace("-", "").substring(0, 8);
     }
 
     private UserInfoResponse getMemberInfo(final Member member) {
