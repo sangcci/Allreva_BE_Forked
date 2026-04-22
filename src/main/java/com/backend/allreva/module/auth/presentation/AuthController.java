@@ -28,10 +28,8 @@ public class AuthController implements AuthControllerSwagger {
             final HttpServletResponse response) {
         String domainName = extractDomainName(request);
         UserInfoResponse userInfoResponse = authService.kakaoLogin(authorizationCode, domainName);
-        if (userInfoResponse.isUser()) {
-            cookieService.addRefreshTokenCookie(response, userInfoResponse.refreshToken(), domainName);
-            response.addHeader("Authorization", "Bearer " + userInfoResponse.accessToken());
-        }
+        cookieService.addRefreshTokenCookie(response, userInfoResponse.refreshToken(), domainName);
+        response.addHeader("Authorization", "Bearer " + userInfoResponse.accessToken());
         return Response.onSuccess(userInfoResponse);
     }
 
@@ -71,7 +69,10 @@ public class AuthController implements AuthControllerSwagger {
     }
 
     private static String extractDomainName(final HttpServletRequest request) {
-        String domain = request.getHeader("Origin");
-        return domain != null ? domain : request.getHeader("Referer");
+        String origin = request.getHeader("Origin");
+        if (origin != null) return origin;
+        String referer = request.getHeader("Referer");
+        if (referer != null) return referer;
+        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
     }
 }
