@@ -70,11 +70,11 @@ class RentConcurrencyTest extends IntegrationTestSupport {
         doNothing().when(storageUploadService).deleteImage(any());
 
         members = List.of(
-                memberRepository.save(MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE)),
-                memberRepository.save(MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE)),
-                memberRepository.save(MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE)),
-                memberRepository.save(MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE)),
-                memberRepository.save(MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE)));
+                memberRepository.save(MemberFixture.createTestMember("user1@example.com", LoginProvider.GOOGLE)),
+                memberRepository.save(MemberFixture.createTestMember("user2@example.com", LoginProvider.GOOGLE)),
+                memberRepository.save(MemberFixture.createTestMember("user3@example.com", LoginProvider.GOOGLE)),
+                memberRepository.save(MemberFixture.createTestMember("user4@example.com", LoginProvider.GOOGLE)),
+                memberRepository.save(MemberFixture.createTestMember("user5@example.com", LoginProvider.GOOGLE)));
 
         Concert concert = concertJpaRepository.save(ConcertFixture.createTestConcert());
         rentId = rentService.registerRent(
@@ -88,7 +88,7 @@ class RentConcurrencyTest extends IntegrationTestSupport {
         rentBoardingSlotJpaRepository.deleteAll();
         rentJpaRepository.deleteAll();
         concertJpaRepository.deleteAll();
-        memberRepository.deleteAll();
+        memberRepository.deleteAllInBatch();
     }
 
     @Test

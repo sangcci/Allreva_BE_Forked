@@ -84,7 +84,7 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
         rentBoardingSlotJpaRepository.deleteAll();
         rentJpaRepository.deleteAll();
         concertJpaRepository.deleteAll();
-        memberRepository.deleteAll();
+        memberRepository.deleteAllInBatch();
     }
 
     @Nested
@@ -176,7 +176,7 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
             @BeforeEach
             void setUp() {
                 otherMember = memberRepository.save(
-                        MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
+                        MemberFixture.createTestMember("other@example.com", LoginProvider.GOOGLE));
             }
 
             @Test
@@ -223,7 +223,7 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
             @DisplayName("접근 거부 예외가 발생한다")
             void it_throws_access_denied() {
                 Member otherMember = memberRepository.save(
-                        MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
+                        MemberFixture.createTestMember("other@example.com", LoginProvider.GOOGLE));
                 assertThatThrownBy(() -> rentService.closeRent(
                                 RentFixture.createRentIdRequest(savedRentId), otherMember.getId()))
                         .isInstanceOf(CustomException.class)
@@ -271,7 +271,7 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
             @DisplayName("접근 거부 예외가 발생한다")
             void it_throws_access_denied() {
                 Member otherMember = memberRepository.save(
-                        MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
+                        MemberFixture.createTestMember("other@example.com", LoginProvider.GOOGLE));
                 assertThatThrownBy(() -> rentService.deleteRent(
                                 RentFixture.createRentIdRequest(savedRentId), otherMember.getId()))
                         .isInstanceOf(CustomException.class)
@@ -397,7 +397,7 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
             @BeforeEach
             void setUp() {
                 otherMember = memberRepository.save(
-                        MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
+                        MemberFixture.createTestMember("other@example.com", LoginProvider.GOOGLE));
             }
 
             @Test
@@ -468,7 +468,7 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
             @BeforeEach
             void setUp() {
                 otherMember = memberRepository.save(
-                        MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
+                        MemberFixture.createTestMember("other@example.com", LoginProvider.GOOGLE));
             }
 
             @Test

@@ -49,7 +49,7 @@ class MemberIntegrationTest extends IntegrationTestSupport {
     @AfterEach
     void tearDown() {
         memberArtistRepository.deleteAll();
-        memberRepository.deleteAll();
+        memberRepository.deleteAllInBatch();
         artistJpaRepository.deleteAll();
     }
 

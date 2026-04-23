@@ -45,7 +45,7 @@ class AuthorizationIntegrationTest extends IntegrationTestSupport {
 
     @AfterEach
     void tearDown() {
-        memberRepository.deleteAll();
+        memberRepository.deleteAllInBatch();
     }
 
     @Nested
