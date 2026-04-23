@@ -140,6 +140,33 @@ class AuthenticationIntegrationTest extends IntegrationTestSupport {
                 assertThat(response.email()).isEqualTo("existing@kakao.com");
             }
         }
+
+        @Nested
+        @DisplayName("카카오가 프로필 이미지를 반환하지 않을 시")
+        class Context_프로필_이미지_없음 {
+
+            @BeforeEach
+            void setUp() {
+                given(kakaoAuthClient.getToken(anyString(), anyString(), anyString(), anyString(), anyString()))
+                        .willReturn(
+                                new KakaoToken("kakao-access-token", "kakao-refresh-token", "bearer", 3600, 5183999));
+                given(kakaoUserInfoClient.getUserInfo(anyString()))
+                        .willReturn(new KakaoUserInfo(
+                                "kakao-provider-id",
+                                new KakaoUserInfo.KakaoAccount(
+                                        "noimage@kakao.com", new KakaoUserInfo.KakaoAccount.Profile("카카오닉네임", null))));
+            }
+
+            @Test
+            void profileImageUrl이_빈문자열로_저장된다() {
+                authService.kakaoLogin("auth-code");
+
+                Member saved = memberRepository
+                        .findByEmailAndLoginProvider(new Email("noimage@kakao.com"), LoginProvider.KAKAO)
+                        .orElseThrow();
+                assertThat(saved.getMemberInfo().getProfileImageUrl()).isEmpty();
+            }
+        }
     }
 
     @Nested

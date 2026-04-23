@@ -3,6 +3,7 @@ package com.backend.allreva.module.auth.oauth2;
 import com.backend.allreva.module.auth.application.OAuth2LoginService;
 import com.backend.allreva.module.auth.application.dto.UserInfo;
 import com.backend.allreva.module.member.domain.value.LoginProvider;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,8 @@ public class KakaoOAuth2LoginService implements OAuth2LoginService {
                 .providerId(kakaoUserInfo.id())
                 .email(kakaoUserInfo.kakaoAccount().email())
                 .nickname(kakaoUserInfo.kakaoAccount().profile().nickname())
-                .profileImageUrl(kakaoUserInfo.kakaoAccount().profile().profileImageUrl())
+                .profileImageUrl(Objects.requireNonNullElse(
+                        kakaoUserInfo.kakaoAccount().profile().profileImageUrl(), ""))
                 .build();
     }
 }
