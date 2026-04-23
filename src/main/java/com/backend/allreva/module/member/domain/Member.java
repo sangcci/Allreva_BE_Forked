@@ -16,8 +16,6 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,12 +26,6 @@ import org.hibernate.annotations.SQLRestriction;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-@Table(
-        name = "member",
-        uniqueConstraints =
-                @UniqueConstraint(
-                        name = MemberConstraints.UQ_EMAIL_PROVIDER,
-                        columnNames = {"email", "provider"}))
 @SQLDelete(sql = "UPDATE member SET deleted_at = NOW() WHERE id = ?")
 @SQLRestriction("deleted_at is NULL")
 public class Member extends BaseEntity {

@@ -69,6 +69,7 @@ class MemberIntegrationTest extends IntegrationTestSupport {
                 Member saved = memberService.registerByOAuth(request);
 
                 assertThat(saved.getMemberInfo().getNickname()).startsWith("user-");
+                assertThat(memberRepository.findById(saved.getId())).isPresent();
             }
         }
 
@@ -99,9 +100,11 @@ class MemberIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void 중복된_닉네임이_있으면_true를_반환한다() {
-                memberRepository.save(MemberFixture.createTestMember("exists@kakao.com", LoginProvider.KAKAO));
+                Member saved =
+                        memberRepository.save(MemberFixture.createTestMember("exists@kakao.com", LoginProvider.KAKAO));
+                String existingNickname = saved.getMemberInfo().getNickname();
 
-                NicknameDuplication result = memberService.isDuplicatedNickname("JohnDoe");
+                NicknameDuplication result = memberService.isDuplicatedNickname(existingNickname);
 
                 assertThat(result.isDuplicated()).isTrue();
             }
