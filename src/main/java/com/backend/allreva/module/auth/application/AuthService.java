@@ -31,8 +31,8 @@ public class AuthService {
      * @param authorizationCode 인가 코드
      * @return 로그인 응답
      */
-    public UserInfoResponse kakaoLogin(final String authorizationCode, final String domainName) {
-        UserInfo userInfo = oAuth2LoginService.getUserInfo(authorizationCode, domainName);
+    public UserInfoResponse kakaoLogin(final String authorizationCode) {
+        UserInfo userInfo = oAuth2LoginService.getUserInfo(authorizationCode);
 
         Email emailVO = Email.builder().email(userInfo.email()).build();
         LoginProvider loginProvider = userInfo.loginProvider();

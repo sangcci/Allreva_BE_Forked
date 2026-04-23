@@ -84,7 +84,6 @@ url:
 
 oauth2:
   kakao:
-    local-redirect-uri: ${KAKAO_LOCAL_REDIRECT_URI:http://localhost:5173/auth/callback}
     redirect-uri: ${KAKAO_REDIRECT_URI:http://localhost:5173/auth/callback}
     client-id: ${KAKAO_CLIENT_ID}
     client-secret: ${KAKAO_CLIENT_SECRET}

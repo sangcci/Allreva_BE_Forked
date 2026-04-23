@@ -74,7 +74,7 @@ class AuthenticationIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void 멤버가_DB에_저장된다() {
-                authService.kakaoLogin("auth-code", "http://localhost:5173");
+                authService.kakaoLogin("auth-code");
 
                 assertThat(memberRepository.findByEmailAndLoginProvider(
                                 new Email("newuser@kakao.com"), LoginProvider.KAKAO))
@@ -83,7 +83,7 @@ class AuthenticationIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void 닉네임이_user_로_시작하는_랜덤값으로_생성된다() {
-                authService.kakaoLogin("auth-code", "http://localhost:5173");
+                authService.kakaoLogin("auth-code");
 
                 Member saved = memberRepository
                         .findByEmailAndLoginProvider(new Email("newuser@kakao.com"), LoginProvider.KAKAO)
@@ -93,7 +93,7 @@ class AuthenticationIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void Kakao_닉네임이_저장되지_않는다() {
-                authService.kakaoLogin("auth-code", "http://localhost:5173");
+                authService.kakaoLogin("auth-code");
 
                 assertThat(memberRepository.existsByMemberInfoNickname("카카오닉네임"))
                         .isFalse();
@@ -101,7 +101,7 @@ class AuthenticationIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void accessToken과_refreshToken이_반환된다() {
-                UserInfoResponse response = authService.kakaoLogin("auth-code", "http://localhost:5173");
+                UserInfoResponse response = authService.kakaoLogin("auth-code");
 
                 assertThat(response.accessToken()).isNotBlank();
                 assertThat(response.refreshToken()).isNotBlank();
@@ -109,7 +109,7 @@ class AuthenticationIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void refreshToken이_Redis에_저장된다() {
-                UserInfoResponse response = authService.kakaoLogin("auth-code", "http://localhost:5173");
+                UserInfoResponse response = authService.kakaoLogin("auth-code");
 
                 assertThat(refreshTokenRepository.findRefreshTokenByToken(response.refreshToken()))
                         .isPresent();
@@ -128,14 +128,14 @@ class AuthenticationIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void 새_멤버가_생성되지_않는다() {
-                authService.kakaoLogin("auth-code", "http://localhost:5173");
+                authService.kakaoLogin("auth-code");
 
                 assertThat(memberRepository.count()).isEqualTo(1);
             }
 
             @Test
             void 기존_멤버_이메일로_토큰이_반환된다() {
-                UserInfoResponse response = authService.kakaoLogin("auth-code", "http://localhost:5173");
+                UserInfoResponse response = authService.kakaoLogin("auth-code");
 
                 assertThat(response.email()).isEqualTo("existing@kakao.com");
             }
