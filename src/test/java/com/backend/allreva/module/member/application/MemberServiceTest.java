@@ -1,6 +1,7 @@
 package com.backend.allreva.module.member.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -8,29 +9,37 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.concert.artist.application.ArtistService;
 import com.backend.allreva.module.concert.artist.domain.Artist;
 import com.backend.allreva.module.member.application.dto.MemberArtistRequest;
 import com.backend.allreva.module.member.application.dto.MemberRegisterRequest;
 import com.backend.allreva.module.member.application.dto.NicknameDuplication;
+import com.backend.allreva.module.member.application.dto.OAuthRegisterRequest;
 import com.backend.allreva.module.member.application.dto.RefundAccountRequest;
 import com.backend.allreva.module.member.application.port.MemberDetailRepository;
 import com.backend.allreva.module.member.domain.Member;
+import com.backend.allreva.module.member.domain.MemberConstraints;
 import com.backend.allreva.module.member.domain.MemberRepository;
 import com.backend.allreva.module.member.domain.artist.MemberArtist;
 import com.backend.allreva.module.member.domain.artist.MemberArtistRepository;
+import com.backend.allreva.module.member.domain.value.LoginProvider;
 import com.backend.allreva.module.member.domain.value.MemberRole;
+import com.backend.allreva.module.member.exception.MemberErrorCode;
 import com.backend.allreva.module.member.fixture.MemberFixture;
 import com.backend.allreva.module.member.fixture.MemberRequestFixture;
 import java.util.Collections;
 import java.util.List;
+import org.hibernate.exception.ConstraintViolationException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @ExtendWith(MockitoExtension.class)
 @SuppressWarnings("NonAsciiCharacters")
@@ -51,6 +60,48 @@ class MemberServiceTest {
 
     @Mock
     private ArtistService artistService;
+
+    @Nested
+    @DisplayName("registerByOAuth 테스트")
+    class Describe_registerByOAuth {
+
+        @Nested
+        @DisplayName("신규 회원 OAuth 등록 시")
+        class Context_신규_회원_등록 {
+
+            @Test
+            void 닉네임이_user_로_시작하는_랜덤값으로_저장된다() {
+                OAuthRegisterRequest request = new OAuthRegisterRequest(
+                        "newuser@kakao.com", LoginProvider.KAKAO, "https://example.com/profile.jpg");
+                given(memberRepository.save(any(Member.class))).willAnswer(inv -> inv.getArgument(0));
+
+                memberService.registerByOAuth(request);
+
+                ArgumentCaptor<Member> captor = ArgumentCaptor.forClass(Member.class);
+                verify(memberRepository).save(captor.capture());
+                assertThat(captor.getValue().getMemberInfo().getNickname()).startsWith("user-");
+            }
+        }
+
+        @Nested
+        @DisplayName("동시 최초 로그인으로 unique constraint 위반 시")
+        class Context_중복_회원_등록 {
+
+            @Test
+            void DUPLICATE_OAUTH_MEMBER_예외가_발생한다() {
+                OAuthRegisterRequest request = new OAuthRegisterRequest(
+                        "duplicate@kakao.com", LoginProvider.KAKAO, "https://example.com/profile.jpg");
+                ConstraintViolationException cve =
+                        new ConstraintViolationException("duplicate key", null, MemberConstraints.UQ_EMAIL_PROVIDER);
+                given(memberRepository.save(any(Member.class)))
+                        .willThrow(new DataIntegrityViolationException("duplicate", cve));
+
+                assertThatThrownBy(() -> memberService.registerByOAuth(request))
+                        .isInstanceOf(CustomException.class)
+                        .hasFieldOrPropertyWithValue("errorCode", MemberErrorCode.DUPLICATE_OAUTH_MEMBER);
+            }
+        }
+    }
 
     @Nested
     @DisplayName("회원 정보 조회")

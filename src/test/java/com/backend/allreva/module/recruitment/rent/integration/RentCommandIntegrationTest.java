@@ -13,6 +13,7 @@ import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
 import com.backend.allreva.module.concert.concert.infra.jpa.ConcertJpaRepository;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.member.domain.MemberRepository;
+import com.backend.allreva.module.member.domain.value.LoginProvider;
 import com.backend.allreva.module.member.fixture.MemberFixture;
 import com.backend.allreva.module.recruitment.rent.application.RentService;
 import com.backend.allreva.module.recruitment.rent.domain.RentRepository;
@@ -70,7 +71,8 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
 
     @BeforeEach
     void setUp() {
-        savedMember = memberRepository.save(MemberFixture.createTestMember());
+        savedMember =
+                memberRepository.save(MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
         Concert concert = concertJpaRepository.save(ConcertFixture.createTestConcert());
         concertId = concert.getId();
         doNothing().when(storageUploadService).deleteImage(any());
@@ -173,7 +175,8 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
 
             @BeforeEach
             void setUp() {
-                otherMember = memberRepository.save(MemberFixture.createTestMember());
+                otherMember = memberRepository.save(
+                        MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
             }
 
             @Test
@@ -219,7 +222,8 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("접근 거부 예외가 발생한다")
             void it_throws_access_denied() {
-                Member otherMember = memberRepository.save(MemberFixture.createTestMember());
+                Member otherMember = memberRepository.save(
+                        MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
                 assertThatThrownBy(() -> rentService.closeRent(
                                 RentFixture.createRentIdRequest(savedRentId), otherMember.getId()))
                         .isInstanceOf(CustomException.class)
@@ -266,7 +270,8 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("접근 거부 예외가 발생한다")
             void it_throws_access_denied() {
-                Member otherMember = memberRepository.save(MemberFixture.createTestMember());
+                Member otherMember = memberRepository.save(
+                        MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
                 assertThatThrownBy(() -> rentService.deleteRent(
                                 RentFixture.createRentIdRequest(savedRentId), otherMember.getId()))
                         .isInstanceOf(CustomException.class)
@@ -391,7 +396,8 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
 
             @BeforeEach
             void setUp() {
-                otherMember = memberRepository.save(MemberFixture.createTestMember());
+                otherMember = memberRepository.save(
+                        MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
             }
 
             @Test
@@ -461,7 +467,8 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
 
             @BeforeEach
             void setUp() {
-                otherMember = memberRepository.save(MemberFixture.createTestMember());
+                otherMember = memberRepository.save(
+                        MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
             }
 
             @Test

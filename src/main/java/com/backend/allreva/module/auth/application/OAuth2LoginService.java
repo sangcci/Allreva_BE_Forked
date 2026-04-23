@@ -4,5 +4,5 @@ import com.backend.allreva.module.auth.application.dto.UserInfo;
 
 public interface OAuth2LoginService {
 
-    UserInfo getUserInfo(String authorizationCode, String domainName);
+    UserInfo getUserInfo(String authorizationCode);
 }

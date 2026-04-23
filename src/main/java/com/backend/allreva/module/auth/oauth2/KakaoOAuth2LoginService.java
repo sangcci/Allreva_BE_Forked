@@ -1,28 +1,19 @@
 package com.backend.allreva.module.auth.oauth2;
 
-import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.auth.application.OAuth2LoginService;
 import com.backend.allreva.module.auth.application.dto.UserInfo;
-import com.backend.allreva.module.auth.exception.OAuth2ErrorCode;
 import com.backend.allreva.module.member.domain.value.LoginProvider;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 public class KakaoOAuth2LoginService implements OAuth2LoginService {
 
     private final KakaoAuthClient kakaoAuthClient;
     private final KakaoUserInfoClient kakaoUserInfoClient;
-
-    @Value("${url.front.domain-name}")
-    private String prodDomainName;
-
-    @Value("${oauth2.kakao.local-redirect-uri}")
-    private String kakaoLocalRedirectUri;
 
     @Value("${oauth2.kakao.redirect-uri}")
     private String kakaoRedirectUri;
@@ -33,18 +24,10 @@ public class KakaoOAuth2LoginService implements OAuth2LoginService {
     @Value("${oauth2.kakao.client-secret}")
     private String kakaoClientSecret;
 
-    /**
-     * 카카오 로그인 시 사용자 정보를 가져옵니다.
-     *
-     * @param authorizationCode 인가 코드
-     * @return 사용자 정보
-     */
     @Override
-    public UserInfo getUserInfo(final String authorizationCode, final String domainName) {
-        log.info("domainName: {}", domainName);
-        String redirectUri = getRedirectUri(domainName); // localhost or prod
+    public UserInfo getUserInfo(final String authorizationCode) {
         KakaoToken token = kakaoAuthClient.getToken(
-                kakaoClientId, redirectUri, authorizationCode, "authorization_code", kakaoClientSecret);
+                kakaoClientId, kakaoRedirectUri, authorizationCode, "authorization_code", kakaoClientSecret);
 
         KakaoUserInfo kakaoUserInfo = kakaoUserInfoClient.getUserInfo("Bearer " + token.accessToken());
 
@@ -53,17 +36,8 @@ public class KakaoOAuth2LoginService implements OAuth2LoginService {
                 .providerId(kakaoUserInfo.id())
                 .email(kakaoUserInfo.kakaoAccount().email())
                 .nickname(kakaoUserInfo.kakaoAccount().profile().nickname())
-                .profileImageUrl(kakaoUserInfo.kakaoAccount().profile().profileImageUrl())
+                .profileImageUrl(Objects.requireNonNullElse(
+                        kakaoUserInfo.kakaoAccount().profile().profileImageUrl(), ""))
                 .build();
-    }
-
-    private String getRedirectUri(final String domainName) {
-        if (domainName.contains("localhost")) {
-            return kakaoLocalRedirectUri;
-        }
-        if (domainName.contains(prodDomainName)) { // sub domain의 경우에도 통과할 수 있도록
-            return kakaoRedirectUri;
-        }
-        throw new CustomException(OAuth2ErrorCode.INVALID_REDIRECT_URI);
     }
 }

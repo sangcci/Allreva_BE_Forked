@@ -12,6 +12,7 @@ import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
 import com.backend.allreva.module.concert.concert.infra.jpa.ConcertJpaRepository;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.member.domain.MemberRepository;
+import com.backend.allreva.module.member.domain.value.LoginProvider;
 import com.backend.allreva.module.member.fixture.MemberFixture;
 import com.backend.allreva.module.recruitment.rent.application.RentService;
 import com.backend.allreva.module.recruitment.rent.fixture.RentFixture;
@@ -69,11 +70,11 @@ class RentConcurrencyTest extends IntegrationTestSupport {
         doNothing().when(storageUploadService).deleteImage(any());
 
         members = List.of(
-                memberRepository.save(MemberFixture.createTestMember()),
-                memberRepository.save(MemberFixture.createTestMember()),
-                memberRepository.save(MemberFixture.createTestMember()),
-                memberRepository.save(MemberFixture.createTestMember()),
-                memberRepository.save(MemberFixture.createTestMember()));
+                memberRepository.save(MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE)),
+                memberRepository.save(MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE)),
+                memberRepository.save(MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE)),
+                memberRepository.save(MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE)),
+                memberRepository.save(MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE)));
 
         Concert concert = concertJpaRepository.save(ConcertFixture.createTestConcert());
         rentId = rentService.registerRent(

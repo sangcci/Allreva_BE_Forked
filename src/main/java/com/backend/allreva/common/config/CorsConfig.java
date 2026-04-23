@@ -22,14 +22,7 @@ public class CorsConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // 허용할 출처 패턴 설정
-        configuration.setAllowedOriginPatterns(List.of(
-                "https://localhost:3000",
-                "http://localhost:8080",
-                "https://api.allreva.shop",
-                "https://allreva.shop/",
-                "https://api.allreva.store",
-                "https://allreva.store/",
-                frontProtocol + "://" + frontDomain));
+        configuration.setAllowedOriginPatterns(List.of(frontProtocol + "://" + frontDomain));
 
         // 자격 증명 허용
         configuration.setAllowCredentials(true);

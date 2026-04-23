@@ -5,11 +5,12 @@ import com.backend.allreva.common.model.Email;
 import com.backend.allreva.module.auth.application.dto.UserInfo;
 import com.backend.allreva.module.auth.application.dto.UserInfoResponse;
 import com.backend.allreva.module.auth.exception.JwtErrorCode;
+import com.backend.allreva.module.member.application.MemberService;
+import com.backend.allreva.module.member.application.dto.OAuthRegisterRequest;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.member.domain.MemberRepository;
 import com.backend.allreva.module.member.domain.value.LoginProvider;
 import com.backend.allreva.module.member.exception.MemberErrorCode;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +23,7 @@ public class AuthService {
     private final OAuth2LoginService oAuth2LoginService;
     private final JwtService jwtService;
     private final MemberRepository memberRepository;
+    private final MemberService memberService;
 
     /**
      * 카카오 로그인을 검증합니다.
@@ -29,27 +31,17 @@ public class AuthService {
      * @param authorizationCode 인가 코드
      * @return 로그인 응답
      */
-    public UserInfoResponse kakaoLogin(final String authorizationCode, final String domainName) {
-        UserInfo userInfo = oAuth2LoginService.getUserInfo(authorizationCode, domainName);
+    public UserInfoResponse kakaoLogin(final String authorizationCode) {
+        UserInfo userInfo = oAuth2LoginService.getUserInfo(authorizationCode);
 
-        // 회원 존재 확인
         Email emailVO = Email.builder().email(userInfo.email()).build();
         LoginProvider loginProvider = userInfo.loginProvider();
-        Optional<Member> memberOptional = memberRepository.findByEmailAndLoginProvider(emailVO, loginProvider);
+        Member member = memberRepository
+                .findByEmailAndLoginProvider(emailVO, loginProvider)
+                .orElseGet(() -> memberService.registerByOAuth(new OAuthRegisterRequest(
+                        userInfo.email(), userInfo.loginProvider(), userInfo.profileImageUrl())));
 
-        if (memberOptional.isPresent()) {
-            return getMemberInfo(memberOptional.get());
-        }
-        return getTemporaryMemberInfo(userInfo);
-    }
-
-    private UserInfoResponse getTemporaryMemberInfo(final UserInfo userInfo) {
-        return UserInfoResponse.builder()
-                .isUser(false)
-                .email(userInfo.email())
-                .nickname(userInfo.nickname())
-                .profileImageUrl(userInfo.profileImageUrl())
-                .build();
+        return getMemberInfo(member);
     }
 
     private UserInfoResponse getMemberInfo(final Member member) {
@@ -62,7 +54,6 @@ public class AuthService {
         jwtService.updateRefreshToken(refreshToken, memberId);
 
         return UserInfoResponse.builder()
-                .isUser(true)
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .email(member.getEmail().getEmail())
@@ -99,7 +90,6 @@ public class AuthService {
         jwtService.updateRefreshToken(generateRefreshToken, Long.valueOf(memberId));
 
         return UserInfoResponse.builder()
-                .isUser(true)
                 .accessToken(generatedAccessToken)
                 .refreshToken(generateRefreshToken)
                 .email(member.getEmail().getEmail())

@@ -46,6 +46,9 @@ public class CookieService {
     }
 
     private static boolean isLocalhost(String domain) {
+        if (domain == null) {
+            return false;
+        }
         try {
             URL url = new URL(domain);
             String host = url.getHost();
