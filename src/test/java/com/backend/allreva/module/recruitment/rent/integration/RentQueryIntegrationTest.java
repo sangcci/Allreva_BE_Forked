@@ -73,8 +73,7 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
 
     @BeforeEach
     void setUp() {
-        savedMember =
-                memberRepository.save(MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
+        savedMember = memberRepository.save(MemberFixture.createTestMember());
         Concert concert = concertJpaRepository.save(ConcertFixture.createTestConcert());
         concertId = concert.getId();
         doNothing().when(storageUploadService).deleteImage(any());
@@ -86,7 +85,7 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
         rentBoardingSlotJpaRepository.deleteAll();
         rentJpaRepository.deleteAll();
         concertJpaRepository.deleteAll();
-        memberRepository.deleteAllInBatch();
+        jdbcTemplate.execute("DELETE FROM member");
     }
 
     @Nested

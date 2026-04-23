@@ -49,7 +49,7 @@ class MemberIntegrationTest extends IntegrationTestSupport {
     @AfterEach
     void tearDown() {
         memberArtistRepository.deleteAll();
-        memberRepository.deleteAllInBatch();
+        jdbcTemplate.execute("DELETE FROM member");
         artistJpaRepository.deleteAll();
     }
 
@@ -79,9 +79,9 @@ class MemberIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void DUPLICATE_OAUTH_MEMBER_예외가_발생한다() {
-                memberRepository.save(MemberFixture.createTestMember("dup@kakao.com", LoginProvider.KAKAO));
+                memberRepository.save(MemberFixture.createTestMember(MemberFixture.EMAIL, LoginProvider.KAKAO));
                 OAuthRegisterRequest request = new OAuthRegisterRequest(
-                        "dup@kakao.com", LoginProvider.KAKAO, "https://example.com/profile.jpg");
+                        MemberFixture.EMAIL, LoginProvider.KAKAO, "https://example.com/profile.jpg");
 
                 assertThatThrownBy(() -> memberService.registerByOAuth(request))
                         .isInstanceOf(CustomException.class)
@@ -100,8 +100,7 @@ class MemberIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void 중복된_닉네임이_있으면_true를_반환한다() {
-                Member saved =
-                        memberRepository.save(MemberFixture.createTestMember("exists@kakao.com", LoginProvider.KAKAO));
+                Member saved = memberRepository.save(MemberFixture.createTestMember());
                 String existingNickname = saved.getMemberInfo().getNickname();
 
                 NicknameDuplication result = memberService.isDuplicatedNickname(existingNickname);
@@ -128,8 +127,7 @@ class MemberIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void 회원_정보가_성공적으로_수정된다() {
-                Member member =
-                        memberRepository.save(MemberFixture.createTestMember("profile@kakao.com", LoginProvider.KAKAO));
+                Member member = memberRepository.save(MemberFixture.createTestMember());
                 MemberRegisterRequest request =
                         MemberRequestFixture.createMemberRegisterRequestWithArtists(Collections.emptyList());
 
@@ -153,8 +151,7 @@ class MemberIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void 아티스트가_성공적으로_추가된다() {
-                Member member = memberRepository.save(
-                        MemberFixture.createTestMember("artist-add@kakao.com", LoginProvider.KAKAO));
+                Member member = memberRepository.save(MemberFixture.createTestMember());
                 artistJpaRepository.save(
                         Artist.builder().id("spotifyId1").name("Artist1").build());
                 List<MemberArtistRequest> artistRequests = List.of(new MemberArtistRequest("spotifyId1", "Artist1"));
@@ -175,8 +172,7 @@ class MemberIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void 아티스트가_성공적으로_삭제된다() {
-                Member member = memberRepository.save(
-                        MemberFixture.createTestMember("artist-del@kakao.com", LoginProvider.KAKAO));
+                Member member = memberRepository.save(MemberFixture.createTestMember());
                 memberArtistRepository.save(MemberArtist.builder()
                         .memberId(member.getId())
                         .artistId("oldArtistId")
@@ -202,8 +198,7 @@ class MemberIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void 환불_계좌가_성공적으로_등록된다() {
-                Member member =
-                        memberRepository.save(MemberFixture.createTestMember("refund@kakao.com", LoginProvider.KAKAO));
+                Member member = memberRepository.save(MemberFixture.createTestMember());
                 RefundAccountRequest request = MemberRequestFixture.createRefundAccountRequest();
 
                 memberService.registerRefundAccount(request, member);
@@ -221,8 +216,7 @@ class MemberIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void 환불_계좌가_성공적으로_삭제된다() {
-                Member member = memberRepository.save(
-                        MemberFixture.createTestMember("refund-del@kakao.com", LoginProvider.KAKAO));
+                Member member = memberRepository.save(MemberFixture.createTestMember());
                 member.setRefundAccount("국민은행", "123-456-789");
 
                 memberService.deleteRefundAccount(member);

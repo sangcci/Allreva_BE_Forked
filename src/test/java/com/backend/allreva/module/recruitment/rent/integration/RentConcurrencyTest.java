@@ -88,7 +88,7 @@ class RentConcurrencyTest extends IntegrationTestSupport {
         rentBoardingSlotJpaRepository.deleteAll();
         rentJpaRepository.deleteAll();
         concertJpaRepository.deleteAll();
-        memberRepository.deleteAllInBatch();
+        memberRepository.deleteAll();
     }
 
     @Test
