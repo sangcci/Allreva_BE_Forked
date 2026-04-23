@@ -45,7 +45,7 @@ class AuthenticationIntegrationTest extends IntegrationTestSupport {
     @AfterEach
     void tearDown() {
         refreshTokenRepository.deleteAll();
-        memberRepository.deleteAll();
+        memberRepository.deleteAllInBatch();
     }
 
     private void mockKakaoLogin(final String email) {

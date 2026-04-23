@@ -74,7 +74,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
         surveyParticipantJpaRepository.deleteAll();
         surveyJpaRepository.deleteAll();
         concertJpaRepository.deleteAll();
-        memberRepository.deleteAll();
+        memberRepository.deleteAllInBatch();
     }
 
     @Nested
@@ -144,7 +144,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             @DisplayName("접근 거부 예외가 발생한다")
             void it_throws_access_denied() {
                 Member otherMember = memberRepository.save(
-                        MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
+                        MemberFixture.createTestMember("other@example.com", LoginProvider.GOOGLE));
                 assertThatThrownBy(() -> surveyService.updateSurvey(
                                 otherMember.getId(),
                                 SurveyFixture.createUpdateSurveyRequest(savedSurveyId, BOARDING_DATES)))
@@ -186,7 +186,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             @DisplayName("접근 거부 예외가 발생한다")
             void it_throws_access_denied() {
                 Member otherMember = memberRepository.save(
-                        MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
+                        MemberFixture.createTestMember("other@example.com", LoginProvider.GOOGLE));
                 assertThatThrownBy(() -> surveyService.removeSurvey(
                                 otherMember.getId(), SurveyFixture.createSurveyIdRequest(savedSurveyId)))
                         .isInstanceOf(CustomException.class)
@@ -279,7 +279,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
                 Long participantId = surveyService.joinSurvey(
                         savedMember.getId(), SurveyFixture.createJoinSurveyRequest(savedSurveyId, TARGET_DATE));
                 Member otherMember = memberRepository.save(
-                        MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
+                        MemberFixture.createTestMember("other@example.com", LoginProvider.GOOGLE));
                 assertThatThrownBy(() -> surveyService.cancelJoin(otherMember.getId(), participantId))
                         .isInstanceOf(CustomException.class)
                         .hasMessageContaining(SurveyErrorCode.SURVEY_JOIN_ACCESS_DENIED.getMessage());
@@ -372,7 +372,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             assertThat(ownSurveys).isNotEmpty();
 
             Member otherMember =
-                    memberRepository.save(MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
+                    memberRepository.save(MemberFixture.createTestMember("other@example.com", LoginProvider.GOOGLE));
             var otherSurveys = surveyService.findCreatedSurveyList(otherMember.getId(), null, null, 10);
             assertThat(otherSurveys).isEmpty();
         }

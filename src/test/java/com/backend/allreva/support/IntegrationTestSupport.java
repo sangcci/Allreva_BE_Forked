@@ -16,6 +16,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -49,6 +50,9 @@ public abstract class IntegrationTestSupport {
 
     @Autowired
     protected AsyncAspect asyncAspect;
+
+    @Autowired
+    protected JdbcTemplate jdbcTemplate;
 
     @MockBean
     protected FcmInitializer fcmInitializer;
