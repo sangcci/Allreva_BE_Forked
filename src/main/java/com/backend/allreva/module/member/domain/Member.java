@@ -16,6 +16,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -23,11 +25,17 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
-@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLRestriction("deleted_at is NULL")
-@SQLDelete(sql = "UPDATE member SET deleted_at = NOW() WHERE id = ?")
+@Getter
 @Entity
+@Table(
+        name = "member",
+        uniqueConstraints =
+                @UniqueConstraint(
+                        name = MemberConstraints.UQ_EMAIL_PROVIDER,
+                        columnNames = {"email", "provider"}))
+@SQLDelete(sql = "UPDATE member SET deleted_at = NOW() WHERE id = ?")
+@SQLRestriction("deleted_at is NULL")
 public class Member extends BaseEntity {
 
     @Id

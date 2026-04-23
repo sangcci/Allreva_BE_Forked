@@ -58,7 +58,7 @@ public class MemberService {
                     .profileImageUrl(request.profileImageUrl())
                     .build();
             member.setDefaultRefundAccount();
-            return memberRepository.save(member);
+            return memberRepository.saveAndFlush(member);
         } catch (DataIntegrityViolationException e) {
             if (e.getCause() instanceof ConstraintViolationException cve
                     && MemberConstraints.UQ_EMAIL_PROVIDER.equals(cve.getConstraintName())) {
