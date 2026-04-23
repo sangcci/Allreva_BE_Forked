@@ -1,5 +1,6 @@
 package com.backend.allreva.module.member.application;
 
+import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.Email;
 import com.backend.allreva.module.concert.artist.application.ArtistService;
 import com.backend.allreva.module.concert.artist.application.dto.ArtistCreateRequest;
@@ -11,13 +12,17 @@ import com.backend.allreva.module.member.application.dto.OAuthRegisterRequest;
 import com.backend.allreva.module.member.application.dto.RefundAccountRequest;
 import com.backend.allreva.module.member.application.port.MemberDetailRepository;
 import com.backend.allreva.module.member.domain.Member;
+import com.backend.allreva.module.member.domain.MemberConstraints;
 import com.backend.allreva.module.member.domain.MemberRepository;
 import com.backend.allreva.module.member.domain.artist.MemberArtist;
 import com.backend.allreva.module.member.domain.artist.MemberArtistRepository;
 import com.backend.allreva.module.member.domain.value.MemberRole;
+import com.backend.allreva.module.member.exception.MemberErrorCode;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,16 +48,24 @@ public class MemberService {
 
     @Transactional
     public Member registerByOAuth(final OAuthRegisterRequest request) {
-        Member member = Member.builder()
-                .email(Email.builder().email(request.email()).build())
-                .loginProvider(request.loginProvider())
-                .memberRole(MemberRole.USER)
-                .nickname(generateUniqueNickname())
-                .introduce("")
-                .profileImageUrl(request.profileImageUrl())
-                .build();
-        member.setDefaultRefundAccount();
-        return memberRepository.save(member);
+        try {
+            Member member = Member.builder()
+                    .email(Email.builder().email(request.email()).build())
+                    .loginProvider(request.loginProvider())
+                    .memberRole(MemberRole.USER)
+                    .nickname(generateUniqueNickname())
+                    .introduce("")
+                    .profileImageUrl(request.profileImageUrl())
+                    .build();
+            member.setDefaultRefundAccount();
+            return memberRepository.save(member);
+        } catch (DataIntegrityViolationException e) {
+            if (e.getCause() instanceof ConstraintViolationException cve
+                    && MemberConstraints.UQ_EMAIL_PROVIDER.equals(cve.getConstraintName())) {
+                throw new CustomException(MemberErrorCode.DUPLICATE_OAUTH_MEMBER);
+            }
+            throw e;
+        }
     }
 
     private String generateUniqueNickname() {
