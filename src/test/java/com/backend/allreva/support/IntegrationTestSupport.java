@@ -7,8 +7,6 @@ import com.backend.allreva.module.auth.oauth2.KakaoAuthClient;
 import com.backend.allreva.module.auth.oauth2.KakaoUserInfoClient;
 import com.backend.allreva.module.concert.artist.infra.spotify.SpotifyAccountClient;
 import com.backend.allreva.module.concert.artist.infra.spotify.SpotifyClient;
-import com.backend.allreva.module.concert.concert.infra.kopis.KopisConcertClient;
-import com.backend.allreva.module.concert.place.infra.kopis.KopisHallClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -69,12 +67,6 @@ public abstract class IntegrationTestSupport {
 
     @MockBean
     protected SpotifyAccountClient spotifyAccountClient;
-
-    @MockBean
-    protected KopisConcertClient kopisConcertClient;
-
-    @MockBean
-    protected KopisHallClient kopisHallClient;
 
     @MockBean
     protected KakaoAuthClient kakaoAuthClient;

@@ -102,12 +102,8 @@ jwt:
 
 public-data:
   kopis:
-    prf-url: /pblprfr/{concertCode}?service=${KOPIS_SERVICE_KEY}
-    prfplc-detail-url: /prfplc/{hallCode}?service=${KOPIS_SERVICE_KEY}
-    prfplc-url: /pblprfr?service=${KOPIS_SERVICE_KEY}&rows=100&cpage=1
-    stdate: 20241001
-    eddate: 20251231
-    genre-code: CCCA
+    base-url: https://www.kopis.or.kr/openApi/restful
+    service-key: ${KOPIS_SERVICE_KEY}
 
 view:
   count:

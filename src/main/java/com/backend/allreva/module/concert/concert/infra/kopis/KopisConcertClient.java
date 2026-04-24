@@ -6,23 +6,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(
-        name = "kopisConcertClient",
-        url = "https://www.kopis.or.kr/openApi/restful",
-        configuration = KopisFeignConfig.class)
+@FeignClient(name = "kopisConcertClient", url = "${public-data.kopis.base-url}", configuration = KopisFeignConfig.class)
 public interface KopisConcertClient {
 
-    /**
-     * 공연장별 공연 목록 조회
-     *
-     * @param hallCode 공연장 코드
-     * @param startDate 조회 시작일 (yyyyMMdd)
-     * @param endDate 조회 종료일 (yyyyMMdd)
-     * @param today 오늘 이후 공연만 조회 (선택)
-     * @param genreCode 장르 코드 (선택, 기본 CCCA)
-     * @return 공연 코드 목록
-     */
-    @GetMapping("${public-data.kopis.prfplc-url}")
+    @GetMapping("/pblprfr?rows=100&cpage=1")
     KopisConcertCodeResponse fetchConcertCodes(
             @RequestParam(value = "prfplccd") String hallCode,
             @RequestParam(value = "stdate") String startDate,
@@ -30,12 +17,6 @@ public interface KopisConcertClient {
             @RequestParam(value = "afterDate", required = false) String today,
             @RequestParam(value = "shcate", required = false) String genreCode);
 
-    /**
-     * 공연 상세 정보 조회
-     *
-     * @param concertCode 공연 코드
-     * @return 공연 상세 정보
-     */
-    @GetMapping("${public-data.kopis.prf-url}")
+    @GetMapping("/pblprfr/{concertCode}")
     KopisConcertResponse fetchConcertDetail(@PathVariable(value = "concertCode") String concertCode);
 }

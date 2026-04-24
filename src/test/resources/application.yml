@@ -70,12 +70,8 @@ jwt:
 
 public-data:
   kopis:
-    prf-url: /pblprfr/{concertCode}?service=test-kopis-key
-    prfplc-detail-url: /prfplc/{hallCode}?service=test-kopis-key
-    prfplc-url: /pblprfr?service=test-kopis-key&rows=100&cpage=1&shcate=CCCD
-    stdate: 20241001
-    eddate: 20251231
-    genre-code: CCCA
+    base-url: http://localhost:${wiremock.server.port}/openApi/restful
+    service-key: test-kopis-key
 
 view:
   count:
