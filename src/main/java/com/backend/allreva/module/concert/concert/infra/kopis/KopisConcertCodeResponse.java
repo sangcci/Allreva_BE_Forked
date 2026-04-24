@@ -27,5 +27,8 @@ public class KopisConcertCodeResponse {
     public static class Db {
         @XmlElement(name = "mt20id")
         private String id;
+
+        @XmlElement(name = "prfstate")
+        private String prfState;
     }
 }

@@ -31,14 +31,14 @@ public final class RentFixture {
             .time("22:00")
             .build();
 
-    public static RentRegisterRequest createRentRegisterRequest(Long concertId, List<LocalDate> dates) {
-        return createRentRegisterRequest(concertId, dates, 30);
+    public static RentRegisterRequest createRentRegisterRequest(String concertCode, List<LocalDate> dates) {
+        return createRentRegisterRequest(concertCode, dates, 30);
     }
 
     public static RentRegisterRequest createRentRegisterRequest(
-            Long concertId, List<LocalDate> dates, int recruitmentCount) {
+            String concertCode, List<LocalDate> dates, int recruitmentCount) {
         return new RentRegisterRequest(
-                concertId,
+                concertCode,
                 "테스트 차대절",
                 "테스트 아티스트",
                 "서울",

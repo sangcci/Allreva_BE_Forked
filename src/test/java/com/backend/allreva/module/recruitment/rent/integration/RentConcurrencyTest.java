@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.common.storage.upload.StorageUploadService;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
 import com.backend.allreva.module.concert.concert.infra.jpa.ConcertJpaRepository;
@@ -30,7 +29,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 @DisplayName("Rent 동시성 테스트")
 @SuppressWarnings("NonAsciiCharacters")
@@ -58,9 +56,6 @@ class RentConcurrencyTest extends IntegrationTestSupport {
     @Autowired
     private RentParticipantJpaRepository rentParticipantJpaRepository;
 
-    @MockBean
-    private StorageUploadService storageUploadService;
-
     private List<Member> members;
     private Long rentId;
 
@@ -77,7 +72,8 @@ class RentConcurrencyTest extends IntegrationTestSupport {
 
         Concert concert = concertJpaRepository.save(ConcertFixture.createTestConcert());
         rentId = rentService.registerRent(
-                RentFixture.createRentRegisterRequest(concert.getId(), List.of(BOARDING_DATE), RECRUITMENT_COUNT),
+                RentFixture.createRentRegisterRequest(
+                        concert.getConcertCode(), List.of(BOARDING_DATE), RECRUITMENT_COUNT),
                 members.get(0).getId());
     }
 

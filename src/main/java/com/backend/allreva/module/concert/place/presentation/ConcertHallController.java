@@ -24,7 +24,7 @@ public class ConcertHallController implements ConcertHallControllerSwagger {
 
     @Override
     public Response<List<RelatedConcertResponse>> findRelatedConcertList(
-            final String hallCode, final Long lastId, final int pageSize) {
-        return Response.onSuccess(hallService.getRelatedConcert(hallCode, lastId, pageSize));
+            final String hallCode, final String lastConcertCode, final int pageSize) {
+        return Response.onSuccess(hallService.getRelatedConcert(hallCode, lastConcertCode, pageSize));
     }
 }

@@ -14,9 +14,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SurveyFixture {
 
-    public static OpenSurveyRequest createOpenSurveyRequest(Long concertId, List<LocalDate> dates) {
+    public static OpenSurveyRequest createOpenSurveyRequest(String concertCode, List<LocalDate> dates) {
         return new OpenSurveyRequest(
-                "테스트 수요조사", concertId, dates, "테스트 아티스트", Region.서울, LocalDate.of(2030, 11, 30), 45, "테스트 수요조사 정보");
+                "테스트 수요조사", concertCode, dates, "테스트 아티스트", Region.서울, LocalDate.of(2030, 11, 30), 45, "테스트 수요조사 정보");
     }
 
     public static UpdateSurveyRequest createUpdateSurveyRequest(Long surveyId, List<LocalDate> dates) {

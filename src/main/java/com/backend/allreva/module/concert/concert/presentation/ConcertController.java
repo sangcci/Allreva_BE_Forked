@@ -24,9 +24,9 @@ public class ConcertController implements ConcertControllerSwagger {
 
     @Operation(summary = "공연 상세 조회", description = "공연 상세 조회 API")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json"))})
-    @GetMapping("/{concertId}")
-    public Response<ConcertDetailResponse> findConcertDetail(@PathVariable("concertId") final Long concertId) {
-        ConcertDetailResponse detail = concertService.findDetailById(concertId);
+    @GetMapping("/{concertCode}")
+    public Response<ConcertDetailResponse> findConcertDetail(@PathVariable("concertCode") final String concertCode) {
+        ConcertDetailResponse detail = concertService.findDetailById(concertCode);
         return Response.onSuccess(detail);
     }
 }

@@ -43,11 +43,11 @@ public class SurveyService {
     /** 수요조사 개설 */
     @Transactional
     public Long openSurvey(final Long memberId, final OpenSurveyRequest request) {
-        validateBoardingDates(request.concertId(), request.boardingDates());
+        validateBoardingDates(request.concertCode(), request.boardingDates());
 
         Survey survey = surveyRepository.save(Survey.builder()
                 .memberId(memberId)
-                .concertId(request.concertId())
+                .concertCode(request.concertCode())
                 .title(request.title())
                 .endDate(request.endDate())
                 .information(request.information())
@@ -74,7 +74,7 @@ public class SurveyService {
     public void updateSurvey(final Long memberId, final UpdateSurveyRequest request) {
         Survey survey = findSurvey(request.surveyId());
 
-        validateBoardingDates(survey.getConcertId(), request.boardingDates());
+        validateBoardingDates(survey.getConcertCode(), request.boardingDates());
 
         survey.isWriter(memberId);
         survey.update(
@@ -168,8 +168,8 @@ public class SurveyService {
         return surveyRepository.findSurveyMainList();
     }
 
-    private void validateBoardingDates(final Long concertId, final List<LocalDate> boardingDates) {
-        ConcertDateInfoResponse dateInfo = findStartDateAndEndDateById(concertId);
+    private void validateBoardingDates(final String concertCode, final List<LocalDate> boardingDates) {
+        ConcertDateInfoResponse dateInfo = findStartDateAndEndDateById(concertCode);
 
         LocalDate concertStartDate = dateInfo.getStartDate();
         LocalDate concertEndDate = dateInfo.getEndDate();
@@ -181,9 +181,9 @@ public class SurveyService {
         }
     }
 
-    private ConcertDateInfoResponse findStartDateAndEndDateById(final Long concertId) {
+    private ConcertDateInfoResponse findStartDateAndEndDateById(final String concertCode) {
         return concertRepository
-                .findStartDateAndEndDateById(concertId)
+                .findStartDateAndEndDateById(concertCode)
                 .orElseThrow(() -> new CustomException(ConcertErrorCode.CONCERT_NOT_FOUND));
     }
 

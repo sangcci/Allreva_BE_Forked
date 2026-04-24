@@ -42,7 +42,8 @@ class JsonConverterIntegrationTest extends IntegrationTestSupport {
                 Concert saved = concertRepository.save(concert);
 
                 // then
-                Concert loaded = concertRepository.findById(saved.getId()).orElseThrow();
+                Concert loaded =
+                        concertRepository.findById(saved.getConcertCode()).orElseThrow();
                 assertSoftly(softly -> {
                     softly.assertThat(loaded.getDetailImages())
                             .hasSize(concert.getDetailImages().size());
@@ -71,7 +72,8 @@ class JsonConverterIntegrationTest extends IntegrationTestSupport {
                 Concert saved = concertRepository.save(concert);
 
                 // then
-                Concert loaded = concertRepository.findById(saved.getId()).orElseThrow();
+                Concert loaded =
+                        concertRepository.findById(saved.getConcertCode()).orElseThrow();
                 assertSoftly(softly -> {
                     softly.assertThat(loaded.getSellers())
                             .hasSize(concert.getSellers().size());

@@ -55,8 +55,8 @@ public class SearchController {
     public Response<ConcertSearchListResponse> searchConcertList(
             @RequestParam @NotEmpty(message = "검색어를 입력해야 합니다.") final String query,
             @RequestParam(defaultValue = "7") final int pageSize,
-            @RequestParam(required = false) final Long cursorId) {
-        return Response.onSuccess(concertSearchService.searchConcertList(query, cursorId, pageSize));
+            @RequestParam(required = false) final String cursorCode) {
+        return Response.onSuccess(concertSearchService.searchConcertList(query, cursorCode, pageSize));
     }
 
     @Operation(summary = "전체 기간 콘서트 검색 API", description = "과거와 현재 모든 콘서트를 검색하는 API입니다.")
@@ -64,8 +64,8 @@ public class SearchController {
     public Response<ConcertSearchListResponse> searchAllConcertList(
             @RequestParam @NotEmpty(message = "검색어를 입력해야 합니다.") final String query,
             @RequestParam(defaultValue = "7") final int pageSize,
-            @RequestParam(required = false) final Long cursorId) {
-        return Response.onSuccess(concertSearchService.searchAllConcertList(query, cursorId, pageSize));
+            @RequestParam(required = false) final String cursorCode) {
+        return Response.onSuccess(concertSearchService.searchAllConcertList(query, cursorCode, pageSize));
     }
 
     @Operation(summary = "전체 검색시 렌트 상위 2개 썸네일 API", description = "검색어에 따라 관련도 상위 2개의 썸네일에 필요한 정보를 출력")
@@ -104,8 +104,8 @@ public class SearchController {
             @RequestParam(defaultValue = "") final String region,
             @RequestParam(defaultValue = "DATE") final SortDirection sortDirection,
             @RequestParam(defaultValue = "7") final int pageSize,
-            @RequestParam(required = false) final Long cursorId) {
-        return Response.onSuccess(concertSearchService.searchMainConcerts(region, cursorId, pageSize, sortDirection));
+            @RequestParam(required = false) final String cursorCode) {
+        return Response.onSuccess(concertSearchService.searchMainConcerts(region, cursorCode, pageSize, sortDirection));
     }
 
     @Operation(summary = "메인 화면 공연장 API", description = "주소/좌석 기준으로 공연장 목록 조회")

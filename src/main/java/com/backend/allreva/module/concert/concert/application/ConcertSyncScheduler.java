@@ -1,13 +1,18 @@
 package com.backend.allreva.module.concert.concert.application;
 
+import com.backend.allreva.module.concert.concert.application.dto.ConcertSummary;
 import com.backend.allreva.module.concert.concert.application.port.ConcertDataSyncPort;
 import com.backend.allreva.module.concert.concert.domain.Concert;
+import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
+import com.backend.allreva.module.concert.concert.domain.value.ConcertStatus;
 import com.backend.allreva.module.concert.concert.infra.kopis.DateConverter;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -22,7 +27,7 @@ public class ConcertSyncScheduler {
 
     private final ConcertDataSyncPort concertDataSyncPort;
     private final ConcertHallRepository concertHallRepository;
-    private final ConcertSyncService concertSyncService;
+    private final ConcertRepository concertRepository;
 
     /** 공연 정보 매일 동기화 — 매일 새벽 4시 */
     @Scheduled(cron = "0 0 4 * * *")
@@ -38,16 +43,40 @@ public class ConcertSyncScheduler {
 
     public void fetchDailyConcertInfoList(final String today) {
         List<String> hallIds = concertHallRepository.findAllIds();
+        Map<String, ConcertStatus> statusMap = concertRepository.findAll().stream()
+                .collect(Collectors.toMap(
+                        Concert::getConcertCode, c -> c.getConcertInfo().getPerformStatus()));
+
         String[] dates =
                 getStartAndEndDate(LocalDate.now().getYear(), LocalDate.now().getMonthValue());
 
         for (String hallId : hallIds) {
             try {
-                List<String> concertCodes =
-                        concertDataSyncPort.fetchDailyConcertCodes(hallId, dates[0], dates[1], today);
-                for (String concertCode : concertCodes) {
-                    Concert fetched = concertDataSyncPort.fetchConcertDetail(hallId, concertCode);
-                    concertSyncService.processConcertUpsert(fetched);
+                List<ConcertSummary> summaries =
+                        concertDataSyncPort.fetchDailyConcertSummaries(hallId, dates[0], dates[1], today);
+
+                for (ConcertSummary summary : summaries) {
+                    ConcertStatus existing = statusMap.get(summary.concertCode());
+
+                    // Skip if existing concert is COMPLETED
+                    if (existing == ConcertStatus.COMPLETED) {
+                        continue;
+                    }
+                    // Skip if status unchanged
+                    if (existing != null && existing == summary.status()) {
+                        continue;
+                    }
+
+                    Concert fetched = concertDataSyncPort.fetchConcertDetail(hallId, summary.concertCode());
+                    concertRepository
+                            .findById(summary.concertCode())
+                            .ifPresentOrElse(
+                                    c -> {
+                                        c.updateFrom(fetched);
+                                        concertRepository.save(c);
+                                    },
+                                    () -> concertRepository.save(fetched));
+
                     Thread.sleep(KOPIS_RATE_LIMIT_MILLIS);
                 }
                 log.debug("Concert sync complete for hall: {}", hallId);

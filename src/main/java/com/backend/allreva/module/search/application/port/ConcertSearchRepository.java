@@ -10,9 +10,9 @@ public interface ConcertSearchRepository {
 
     List<ConcertThumbnail> findThumbnailsByTitle(String title, int limit);
 
-    ConcertSearchListResponse searchByTitle(String query, Long cursorId, int pageSize);
+    ConcertSearchListResponse searchByTitle(String query, String cursorCode, int pageSize);
 
-    ConcertSearchListResponse searchByTitleAll(String query, Long cursorId, int pageSize);
+    ConcertSearchListResponse searchByTitleAll(String query, String cursorCode, int pageSize);
 
-    ConcertMainResponse searchMain(String address, Long cursorId, int pageSize, SortDirection sortDirection);
+    ConcertMainResponse searchMain(String address, String cursorCode, int pageSize, SortDirection sortDirection);
 }

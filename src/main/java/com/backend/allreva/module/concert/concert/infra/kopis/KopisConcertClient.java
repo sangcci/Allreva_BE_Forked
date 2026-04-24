@@ -19,6 +19,7 @@ public interface KopisConcertClient {
      * @param startDate 조회 시작일 (yyyyMMdd)
      * @param endDate 조회 종료일 (yyyyMMdd)
      * @param today 오늘 이후 공연만 조회 (선택)
+     * @param genreCode 장르 코드 (선택, 기본 CCCA)
      * @return 공연 코드 목록
      */
     @GetMapping("${public-data.kopis.prfplc-url}")
@@ -26,7 +27,8 @@ public interface KopisConcertClient {
             @RequestParam(value = "prfplccd") String hallCode,
             @RequestParam(value = "stdate") String startDate,
             @RequestParam(value = "eddate") String endDate,
-            @RequestParam(value = "afterDate", required = false) String today);
+            @RequestParam(value = "afterDate", required = false) String today,
+            @RequestParam(value = "shcate", required = false) String genreCode);
 
     /**
      * 공연 상세 정보 조회
