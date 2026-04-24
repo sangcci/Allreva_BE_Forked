@@ -12,7 +12,6 @@ import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
 import com.backend.allreva.module.concert.concert.infra.jpa.ConcertJpaRepository;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.member.domain.MemberRepository;
-import com.backend.allreva.module.member.domain.value.LoginProvider;
 import com.backend.allreva.module.member.fixture.MemberFixture;
 import com.backend.allreva.module.recruitment.rent.application.RentService;
 import com.backend.allreva.module.recruitment.rent.fixture.RentFixture;
@@ -70,11 +69,11 @@ class RentConcurrencyTest extends IntegrationTestSupport {
         doNothing().when(storageUploadService).deleteImage(any());
 
         members = List.of(
-                memberRepository.save(MemberFixture.createTestMember("user1@example.com", LoginProvider.GOOGLE)),
-                memberRepository.save(MemberFixture.createTestMember("user2@example.com", LoginProvider.GOOGLE)),
-                memberRepository.save(MemberFixture.createTestMember("user3@example.com", LoginProvider.GOOGLE)),
-                memberRepository.save(MemberFixture.createTestMember("user4@example.com", LoginProvider.GOOGLE)),
-                memberRepository.save(MemberFixture.createTestMember("user5@example.com", LoginProvider.GOOGLE)));
+                memberRepository.save(MemberFixture.createTestMemberWithIndex(1)),
+                memberRepository.save(MemberFixture.createTestMemberWithIndex(2)),
+                memberRepository.save(MemberFixture.createTestMemberWithIndex(3)),
+                memberRepository.save(MemberFixture.createTestMemberWithIndex(4)),
+                memberRepository.save(MemberFixture.createTestMemberWithIndex(5)));
 
         Concert concert = concertJpaRepository.save(ConcertFixture.createTestConcert());
         rentId = rentService.registerRent(
@@ -88,7 +87,7 @@ class RentConcurrencyTest extends IntegrationTestSupport {
         rentBoardingSlotJpaRepository.deleteAll();
         rentJpaRepository.deleteAll();
         concertJpaRepository.deleteAll();
-        memberRepository.deleteAll();
+        jdbcTemplate.execute("DELETE FROM member");
     }
 
     @Test

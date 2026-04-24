@@ -12,7 +12,6 @@ import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
 import com.backend.allreva.module.concert.concert.infra.jpa.ConcertJpaRepository;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.member.domain.MemberRepository;
-import com.backend.allreva.module.member.domain.value.LoginProvider;
 import com.backend.allreva.module.member.fixture.MemberFixture;
 import com.backend.allreva.module.recruitment.rent.application.RentService;
 import com.backend.allreva.module.recruitment.rent.application.dto.HostedRentSummaryResponse;
@@ -198,8 +197,7 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
                             RentFixture.createRentRegisterRequest(concertId, SLOT_DATES), savedMember.getId());
                 }
                 // 타인 rent 5개
-                otherMember = memberRepository.save(
-                        MemberFixture.createTestMember("other@example.com", LoginProvider.GOOGLE));
+                otherMember = memberRepository.save(MemberFixture.createOtherTestMember());
                 for (int i = 0; i < 5; i++) {
                     rentService.registerRent(
                             RentFixture.createRentRegisterRequest(concertId, SLOT_DATES), otherMember.getId());
@@ -272,10 +270,8 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @BeforeEach
             void setUp() {
                 // member2, member3이 TARGET_DATE에 각각 참여
-                Member member2 = memberRepository.save(
-                        MemberFixture.createTestMember("member2@example.com", LoginProvider.GOOGLE));
-                Member member3 = memberRepository.save(
-                        MemberFixture.createTestMember("member3@example.com", LoginProvider.GOOGLE));
+                Member member2 = memberRepository.save(MemberFixture.createTestMemberWithIndex(2));
+                Member member3 = memberRepository.save(MemberFixture.createTestMemberWithIndex(3));
                 rentService.joinRent(RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 1), member2.getId());
                 rentService.joinRent(RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 1), member3.getId());
             }
@@ -305,8 +301,7 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("NOT_FOUND 예외가 발생한다")
             void it_throws_not_found() {
-                Member otherMember = memberRepository.save(
-                        MemberFixture.createTestMember("other@example.com", LoginProvider.GOOGLE));
+                Member otherMember = memberRepository.save(MemberFixture.createOtherTestMember());
                 assertThatThrownBy(() -> rentService.getRentHostDetail(otherMember.getId(), TARGET_DATE, savedRentId))
                         .isInstanceOf(CustomException.class)
                         .hasMessageContaining(RentErrorCode.RENT_NOT_FOUND.getMessage());
@@ -340,8 +335,7 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
 
         @BeforeEach
         void setUp() {
-            otherMember =
-                    memberRepository.save(MemberFixture.createTestMember("other@example.com", LoginProvider.GOOGLE));
+            otherMember = memberRepository.save(MemberFixture.createOtherTestMember());
 
             for (int i = 0; i < 5; i++) {
                 Long rentId = rentService.registerRent(
@@ -462,8 +456,7 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("NOT_FOUND 예외가 발생한다")
             void it_throws_not_found_for_other_member() {
-                Member otherMember = memberRepository.save(
-                        MemberFixture.createTestMember("other@example.com", LoginProvider.GOOGLE));
+                Member otherMember = memberRepository.save(MemberFixture.createOtherTestMember());
                 assertThatThrownBy(() -> rentService.getJoinedRentDetail(otherMember.getId(), TARGET_DATE, savedRentId))
                         .isInstanceOf(CustomException.class)
                         .hasMessageContaining(RentErrorCode.RENT_NOT_FOUND.getMessage());

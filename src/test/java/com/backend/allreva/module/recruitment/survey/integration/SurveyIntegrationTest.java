@@ -9,7 +9,6 @@ import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
 import com.backend.allreva.module.concert.concert.infra.jpa.ConcertJpaRepository;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.member.domain.MemberRepository;
-import com.backend.allreva.module.member.domain.value.LoginProvider;
 import com.backend.allreva.module.member.fixture.MemberFixture;
 import com.backend.allreva.module.recruitment.survey.application.SurveyService;
 import com.backend.allreva.module.recruitment.survey.application.dto.SortType;
@@ -63,8 +62,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
 
     @BeforeEach
     void setUp() {
-        savedMember =
-                memberRepository.save(MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
+        savedMember = memberRepository.save(MemberFixture.createTestMember());
         Concert concert = concertJpaRepository.save(ConcertFixture.createTestConcert());
         concertId = concert.getId();
     }
@@ -74,7 +72,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
         surveyParticipantJpaRepository.deleteAll();
         surveyJpaRepository.deleteAll();
         concertJpaRepository.deleteAll();
-        memberRepository.deleteAllInBatch();
+        jdbcTemplate.execute("DELETE FROM member");
     }
 
     @Nested
@@ -143,8 +141,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("접근 거부 예외가 발생한다")
             void it_throws_access_denied() {
-                Member otherMember = memberRepository.save(
-                        MemberFixture.createTestMember("other@example.com", LoginProvider.GOOGLE));
+                Member otherMember = memberRepository.save(MemberFixture.createOtherTestMember());
                 assertThatThrownBy(() -> surveyService.updateSurvey(
                                 otherMember.getId(),
                                 SurveyFixture.createUpdateSurveyRequest(savedSurveyId, BOARDING_DATES)))
@@ -185,8 +182,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("접근 거부 예외가 발생한다")
             void it_throws_access_denied() {
-                Member otherMember = memberRepository.save(
-                        MemberFixture.createTestMember("other@example.com", LoginProvider.GOOGLE));
+                Member otherMember = memberRepository.save(MemberFixture.createOtherTestMember());
                 assertThatThrownBy(() -> surveyService.removeSurvey(
                                 otherMember.getId(), SurveyFixture.createSurveyIdRequest(savedSurveyId)))
                         .isInstanceOf(CustomException.class)
@@ -278,8 +274,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             void it_throws_access_denied() {
                 Long participantId = surveyService.joinSurvey(
                         savedMember.getId(), SurveyFixture.createJoinSurveyRequest(savedSurveyId, TARGET_DATE));
-                Member otherMember = memberRepository.save(
-                        MemberFixture.createTestMember("other@example.com", LoginProvider.GOOGLE));
+                Member otherMember = memberRepository.save(MemberFixture.createOtherTestMember());
                 assertThatThrownBy(() -> surveyService.cancelJoin(otherMember.getId(), participantId))
                         .isInstanceOf(CustomException.class)
                         .hasMessageContaining(SurveyErrorCode.SURVEY_JOIN_ACCESS_DENIED.getMessage());
@@ -371,8 +366,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             var ownSurveys = surveyService.findCreatedSurveyList(savedMember.getId(), null, null, 10);
             assertThat(ownSurveys).isNotEmpty();
 
-            Member otherMember =
-                    memberRepository.save(MemberFixture.createTestMember("other@example.com", LoginProvider.GOOGLE));
+            Member otherMember = memberRepository.save(MemberFixture.createOtherTestMember());
             var otherSurveys = surveyService.findCreatedSurveyList(otherMember.getId(), null, null, 10);
             assertThat(otherSurveys).isEmpty();
         }

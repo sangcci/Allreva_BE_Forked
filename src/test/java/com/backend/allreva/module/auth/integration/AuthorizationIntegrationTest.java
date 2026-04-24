@@ -7,7 +7,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.backend.allreva.module.auth.application.JwtService;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.member.domain.MemberRepository;
-import com.backend.allreva.module.member.domain.value.LoginProvider;
 import com.backend.allreva.module.member.fixture.MemberFixture;
 import com.backend.allreva.support.IntegrationTestSupport;
 import org.junit.jupiter.api.AfterEach;
@@ -45,7 +44,7 @@ class AuthorizationIntegrationTest extends IntegrationTestSupport {
 
     @AfterEach
     void tearDown() {
-        memberRepository.deleteAllInBatch();
+        jdbcTemplate.execute("DELETE FROM member");
     }
 
     @Nested
@@ -72,8 +71,7 @@ class AuthorizationIntegrationTest extends IntegrationTestSupport {
 
         @BeforeEach
         void setUp() {
-            Member member =
-                    memberRepository.save(MemberFixture.createTestMember("user@test.com", LoginProvider.GOOGLE));
+            Member member = memberRepository.save(MemberFixture.createTestMember());
             accessToken = jwtService.generateAccessToken(String.valueOf(member.getId()));
         }
 
