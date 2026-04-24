@@ -2,7 +2,6 @@ package com.backend.allreva.module.concert.concert.infra.kopis;
 
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.module.concert.concert.domain.Concert;
-import com.backend.allreva.module.concert.concert.domain.value.Code;
 import com.backend.allreva.module.concert.concert.domain.value.ConcertInfo;
 import com.backend.allreva.module.concert.concert.domain.value.ConcertStatus;
 import com.backend.allreva.module.concert.concert.domain.value.DateInfo;
@@ -94,14 +93,12 @@ public class KopisConcertResponse {
     public static Concert toEntity(final String hallCode, final KopisConcertResponse response) {
         Db db = response.getDb();
         return Concert.builder()
+                .concertCode(db.concertCode)
+                .hallCode(hallCode)
                 .concertInfo(toConcertInfo(db))
                 .poster(toIntroduceImage(db.poster))
                 .detailImages(toDetailImages(db.styurls.styurl))
                 .sellers(toSellers(db.relates.relate))
-                .code(Code.builder()
-                        .concertCode(db.concertCode)
-                        .hallCode(hallCode)
-                        .build())
                 .episodes(toEpisodes(db.dtguidance))
                 .build();
     }

@@ -57,7 +57,7 @@ public class Survey extends BaseEntity {
     private String information;
 
     @Column(nullable = false)
-    private Long concertId;
+    private String concertCode;
 
     @Column(nullable = false)
     private Long memberId;
@@ -68,7 +68,7 @@ public class Survey extends BaseEntity {
     @Builder
     private Survey(
             final Long memberId,
-            final Long concertId,
+            final String concertCode,
             final String title,
             final String artistName,
             final Region region,
@@ -77,7 +77,7 @@ public class Survey extends BaseEntity {
             final String information,
             final List<LocalDate> boardingDates) {
         this.memberId = memberId;
-        this.concertId = concertId;
+        this.concertCode = concertCode;
         this.title = title;
         this.artistName = artistName;
         this.region = region;

@@ -43,7 +43,7 @@ class RentRequestValidationTest {
 
         private RentRegisterRequest request(BoardingType boardingType, Route upRoute, Route downRoute) {
             return new RentRegisterRequest(
-                    1L,
+                    "PFMOCK001",
                     "제목",
                     "아티스트",
                     "서울",
@@ -182,7 +182,7 @@ class RentRequestValidationTest {
             @DisplayName("title이 빈 문자열이면 실패한다")
             void blank_title_fails() {
                 var req = new RentRegisterRequest(
-                        1L,
+                        "PFMOCK001",
                         "",
                         "아티스트",
                         "서울",
@@ -206,7 +206,7 @@ class RentRequestValidationTest {
             @DisplayName("endDate가 과거이면 실패한다")
             void past_endDate_fails() {
                 var req = new RentRegisterRequest(
-                        1L,
+                        "PFMOCK001",
                         "제목",
                         "아티스트",
                         "서울",
@@ -230,7 +230,7 @@ class RentRequestValidationTest {
             @DisplayName("maxPassenger가 0이면 실패한다")
             void zero_maxPassenger_fails() {
                 var req = new RentRegisterRequest(
-                        1L,
+                        "PFMOCK001",
                         "제목",
                         "아티스트",
                         "서울",
@@ -254,7 +254,7 @@ class RentRequestValidationTest {
             @DisplayName("price가 음수이면 실패한다")
             void negative_price_fails() {
                 var req = new RentRegisterRequest(
-                        1L,
+                        "PFMOCK001",
                         "제목",
                         "아티스트",
                         "서울",
@@ -278,7 +278,7 @@ class RentRequestValidationTest {
             @DisplayName("boardingDates가 비어 있으면 실패한다")
             void empty_boardingDates_fails() {
                 var req = new RentRegisterRequest(
-                        1L,
+                        "PFMOCK001",
                         "제목",
                         "아티스트",
                         "서울",

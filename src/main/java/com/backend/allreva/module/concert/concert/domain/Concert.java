@@ -3,7 +3,6 @@ package com.backend.allreva.module.concert.concert.domain;
 import com.backend.allreva.common.converter.ImageListConverter;
 import com.backend.allreva.common.model.BaseEntity;
 import com.backend.allreva.common.model.Image;
-import com.backend.allreva.module.concert.concert.domain.value.Code;
 import com.backend.allreva.module.concert.concert.domain.value.ConcertInfo;
 import com.backend.allreva.module.concert.concert.domain.value.Seller;
 import com.backend.allreva.module.concert.concert.infra.jpa.SellerSetConverter;
@@ -12,8 +11,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
@@ -33,12 +30,12 @@ import org.hibernate.type.SqlTypes;
 @Table(indexes = @Index(name = "idx_hall_code", columnList = "hall_code"))
 @Entity
 public class Concert extends BaseEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    @Embedded
-    private Code code;
+    @Id
+    private String concertCode;
+
+    @Column(name = "hall_code", nullable = false)
+    private String hallCode;
 
     @Embedded
     private ConcertInfo concertInfo;
@@ -61,30 +58,26 @@ public class Concert extends BaseEntity {
     @Column(columnDefinition = "jsonb", nullable = false)
     private Set<Seller> sellers = new HashSet<>();
 
-    public void updateFrom(
-            final Code code,
-            final ConcertInfo concertInfo,
-            final List<String> episodes,
-            final Image poster,
-            final List<Image> detailImages,
-            final Set<Seller> sellers) {
-        this.code = code;
-        this.concertInfo = concertInfo;
-        this.episodes = episodes;
-        this.poster = poster;
-        this.detailImages = detailImages;
-        this.sellers = sellers;
+    public void updateFrom(final Concert fetched) {
+        this.hallCode = fetched.hallCode;
+        this.concertInfo = fetched.concertInfo;
+        this.episodes = fetched.episodes;
+        this.poster = fetched.poster;
+        this.detailImages = fetched.detailImages;
+        this.sellers = fetched.sellers;
     }
 
     @Builder
     private Concert(
-            final Code code,
+            final String concertCode,
+            final String hallCode,
             final ConcertInfo concertInfo,
             final List<String> episodes,
             final Image poster,
             final List<Image> detailImages,
             final Set<Seller> sellers) {
-        this.code = code;
+        this.concertCode = concertCode;
+        this.hallCode = hallCode;
         this.concertInfo = concertInfo;
         this.episodes = episodes != null ? episodes : this.episodes;
         this.poster = poster;

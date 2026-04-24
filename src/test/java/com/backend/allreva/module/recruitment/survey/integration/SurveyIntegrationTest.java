@@ -58,13 +58,13 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
     private MemberRepository memberRepository;
 
     private Member savedMember;
-    private Long concertId;
+    private String concertCode;
 
     @BeforeEach
     void setUp() {
         savedMember = memberRepository.save(MemberFixture.createTestMember());
         Concert concert = concertJpaRepository.save(ConcertFixture.createTestConcert());
-        concertId = concert.getId();
+        concertCode = concert.getConcertCode();
     }
 
     @AfterEach
@@ -88,7 +88,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             @BeforeEach
             void setUp() {
                 savedSurveyId = surveyService.openSurvey(
-                        savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertId, BOARDING_DATES));
+                        savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertCode, BOARDING_DATES));
             }
 
             @Test
@@ -117,7 +117,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
         @BeforeEach
         void setUp() {
             savedSurveyId = surveyService.openSurvey(
-                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertId, BOARDING_DATES));
+                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertCode, BOARDING_DATES));
         }
 
         @Nested
@@ -160,7 +160,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
         @BeforeEach
         void setUp() {
             savedSurveyId = surveyService.openSurvey(
-                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertId, BOARDING_DATES));
+                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertCode, BOARDING_DATES));
         }
 
         @Nested
@@ -201,7 +201,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
         @BeforeEach
         void setUp() {
             savedSurveyId = surveyService.openSurvey(
-                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertId, BOARDING_DATES));
+                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertCode, BOARDING_DATES));
         }
 
         @Nested
@@ -248,7 +248,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
         @BeforeEach
         void setUp() {
             savedSurveyId = surveyService.openSurvey(
-                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertId, BOARDING_DATES));
+                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertCode, BOARDING_DATES));
         }
 
         @Nested
@@ -291,7 +291,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
         @BeforeEach
         void setUp() {
             savedSurveyId = surveyService.openSurvey(
-                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertId, BOARDING_DATES));
+                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertCode, BOARDING_DATES));
         }
 
         @Nested
@@ -327,7 +327,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
         @BeforeEach
         void setUp() {
             surveyService.openSurvey(
-                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertId, BOARDING_DATES));
+                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertCode, BOARDING_DATES));
         }
 
         @Test
@@ -357,7 +357,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
         @BeforeEach
         void setUp() {
             surveyService.openSurvey(
-                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertId, BOARDING_DATES));
+                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertCode, BOARDING_DATES));
         }
 
         @Test

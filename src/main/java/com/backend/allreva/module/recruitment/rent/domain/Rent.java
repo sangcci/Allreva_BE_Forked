@@ -50,7 +50,7 @@ public class Rent extends BaseEntity {
     private Long memberId;
 
     @Column(nullable = false)
-    private Long concertId;
+    private String concertCode;
 
     @Column(nullable = false)
     private String title;

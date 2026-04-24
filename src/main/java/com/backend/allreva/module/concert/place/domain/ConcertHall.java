@@ -6,7 +6,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,12 +20,9 @@ public class ConcertHall {
     private String id;
 
     @Column(nullable = false)
-    private String name; // fcltyName + prfplcName
+    private String name;
 
     private int seatScale;
-    private double star;
-    private long totalStars;
-    private long reviewCount;
 
     @Embedded
     private ConvenienceInfo convenienceInfo;
@@ -40,16 +40,7 @@ public class ConcertHall {
         this.id = id;
         this.name = name;
         this.seatScale = seatScale;
-        this.star = 0.0;
-        this.totalStars = 0;
-        this.reviewCount = 0;
         this.convenienceInfo = convenienceInfo;
         this.location = location;
-    }
-
-    public void updateStar(int starDelta, int countDelta) {
-        this.totalStars += starDelta;
-        this.reviewCount += countDelta;
-        this.star = reviewCount == 0 ? 0.0 : (double) totalStars / reviewCount;
     }
 }

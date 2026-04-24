@@ -17,4 +17,10 @@ public interface ConcertHallJpaRepository extends JpaRepository<ConcertHall, Str
 
     @Query("SELECT c.id FROM ConcertHall c")
     List<String> findAllIds();
+
+    @Query("SELECT DISTINCT SUBSTRING(c.id, 1, LOCATE('-', c.id) - 1) FROM ConcertHall c WHERE c.id LIKE '%-%'")
+    List<String> findAllFacilityCodes();
+
+    @Query("SELECT c.id FROM ConcertHall c WHERE c.id LIKE CONCAT(:facilityCode, '-%')")
+    List<String> findIdsByFacilityCode(@Param("facilityCode") String facilityCode);
 }

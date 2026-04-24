@@ -9,5 +9,5 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 public interface ConcertControllerSwagger {
 
     @Operation(summary = "공연 상세 조회", description = "공연 상세 조회 API")
-    Response<ConcertDetailResponse> findConcertDetail(Long concertId);
+    Response<ConcertDetailResponse> findConcertDetail(String concertCode);
 }

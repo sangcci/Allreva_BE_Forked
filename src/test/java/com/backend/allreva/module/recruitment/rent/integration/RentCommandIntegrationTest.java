@@ -7,7 +7,6 @@ import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
 
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.common.storage.upload.StorageUploadService;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
 import com.backend.allreva.module.concert.concert.infra.jpa.ConcertJpaRepository;
@@ -31,7 +30,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 @DisplayName("Rent Command Integration 테스트")
 class RentCommandIntegrationTest extends IntegrationTestSupport {
@@ -62,17 +60,14 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
     @Autowired
     private MemberRepository memberRepository;
 
-    @MockBean
-    private StorageUploadService storageUploadService;
-
     private Member savedMember;
-    private Long concertId;
+    private String concertCode;
 
     @BeforeEach
     void setUp() {
         savedMember = memberRepository.save(MemberFixture.createTestMember());
         Concert concert = concertJpaRepository.save(ConcertFixture.createTestConcert());
-        concertId = concert.getId();
+        concertCode = concert.getConcertCode();
         doNothing().when(storageUploadService).deleteImage(any());
     }
 
@@ -98,7 +93,7 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
             @BeforeEach
             void setUp() {
                 savedRentId = rentService.registerRent(
-                        RentFixture.createRentRegisterRequest(concertId, BOARDING_DATES), savedMember.getId());
+                        RentFixture.createRentRegisterRequest(concertCode, BOARDING_DATES), savedMember.getId());
             }
 
             @Test
@@ -107,7 +102,7 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
                 var rent = rentRepository.findById(savedRentId).orElseThrow();
                 assertThat(rent.getTitle()).isEqualTo("테스트 차대절");
                 assertThat(rent.getMemberId()).isEqualTo(savedMember.getId());
-                assertThat(rent.getConcertId()).isEqualTo(concertId);
+                assertThat(rent.getConcertCode()).isEqualTo(concertCode);
             }
 
             @Test
@@ -132,7 +127,7 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
         @BeforeEach
         void setUp() {
             savedRentId = rentService.registerRent(
-                    RentFixture.createRentRegisterRequest(concertId, BOARDING_DATES), savedMember.getId());
+                    RentFixture.createRentRegisterRequest(concertCode, BOARDING_DATES), savedMember.getId());
         }
 
         @Nested
@@ -196,7 +191,7 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
         @BeforeEach
         void setUp() {
             savedRentId = rentService.registerRent(
-                    RentFixture.createRentRegisterRequest(concertId, BOARDING_DATES), savedMember.getId());
+                    RentFixture.createRentRegisterRequest(concertCode, BOARDING_DATES), savedMember.getId());
         }
 
         @Nested
@@ -237,7 +232,7 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
         @BeforeEach
         void setUp() {
             savedRentId = rentService.registerRent(
-                    RentFixture.createRentRegisterRequest(concertId, BOARDING_DATES), savedMember.getId());
+                    RentFixture.createRentRegisterRequest(concertCode, BOARDING_DATES), savedMember.getId());
         }
 
         @Nested
@@ -285,7 +280,7 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
         @BeforeEach
         void setUp() {
             savedRentId = rentService.registerRent(
-                    RentFixture.createRentRegisterRequest(concertId, BOARDING_DATES), savedMember.getId());
+                    RentFixture.createRentRegisterRequest(concertCode, BOARDING_DATES), savedMember.getId());
         }
 
         @Nested
@@ -358,7 +353,7 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
         @BeforeEach
         void setUp() {
             savedRentId = rentService.registerRent(
-                    RentFixture.createRentRegisterRequest(concertId, BOARDING_DATES), savedMember.getId());
+                    RentFixture.createRentRegisterRequest(concertCode, BOARDING_DATES), savedMember.getId());
             participantId = rentService.joinRent(
                     RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 2), savedMember.getId());
         }
@@ -417,7 +412,7 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
         @BeforeEach
         void setUp() {
             savedRentId = rentService.registerRent(
-                    RentFixture.createRentRegisterRequest(concertId, BOARDING_DATES), savedMember.getId());
+                    RentFixture.createRentRegisterRequest(concertCode, BOARDING_DATES), savedMember.getId());
             participantId = rentService.joinRent(
                     RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 2), savedMember.getId());
         }

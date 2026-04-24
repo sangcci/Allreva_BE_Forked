@@ -11,7 +11,7 @@ import java.util.List;
 
 public record OpenSurveyRequest(
         @NotBlank String title,
-        @NotNull Long concertId,
+        @NotBlank String concertCode,
         @NotEmpty(message = "날짜는 하루 이상 선택되어야 합니다.") List<LocalDate> boardingDates,
         @NotBlank String artistName,
         @NotNull Region region,

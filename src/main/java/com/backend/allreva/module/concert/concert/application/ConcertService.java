@@ -13,7 +13,7 @@ public class ConcertService {
     private final ConcertRepository concertRepository;
 
     @Transactional(readOnly = true)
-    public ConcertDetailResponse findDetailById(final Long concertId) {
-        return concertRepository.findDetailById(concertId);
+    public ConcertDetailResponse findDetailById(final String concertCode) {
+        return concertRepository.findDetailById(concertCode);
     }
 }

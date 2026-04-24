@@ -1,16 +1,13 @@
 package com.backend.allreva.module.concert.concert.integration;
 
 import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createConcertWithHallCode;
-import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createTestConcert;
 import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createTestConcertHall;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.backend.allreva.module.concert.concert.application.ConcertService;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailResponse;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
-import com.backend.allreva.module.concert.concert.domain.value.ConcertInfo;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import com.backend.allreva.support.IntegrationTestSupport;
@@ -48,92 +45,23 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
         class Context_공연_ID로_조회 {
 
             @Test
-            @DisplayName("상세 정보가 반환된다")
-            void 상세정보가_반환된다() {
-                // given
-                ConcertHall hall = concertHallRepository.save(createTestConcertHall());
-                Concert concert = concertRepository.save(createConcertWithHallCode(hall.getId()));
-                Long concertId = concert.getId();
-
-                // when
-                ConcertDetailResponse result = concertService.findDetailById(concertId);
-
-                // then
-                assertSoftly(softly -> {
-                    softly.assertThat(result).isNotNull();
-                    softly.assertThat(result.hallCode()).isNotNull();
-                });
-            }
-        }
-    }
-
-    @Nested
-    @DisplayName("공연 정보 업데이트")
-    class Describe_공연_정보_업데이트 {
-
-        @Nested
-        @DisplayName("공연 정보를 수정할 때")
-        class Context_공연_정보_수정 {
-
-            @Test
-            @DisplayName("공연 정보가 정상적으로 업데이트된다")
-            void 공연_정보가_정상적으로_업데이트된다() {
-                // given
-                Concert concert = concertRepository.save(createTestConcert());
-                String newTitle = "변경된 콘서트 제목";
-
-                // when
-                Concert updatedConcert =
-                        concertRepository.findById(concert.getId()).orElseThrow();
-                ConcertInfo newConcertInfo = ConcertInfo.builder()
-                        .title(newTitle)
-                        .price(updatedConcert.getConcertInfo().getPrice())
-                        .performStatus(updatedConcert.getConcertInfo().getPerformStatus())
-                        .host(updatedConcert.getConcertInfo().getHost())
-                        .dateInfo(updatedConcert.getConcertInfo().getDateInfo())
-                        .build();
-
-                updatedConcert.updateFrom(
-                        updatedConcert.getCode(),
-                        newConcertInfo,
-                        updatedConcert.getEpisodes(),
-                        updatedConcert.getPoster(),
-                        updatedConcert.getDetailImages(),
-                        updatedConcert.getSellers());
-                concertRepository.save(updatedConcert);
-
-                // then
-                Concert result = concertRepository.findById(concert.getId()).orElseThrow();
-                assertThat(result.getConcertInfo().getTitle()).isEqualTo(newTitle);
-            }
-        }
-    }
-
-    @Nested
-    @DisplayName("공연 상세 조회와 공연장 정보")
-    class Describe_공연_상세_조회와_공연장_정보 {
-
-        @Nested
-        @DisplayName("공연 ID로 상세 조회할 때")
-        class Context_공연과_공연장_조회 {
-
-            @Test
-            @DisplayName("공연 상세 정보와 해당 공연장 정보가 함께 반환된다")
+            @DisplayName("공연 상세 정보와 공연장 정보가 함께 반환된다")
             void 공연_상세_정보와_공연장_정보가_반환된다() {
                 // given
                 ConcertHall hall = concertHallRepository.save(createTestConcertHall());
                 Concert concert = concertRepository.save(createConcertWithHallCode(hall.getId()));
 
                 // when
-                ConcertDetailResponse response = concertService.findDetailById(concert.getId());
+                ConcertDetailResponse result = concertService.findDetailById(concert.getConcertCode());
 
                 // then
                 assertSoftly(softly -> {
-                    softly.assertThat(response).isNotNull();
-                    softly.assertThat(response.hallCode()).isNotNull();
-                    softly.assertThat(response.hallName()).isNotNull();
-                    softly.assertThat(response.sellers()).isNotEmpty();
-                    softly.assertThat(response.convenienceInfo()).isNotNull();
+                    softly.assertThat(result).isNotNull();
+                    softly.assertThat(result.hallCode()).isEqualTo(hall.getId());
+                    softly.assertThat(result.hallName()).isEqualTo(hall.getName());
+                    softly.assertThat(result.concertInfo().getTitle()).isEqualTo("Sample Concert");
+                    softly.assertThat(result.sellers()).isNotEmpty();
+                    softly.assertThat(result.convenienceInfo()).isNotNull();
                 });
             }
         }

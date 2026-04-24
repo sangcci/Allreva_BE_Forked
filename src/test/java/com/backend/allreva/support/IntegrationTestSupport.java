@@ -2,6 +2,7 @@ package com.backend.allreva.support;
 
 import com.backend.allreva.common.config.FcmInitializer;
 import com.backend.allreva.common.config.JpaAuditingConfig;
+import com.backend.allreva.common.storage.upload.StorageUploadService;
 import com.backend.allreva.module.auth.oauth2.KakaoAuthClient;
 import com.backend.allreva.module.auth.oauth2.KakaoUserInfoClient;
 import com.backend.allreva.module.concert.artist.infra.spotify.SpotifyAccountClient;
@@ -59,6 +60,9 @@ public abstract class IntegrationTestSupport {
 
     @MockBean
     protected JpaAuditingConfig jpaAuditingConfig;
+
+    @MockBean
+    protected StorageUploadService storageUploadService;
 
     @MockBean
     protected SpotifyClient spotifyClient;

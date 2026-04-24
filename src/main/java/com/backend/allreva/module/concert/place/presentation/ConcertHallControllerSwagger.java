@@ -21,6 +21,6 @@ public interface ConcertHallControllerSwagger {
     @GetMapping("/relate/list")
     Response<List<RelatedConcertResponse>> findRelatedConcertList(
             @RequestParam(required = true) String hallCode,
-            @RequestParam(required = false) Long lastId,
+            @RequestParam(required = false) String lastConcertCode,
             @RequestParam(defaultValue = "3") int pageSize);
 }

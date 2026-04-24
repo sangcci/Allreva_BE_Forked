@@ -11,19 +11,17 @@ public interface ConcertRepository {
 
     Concert save(Concert concert);
 
-    Optional<Concert> findById(Long id);
+    Optional<Concert> findById(String concertCode);
 
-    boolean existsByCodeConcertCode(String concertCode);
+    List<Concert> findAll();
 
-    Optional<Concert> findByCodeConcertCode(String concertCode);
+    Optional<ConcertDateInfoResponse> findStartDateAndEndDateById(String concertCode);
 
-    Optional<ConcertDateInfoResponse> findStartDateAndEndDateById(Long concertId);
-
-    ConcertDetailResponse findDetailById(Long concertId);
+    ConcertDetailResponse findDetailById(String concertCode);
 
     List<ConcertThumbnail> getConcertMainThumbnails();
 
-    List<RelatedConcertResponse> findRelatedConcertsByHall(String hallCode, Long lastId, int pageSize);
+    List<RelatedConcertResponse> findRelatedConcertsByHall(String hallCode, String lastConcertCode, int pageSize);
 
     void deleteAll();
 
