@@ -20,7 +20,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record RentRegisterRequest(
-        @NotBlank String concertCode,
+        @NotNull Long concertId,
         @NotBlank String title,
         @NotBlank String artistName,
         @NotBlank String region,
@@ -61,7 +61,7 @@ public record RentRegisterRequest(
     public Rent toEntity(final Long memberId) {
         return Rent.builder()
                 .memberId(memberId)
-                .concertCode(concertCode)
+                .concertId(concertId)
                 .title(title)
                 .image(image)
                 .artistName(artistName)
