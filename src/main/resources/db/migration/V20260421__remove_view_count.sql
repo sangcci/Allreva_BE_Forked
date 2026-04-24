@@ -1,0 +1,1 @@
+ALTER TABLE concert DROP COLUMN IF EXISTS view_count;

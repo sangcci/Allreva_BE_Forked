@@ -1,6 +1,7 @@
 package com.backend.allreva.module.search.integration;
 
-import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createTestConcert;
+import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createConcertWithCodes;
+import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createConcertWithHallCode;
 import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createConcertHall;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -55,8 +56,10 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
             @DisplayName("검색 결과가 반환된다")
             void 검색_결과가_반환된다() {
                 // given - ConcertFixture의 hallCode "123"과 일치하는 hall 저장
-                concertHallRepository.save(createConcertHall("123"));
-                concertRepository.save(createTestConcert()); // title: "Sample Concert"
+                String hallCode = "FCMOCK01-1";
+                String concertCode = "PFMOCK001";
+                concertHallRepository.save(createConcertHall(hallCode));
+                concertRepository.save(createConcertWithHallCode(concertCode)); // title: "Sample Concert"
 
                 // when
                 List<ConcertThumbnail> result = concertSearchService.searchConcertThumbnails("Sample");
@@ -80,20 +83,21 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
             @DisplayName("cursorId로 다음 페이지를 조회할 수 있다")
             void cursorId로_다음_페이지를_조회할_수_있다() {
                 // given
-                concertHallRepository.save(createConcertHall("123"));
+                String hallCode = "FCMOCK01-1";
+                concertHallRepository.save(createConcertHall(hallCode));
                 for (int i = 0; i < 3; i++) {
-                    concertRepository.save(createTestConcert());
+                    concertRepository.save(createConcertWithCodes("PFMOCK00" + i, hallCode));
                 }
 
                 // when
                 ConcertSearchListResponse page1 = concertSearchService.searchConcertList("Sample", null, 2);
                 ConcertSearchListResponse page2 =
-                        concertSearchService.searchConcertList("Sample", page1.nextCursorId(), 2);
+                        concertSearchService.searchConcertList("Sample", page1.nextCursorCode(), 2);
 
                 // then
                 assertSoftly(softly -> {
                     softly.assertThat(page1.concertThumbnails()).hasSize(2);
-                    softly.assertThat(page1.nextCursorId()).isNotNull();
+                    softly.assertThat(page1.nextCursorCode()).isNotNull();
                     softly.assertThat(page2.concertThumbnails()).hasSize(1);
                     softly.assertThat(page2.concertThumbnails().get(0))
                             .isNotEqualTo(page1.concertThumbnails().get(0));
@@ -117,15 +121,16 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
         @DisplayName("날짜 정렬로 메인 콘서트를 조회한다")
         void 날짜_정렬로_메인_콘서트를_조회한다() {
             // given
-            concertHallRepository.save(createConcertHall("123"));
+            String hallCode = "FCMOCK01-1";
+            concertHallRepository.save(createConcertHall(hallCode));
             for (int i = 0; i < 5; i++) {
-                concertRepository.save(createTestConcert());
+                concertRepository.save(createConcertWithCodes("PFMOCK00" + i, hallCode));
             }
 
             // when
             ConcertMainResponse page1 = concertSearchService.searchMainConcerts("", null, 3, SortDirection.DATE);
             ConcertMainResponse page2 =
-                    concertSearchService.searchMainConcerts("", page1.nextCursorId(), 3, SortDirection.DATE);
+                    concertSearchService.searchMainConcerts("", page1.nextCursorCode(), 3, SortDirection.DATE);
 
             // then
             assertSoftly(softly -> {

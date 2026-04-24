@@ -9,7 +9,10 @@ import com.backend.allreva.module.concert.place.infra.jpa.ConcertHallJpaReposito
 import com.querydsl.core.types.ConstructorExpression;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
@@ -41,6 +44,21 @@ public class ConcertHallRepositoryImpl implements ConcertHallRepository {
     }
 
     @Override
+    public List<String> findAllIds() {
+        return jpa.findAllIds();
+    }
+
+    @Override
+    public Set<String> findAllFacilityCodes() {
+        return new HashSet<>(jpa.findAllFacilityCodes());
+    }
+
+    @Override
+    public Set<String> findIdsByFacilityCode(final String facilityCode) {
+        return new HashSet<>(jpa.findIdsByFacilityCode(facilityCode));
+    }
+
+    @Override
     public ConcertHallDetailResponse findDetailByHallCode(final String hallCode) {
         return queryFactory
                 .select(hallDetailProjections())
@@ -54,7 +72,6 @@ public class ConcertHallRepositoryImpl implements ConcertHallRepository {
                 ConcertHallDetailResponse.class,
                 concertHall.name,
                 concertHall.seatScale,
-                concertHall.star,
                 concertHall.convenienceInfo,
                 concertHall.location);
     }

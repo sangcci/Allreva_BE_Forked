@@ -45,7 +45,7 @@ class AuthenticationIntegrationTest extends IntegrationTestSupport {
     @AfterEach
     void tearDown() {
         refreshTokenRepository.deleteAll();
-        memberRepository.deleteAllInBatch();
+        jdbcTemplate.execute("DELETE FROM member");
     }
 
     private void mockKakaoLogin(final String email) {
@@ -182,8 +182,7 @@ class AuthenticationIntegrationTest extends IntegrationTestSupport {
 
             @BeforeEach
             void setUp() {
-                Member member = memberRepository.save(
-                        MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
+                Member member = memberRepository.save(MemberFixture.createTestMember());
                 memberId = member.getId();
                 refreshToken = jwtService.generateRefreshToken(String.valueOf(memberId));
                 jwtService.updateRefreshToken(refreshToken, memberId);
@@ -226,8 +225,7 @@ class AuthenticationIntegrationTest extends IntegrationTestSupport {
 
             @BeforeEach
             void setUp() {
-                Member member = memberRepository.save(
-                        MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
+                Member member = memberRepository.save(MemberFixture.createTestMember());
                 orphanToken = jwtService.generateRefreshToken(String.valueOf(member.getId()));
                 // Redis에 저장하지 않음
             }
@@ -253,8 +251,7 @@ class AuthenticationIntegrationTest extends IntegrationTestSupport {
 
             @BeforeEach
             void setUp() {
-                Member member = memberRepository.save(
-                        MemberFixture.createTestMember("example@example.com", LoginProvider.GOOGLE));
+                Member member = memberRepository.save(MemberFixture.createTestMember());
                 refreshToken = jwtService.generateRefreshToken(String.valueOf(member.getId()));
                 jwtService.updateRefreshToken(refreshToken, member.getId());
             }

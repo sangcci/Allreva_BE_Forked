@@ -30,37 +30,31 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Concert save(final Concert concert) {
-        return jpa.save(concert);
+    public Concert save(final Concert concertEntity) {
+        return jpa.save(concertEntity);
     }
 
     @Override
-    public Optional<Concert> findById(final Long id) {
-        return jpa.findById(id);
+    public Optional<Concert> findById(final String concertCode) {
+        return jpa.findById(concertCode);
     }
 
     @Override
-    public boolean existsByCodeConcertCode(final String concertCode) {
-        return jpa.existsByCodeConcertCode(concertCode);
+    public List<Concert> findAll() {
+        return jpa.findAll();
     }
 
     @Override
-    public Concert findByCodeConcertCode(final String concertCode) {
-        return jpa.findByCodeConcertCode(concertCode);
+    public Optional<ConcertDateInfoResponse> findStartDateAndEndDateById(final String concertCode) {
+        return jpa.findStartDateAndEndDateByConcertCode(concertCode);
     }
 
     @Override
-    public Optional<ConcertDateInfoResponse> findStartDateAndEndDateById(final Long concertId) {
-        return jpa.findStartDateAndEndDateById(concertId);
-    }
-
-    @Override
-    public ConcertDetailResponse findDetailById(final Long concertId) {
-        return jpa.findById(concertId)
+    public ConcertDetailResponse findDetailById(final String concertCode) {
+        return jpa.findById(concertCode)
                 .map(concertEntity -> {
-                    ConcertHall hall = concertHallJpa
-                            .findById(concertEntity.getCode().getHallCode())
-                            .orElse(null);
+                    ConcertHall hall =
+                            concertHallJpa.findById(concertEntity.getHallCode()).orElse(null);
                     return ConcertDetailResponse.from(concertEntity, hall);
                 })
                 .orElse(ConcertDetailResponse.EMPTY);
@@ -76,10 +70,10 @@ public class ConcertRepositoryImpl implements ConcertRepository {
                         concertHall.name,
                         concert.concertInfo.dateInfo.startDate,
                         concert.concertInfo.dateInfo.endDate,
-                        concert.id))
+                        concert.concertCode))
                 .from(concert)
                 .leftJoin(concertHall)
-                .on(concert.code.hallCode.eq(concertHall.id))
+                .on(concert.hallCode.eq(concertHall.id))
                 .where(concert.concertInfo.dateInfo.endDate.goe(LocalDate.now()))
                 .orderBy(concert.concertInfo.dateInfo.startDate.asc())
                 .limit(5)
@@ -88,19 +82,18 @@ public class ConcertRepositoryImpl implements ConcertRepository {
 
     @Override
     public List<RelatedConcertResponse> findRelatedConcertsByHall(
-            final String hallCode, final Long lastId, final Long lastViewCount, final int pageSize) {
+            final String hallCode, final String lastConcertCode, final int pageSize) {
         return queryFactory
                 .select(Projections.constructor(
                         RelatedConcertResponse.class,
-                        concert.id,
+                        concert.concertCode,
                         concert.concertInfo.title,
                         concert.concertInfo.dateInfo.startDate,
                         concert.concertInfo.dateInfo.endDate,
-                        concert.poster.url,
-                        concert.viewCount))
+                        concert.poster.url))
                 .from(concert)
-                .where(eqHallCode(hallCode), ltCursor(lastId, lastViewCount))
-                .orderBy(concert.viewCount.desc(), concert.id.desc())
+                .where(eqHallCode(hallCode), ltConcertCode(lastConcertCode))
+                .orderBy(concert.concertCode.desc())
                 .limit(pageSize)
                 .fetch();
     }
@@ -116,15 +109,10 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     }
 
     private BooleanExpression eqHallCode(final String hallCode) {
-        return hallCode != null ? concert.code.hallCode.eq(hallCode) : null;
+        return hallCode != null ? concert.hallCode.eq(hallCode) : null;
     }
 
-    private BooleanExpression ltCursor(final Long lastId, final Long lastViewCount) {
-        if (lastViewCount == null || lastId == null) {
-            return null;
-        }
-        return concert.viewCount
-                .lt(lastViewCount)
-                .or(concert.viewCount.eq(lastViewCount).and(concert.id.lt(lastId)));
+    private BooleanExpression ltConcertCode(final String lastConcertCode) {
+        return lastConcertCode != null ? concert.concertCode.lt(lastConcertCode) : null;
     }
 }

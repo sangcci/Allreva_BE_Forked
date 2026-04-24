@@ -3,46 +3,61 @@ package com.backend.allreva.module.concert.place.application;
 import com.backend.allreva.module.concert.place.application.port.ConcertHallDataSyncPort;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
-import com.backend.allreva.module.concert.place.infra.kopis.CsvUtil;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+@RequiredArgsConstructor
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class ConcertHallSyncScheduler {
+
+    private static final int KOPIS_RATE_LIMIT_MILLIS = 100;
 
     private final ConcertHallDataSyncPort concertHallDataSyncPort;
     private final ConcertHallRepository concertHallRepository;
 
-    /** 공연장 매주 동기화 매주 일요일 새벽 2시 */
-    @Scheduled(cron = "0 0 2 * * SUN") // 매주 일요일 새벽 2시
-    public void fetchWeeklyHallInfoList() {
+    /** 공연장 정보 매월 동기화 — 매월 1일 새벽 2시 */
+    @Scheduled(cron = "0 0 2 1 * *")
+    public void fetchMonthlyHallInfoList() {
         try {
             fetchConcertHallInfoList();
-            log.info("Weekly concert hall info update complete");
+            log.info("Monthly concert hall info update complete");
         } catch (Exception e) {
-            log.error("Can't update weekly hall info. Message: {}", e.getMessage());
+            log.error("Can't update monthly hall info. Message: {}", e.getMessage());
         }
     }
 
     @CacheEvict(cacheNames = "placeMain", allEntries = true)
     public void fetchConcertHallInfoList() {
-        List<String> hallCodes = CsvUtil.readConcertHallCodes();
-        hallCodes.parallelStream().forEach(hallCode -> {
-            List<ConcertHall> concertHalls = concertHallDataSyncPort.fetchConcertHallDetails(getFacilityCode(hallCode));
+        Set<String> facilityCodes = concertHallRepository.findAllFacilityCodes();
 
-            concertHalls.stream().filter(hall -> hall.getId().equals(hallCode)).forEach(concertHallRepository::save);
+        for (String facilityCode : facilityCodes) {
+            try {
+                List<ConcertHall> halls = concertHallDataSyncPort.fetchConcertHallDetails(facilityCode);
+                Set<String> existingIds = concertHallRepository.findIdsByFacilityCode(facilityCode);
 
-            log.info("hall detail fetch complete for hall Code: {}", hallCode);
-        });
-    }
-
-    private String getFacilityCode(final String hallCode) {
-        return hallCode.split("-")[0];
+                for (ConcertHall hall : halls) {
+                    // Save only if hallId exists in whitelist (already in DB)
+                    if (existingIds.contains(hall.getId())) {
+                        concertHallRepository.save(hall);
+                    } else {
+                        log.debug("Skipping non-whitelisted hall: {}", hall.getId());
+                    }
+                }
+                log.debug("Hall detail fetch complete for facility: {}", facilityCode);
+                Thread.sleep(KOPIS_RATE_LIMIT_MILLIS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                log.error("Hall sync interrupted for facility: {}", facilityCode);
+                break;
+            } catch (Exception e) {
+                log.error("Hall sync failed for facility {}: {}", facilityCode, e.getMessage());
+            }
+        }
     }
 }

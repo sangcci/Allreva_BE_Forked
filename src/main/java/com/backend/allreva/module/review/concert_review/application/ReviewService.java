@@ -1,7 +1,6 @@
 package com.backend.allreva.module.review.concert_review.application;
 
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.module.concert.place.application.HallService;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.review.concert_review.application.dto.ReviewCreateRequest;
 import com.backend.allreva.module.review.concert_review.application.dto.ReviewUpdateRequest;
@@ -20,14 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ReviewService {
     private final SeatReviewRepository seatReviewRepository;
-    private final HallService hallService;
 
-    // Query methods (read-only)
     public List<SeatReviewResponse> getReviews(final SeatReviewSearchCondition condition, final Long currentMemberId) {
         return seatReviewRepository.findReviewsWithNoOffset(condition, currentMemberId);
     }
 
-    // Command methods (write)
     @Transactional
     public Long createReview(final ReviewCreateRequest request, final Member member) {
         SeatReview savedSeatReview = seatReviewRepository.save(SeatReview.builder()
@@ -40,8 +36,6 @@ public class ReviewService {
                 .concertTitle(request.concertTitle())
                 .build());
 
-        hallService.updateConcertHallStar(savedSeatReview.getHallId(), savedSeatReview.getStar(), 1);
-
         return savedSeatReview.getId();
     }
 
@@ -50,11 +44,8 @@ public class ReviewService {
         SeatReview seatReview = seatReviewRepository
                 .findById(request.reviewId())
                 .orElseThrow(() -> new CustomException(ReviewErrorCode.REVIEW_NOT_FOUND));
-        int starDelta = request.star() - seatReview.getStar();
         validateWriter(seatReview.getMemberId(), member.getId());
         seatReview.updateSeatReview(request);
-
-        hallService.updateConcertHallStar(seatReview.getHallId(), starDelta, 0);
 
         return seatReviewRepository.save(seatReview);
     }
@@ -65,8 +56,6 @@ public class ReviewService {
                 .findById(id)
                 .orElseThrow(() -> new CustomException(ReviewErrorCode.REVIEW_NOT_FOUND));
         validateWriter(seatReview.getMemberId(), member.getId());
-
-        hallService.updateConcertHallStar(seatReview.getHallId(), -seatReview.getStar(), -1);
 
         seatReviewRepository.delete(seatReview);
     }

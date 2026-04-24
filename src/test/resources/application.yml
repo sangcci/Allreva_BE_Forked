@@ -75,6 +75,7 @@ public-data:
     prfplc-url: /pblprfr?service=test-kopis-key&rows=100&cpage=1&shcate=CCCD
     stdate: 20241001
     eddate: 20251231
+    genre-code: CCCA
 
 view:
   count:

@@ -37,43 +37,43 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
                         hall.name,
                         concert.concertInfo.dateInfo.startDate,
                         concert.concertInfo.dateInfo.endDate,
-                        concert.id))
+                        concert.concertCode))
                 .from(concert)
                 .leftJoin(hall)
-                .on(concert.code.hallCode.eq(hall.id))
+                .on(concert.hallCode.eq(hall.id))
                 .where(titleMatchCondition(title))
-                .orderBy(similarityOrder(title), concert.id.desc())
+                .orderBy(similarityOrder(title), concert.concertCode.desc())
                 .limit(limit)
                 .fetch();
     }
 
     @Override
-    public ConcertSearchListResponse searchByTitle(final String query, final Long cursorId, final int pageSize) {
+    public ConcertSearchListResponse searchByTitle(final String query, final String cursorCode, final int pageSize) {
         List<ConcertThumbnail> results = fetchConcerts(
-                titleMatchCondition(query), cursorCondition(cursorId), similarityOrder(query), pageSize + 1);
+                titleMatchCondition(query), cursorCondition(cursorCode), similarityOrder(query), pageSize + 1);
 
         return buildResponse(results, pageSize);
     }
 
     @Override
-    public ConcertSearchListResponse searchByTitleAll(final String query, final Long cursorId, final int pageSize) {
-        return searchByTitle(query, cursorId, pageSize);
+    public ConcertSearchListResponse searchByTitleAll(final String query, final String cursorCode, final int pageSize) {
+        return searchByTitle(query, cursorCode, pageSize);
     }
 
     @Override
     public ConcertMainResponse searchMain(
-            final String address, final Long cursorId, final int pageSize, final SortDirection sortDirection) {
+            final String address, final String cursorCode, final int pageSize, final SortDirection sortDirection) {
         BooleanExpression addressCondition = StringUtils.hasText(address)
                 ? Expressions.booleanTemplate("({0} ilike {1})", hall.location.address, "%" + address + "%")
                 : null;
 
-        List<ConcertThumbnail> results =
-                fetchConcerts(addressCondition, cursorCondition(cursorId), mainSortOrder(sortDirection), pageSize + 1);
+        List<ConcertThumbnail> results = fetchConcerts(
+                addressCondition, cursorCondition(cursorCode), mainSortOrder(sortDirection), pageSize + 1);
 
-        Long nextCursorId =
-                results.size() > pageSize ? results.get(pageSize - 1).id() : null;
+        String nextCursorCode =
+                results.size() > pageSize ? results.get(pageSize - 1).concertCode() : null;
         List<ConcertThumbnail> page = results.stream().limit(pageSize).toList();
-        return ConcertMainResponse.from(page, nextCursorId);
+        return ConcertMainResponse.from(page, nextCursorCode);
     }
 
     private List<ConcertThumbnail> fetchConcerts(
@@ -89,21 +89,21 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
                         hall.name,
                         concert.concertInfo.dateInfo.startDate,
                         concert.concertInfo.dateInfo.endDate,
-                        concert.id))
+                        concert.concertCode))
                 .from(concert)
                 .leftJoin(hall)
-                .on(concert.code.hallCode.eq(hall.id))
+                .on(concert.hallCode.eq(hall.id))
                 .where(searchCondition, cursorCondition)
-                .orderBy(primarySort, concert.id.desc())
+                .orderBy(primarySort, concert.concertCode.desc())
                 .limit(fetchSize)
                 .fetch();
     }
 
     private ConcertSearchListResponse buildResponse(List<ConcertThumbnail> results, int pageSize) {
-        Long nextCursorId =
-                results.size() > pageSize ? results.get(pageSize - 1).id() : null;
+        String nextCursorCode =
+                results.size() > pageSize ? results.get(pageSize - 1).concertCode() : null;
         List<ConcertThumbnail> page = results.stream().limit(pageSize).toList();
-        return ConcertSearchListResponse.from(page, nextCursorId);
+        return ConcertSearchListResponse.from(page, nextCursorCode);
     }
 
     private BooleanExpression titleMatchCondition(final String query) {
@@ -115,12 +115,12 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
         return sim.gt(SIMILARITY_THRESHOLD).or(ilike);
     }
 
-    private BooleanExpression cursorCondition(final Long cursorId) {
-        return cursorId != null ? concert.id.lt(cursorId) : null;
+    private BooleanExpression cursorCondition(final String cursorCode) {
+        return cursorCode != null ? concert.concertCode.lt(cursorCode) : null;
     }
 
     private OrderSpecifier<?> similarityOrder(final String query) {
-        if (!StringUtils.hasText(query)) return concert.id.desc();
+        if (!StringUtils.hasText(query)) return concert.concertCode.desc();
         return Expressions.numberTemplate(Double.class, "similarity({0}, {1})", concert.concertInfo.title, query)
                 .desc();
     }
@@ -128,8 +128,8 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
     private OrderSpecifier<?> mainSortOrder(final SortDirection sortDirection) {
         return switch (sortDirection) {
             case DATE -> concert.concertInfo.dateInfo.startDate.desc();
-            case VIEWS -> concert.viewCount.desc();
-            default -> concert.id.desc();
+            case VIEWS -> concert.concertCode.desc();
+            default -> concert.concertCode.desc();
         };
     }
 }

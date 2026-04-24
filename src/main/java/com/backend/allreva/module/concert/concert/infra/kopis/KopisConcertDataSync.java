@@ -1,11 +1,12 @@
 package com.backend.allreva.module.concert.concert.infra.kopis;
 
+import com.backend.allreva.module.concert.concert.application.dto.ConcertSummary;
 import com.backend.allreva.module.concert.concert.application.port.ConcertDataSyncPort;
 import com.backend.allreva.module.concert.concert.domain.Concert;
-import com.backend.allreva.module.concert.concert.infra.kopis.KopisConcertCodeResponse.Db;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -19,15 +20,19 @@ import org.springframework.stereotype.Service;
 public class KopisConcertDataSync implements ConcertDataSyncPort {
     private final KopisConcertClient kopisConcertClient;
 
+    @Value("${public-data.kopis.genre-code}")
+    private String genreCode;
+
     @Override
-    public List<String> fetchDailyConcertCodes(String hallCode, String startDate, String endDate, String today) {
-        return kopisConcertClient.fetchConcertCodes(hallCode, startDate, endDate, today).getDbList().stream()
-                .map(Db::getId)
+    public List<ConcertSummary> fetchDailyConcertSummaries(
+            final String hallCode, final String startDate, final String endDate, final String today) {
+        return kopisConcertClient.fetchConcertCodes(hallCode, startDate, endDate, today, genreCode).getDbList().stream()
+                .map(ConcertSummary::from)
                 .toList();
     }
 
     @Override
-    public Concert fetchConcertDetail(String hallCode, String concertCode) {
+    public Concert fetchConcertDetail(final String hallCode, final String concertCode) {
         KopisConcertResponse response = kopisConcertClient.fetchConcertDetail(concertCode);
         return KopisConcertResponse.toEntity(hallCode, response);
     }
