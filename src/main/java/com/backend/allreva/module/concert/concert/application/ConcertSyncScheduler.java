@@ -5,11 +5,9 @@ import com.backend.allreva.module.concert.concert.application.port.ConcertDataSy
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.domain.value.ConcertStatus;
-import com.backend.allreva.module.concert.concert.infra.kopis.DateConverter;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,7 +30,7 @@ public class ConcertSyncScheduler {
     /** 공연 정보 매일 동기화 — 매일 새벽 4시 */
     @Scheduled(cron = "0 0 4 * * *")
     public void fetchDailyScheduled() {
-        String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
+        LocalDate today = LocalDate.now();
         try {
             fetchDailyConcertInfoList(today);
             log.info("{}: daily concert info update complete", today);
@@ -41,19 +39,20 @@ public class ConcertSyncScheduler {
         }
     }
 
-    public void fetchDailyConcertInfoList(final String today) {
+    public void fetchDailyConcertInfoList(final LocalDate today) {
         List<String> hallIds = concertHallRepository.findAllIds();
         Map<String, ConcertStatus> statusMap = concertRepository.findAll().stream()
                 .collect(Collectors.toMap(
                         Concert::getConcertCode, c -> c.getConcertInfo().getPerformStatus()));
 
-        String[] dates =
-                getStartAndEndDate(LocalDate.now().getYear(), LocalDate.now().getMonthValue());
+        YearMonth yearMonth = YearMonth.from(today);
+        LocalDate startDate = yearMonth.atDay(1);
+        LocalDate endDate = yearMonth.atEndOfMonth();
 
         for (String hallId : hallIds) {
             try {
                 List<ConcertSummary> summaries =
-                        concertDataSyncPort.fetchDailyConcertSummaries(hallId, dates[0], dates[1], today);
+                        concertDataSyncPort.fetchDailyConcertSummaries(hallId, startDate, endDate, today);
 
                 for (ConcertSummary summary : summaries) {
                     ConcertStatus existing = statusMap.get(summary.concertCode());
@@ -89,12 +88,5 @@ public class ConcertSyncScheduler {
                 log.error("Concert sync failed for hall {}: {}", hallId, e.getMessage());
             }
         }
-    }
-
-    private static String[] getStartAndEndDate(final int year, final int month) {
-        YearMonth yearMonth = YearMonth.of(year, month);
-        String startDate = DateConverter.convertToyyyyMMdd(yearMonth.atDay(1));
-        String endDate = DateConverter.convertToyyyyMMdd(yearMonth.atEndOfMonth());
-        return new String[] {startDate, endDate};
     }
 }

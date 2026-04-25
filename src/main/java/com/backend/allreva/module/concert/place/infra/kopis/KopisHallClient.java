@@ -9,5 +9,5 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface KopisHallClient {
 
     @GetMapping("/prfplc/{hallCode}")
-    KopisHallResponse fetchConcertHallDetail(@PathVariable(value = "hallCode") String hallCode);
+    KopisHallDetailResponse fetchConcertHallDetail(@PathVariable(value = "hallCode") String hallCode);
 }

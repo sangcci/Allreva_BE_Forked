@@ -47,11 +47,8 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign:4.1.3'
     implementation 'org.springframework.cloud:spring-cloud-commons:4.1.4'
 
-    // jaxb
-    implementation 'io.github.openfeign:feign-jaxb:11.0'
-    implementation 'javax.xml.bind:jaxb-api:2.3.1'
-    implementation 'org.glassfish.jaxb:jaxb-runtime:2.3.1'
-    implementation 'javax.activation:activation:1.1.1'
+    // jackson - xml
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
 
     // swagger
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
