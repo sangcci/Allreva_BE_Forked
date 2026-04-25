@@ -1,42 +1,102 @@
 package com.backend.allreva.module.concert.concert.integration;
 
 import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createCompletedConcert;
-import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createInProgressConcert;
-import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createInProgressConcertWithTitle;
 import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createScheduledConcert;
 import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createConcertHall;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.get;
+import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
+import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 
 import com.backend.allreva.module.concert.concert.application.ConcertSyncScheduler;
-import com.backend.allreva.module.concert.concert.application.dto.ConcertSummary;
-import com.backend.allreva.module.concert.concert.application.port.ConcertDataSyncPort;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
-import com.backend.allreva.module.concert.concert.domain.value.ConcertStatus;
 import com.backend.allreva.module.concert.place.application.ConcertHallSyncScheduler;
-import com.backend.allreva.module.concert.place.application.port.ConcertHallDataSyncPort;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
-import com.backend.allreva.module.concert.place.domain.value.ConvenienceInfo;
-import com.backend.allreva.module.concert.place.domain.value.Location;
 import com.backend.allreva.support.IntegrationTestSupport;
-import java.util.List;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SuppressWarnings("NonAsciiCharacters")
 @DisplayName("Concert Sync 통합 테스트")
 class ConcertSyncIntegrationTest extends IntegrationTestSupport {
+
+    private static final String HALL_ID = "FC001114-1";
+    private static final String FACILITY_CODE = "FC001114";
+
+    private static final String CONCERT_CODE_LIST_XML = """
+            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <dbs>
+                <db>
+                    <mt20id>%s</mt20id>
+                    <prfstate>%s</prfstate>
+                </db>
+            </dbs>
+            """;
+
+    private static final String CONCERT_DETAIL_XML = """
+            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <dbs>
+                <db>
+                    <mt20id>%s</mt20id>
+                    <prfnm>%s</prfnm>
+                    <prfpdfrom>2026.01.01</prfpdfrom>
+                    <prfpdto>2026.12.31</prfpdto>
+                    <poster>http://example.com/poster.jpg</poster>
+                    <pcseguidance>R석 150,000원</pcseguidance>
+                    <prfstate>공연중</prfstate>
+                    <dtguidance>토(19:00)</dtguidance>
+                    <entrpsnmH>테스트 기획사</entrpsnmH>
+                    <styurls>
+                        <styurl>http://example.com/detail1.jpg</styurl>
+                    </styurls>
+                    <relates>
+                        <relate>
+                            <relatenm>인터파크</relatenm>
+                            <relateurl>https://tickets.interpark.com</relateurl>
+                        </relate>
+                    </relates>
+                </db>
+            </dbs>
+            """;
+
+    private static final String CONCERT_HALL_DETAIL_XML = """
+            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <dbs>
+                <db>
+                    <fcltynm>KSPO돔</fcltynm>
+                    <adres>서울특별시 송파구 올림픽로 424</adres>
+                    <la>37.518486</la>
+                    <lo>127.013079</lo>
+                    <restaurant>Y</restaurant>
+                    <cafe>Y</cafe>
+                    <store>N</store>
+                    <parkbarrier>N</parkbarrier>
+                    <restbarrier>N</restbarrier>
+                    <runwbarrier>N</runwbarrier>
+                    <elevbarrier>N</elevbarrier>
+                    <parkinglot>Y</parkinglot>
+                    <mt13s>
+                        <mt13>
+                            <prfplcnm>KSPO돔</prfplcnm>
+                            <mt13id>FC001114-1</mt13id>
+                            <seatscale>15000</seatscale>
+                        </mt13>
+                    </mt13s>
+                </db>
+            </dbs>
+            """;
 
     @Autowired
     private ConcertSyncScheduler concertSyncScheduler;
@@ -50,16 +110,11 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
     @Autowired
     private ConcertHallRepository concertHallRepository;
 
-    @MockBean
-    private ConcertDataSyncPort concertDataSyncPort;
-
-    @MockBean
-    private ConcertHallDataSyncPort concertHallDataSyncPort;
-
     @AfterEach
     void tearDown() {
         concertRepository.deleteAll();
         concertHallRepository.deleteAll();
+        WireMock.reset();
     }
 
     @Nested
@@ -74,15 +129,19 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
             @DisplayName("공연 정보를 DB에 저장한다")
             void savesNewConcertToDb() {
                 // given
-                String hallId = "FC001114-1";
                 String concertCode = "PF001";
-                concertHallRepository.save(createConcertHall(hallId));
+                concertHallRepository.save(createConcertHall(HALL_ID));
 
-                given(concertDataSyncPort.fetchDailyConcertSummaries(
-                                anyString(), anyString(), anyString(), anyString()))
-                        .willReturn(List.of(new ConcertSummary(concertCode, ConcertStatus.IN_PROGRESS)));
-                given(concertDataSyncPort.fetchConcertDetail(hallId, concertCode))
-                        .willReturn(createInProgressConcert(concertCode));
+                stubFor(get(urlPathEqualTo("/openApi/restful/pblprfr"))
+                        .withQueryParam("prfplccd", equalTo(HALL_ID))
+                        .willReturn(aResponse()
+                                .withHeader("Content-Type", "application/xml;charset=UTF-8")
+                                .withBody(CONCERT_CODE_LIST_XML.formatted(concertCode, "공연중"))));
+
+                stubFor(get(urlPathMatching("/openApi/restful/pblprfr/" + concertCode + ".*"))
+                        .willReturn(aResponse()
+                                .withHeader("Content-Type", "application/xml;charset=UTF-8")
+                                .withBody(CONCERT_DETAIL_XML.formatted(concertCode, "진행 중인 공연"))));
 
                 // when
                 concertSyncScheduler.fetchDailyConcertInfoList("20260424");
@@ -104,20 +163,21 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
             @DisplayName("상세를 호출하지 않고 스킵한다")
             void skipsCompletedConcert() {
                 // given
-                String hallId = "FC001114-1";
                 String concertCode = "PF003";
-                concertHallRepository.save(createConcertHall(hallId));
+                concertHallRepository.save(createConcertHall(HALL_ID));
                 concertRepository.save(createCompletedConcert(concertCode));
 
-                given(concertDataSyncPort.fetchDailyConcertSummaries(
-                                anyString(), anyString(), anyString(), anyString()))
-                        .willReturn(List.of(new ConcertSummary(concertCode, ConcertStatus.COMPLETED)));
+                stubFor(get(urlPathEqualTo("/openApi/restful/pblprfr"))
+                        .withQueryParam("prfplccd", equalTo(HALL_ID))
+                        .willReturn(aResponse()
+                                .withHeader("Content-Type", "application/xml;charset=UTF-8")
+                                .withBody(CONCERT_CODE_LIST_XML.formatted(concertCode, "공연완료"))));
 
                 // when
                 concertSyncScheduler.fetchDailyConcertInfoList("20260424");
 
                 // then
-                verify(concertDataSyncPort, never()).fetchConcertDetail(anyString(), anyString());
+                verify(0, getRequestedFor(urlPathMatching("/openApi/restful/pblprfr/" + concertCode + ".*")));
                 Concert result = concertRepository.findById(concertCode).orElseThrow();
                 assertThat(result.getConcertInfo().getTitle()).isEqualTo("종료된 공연"); // unchanged
             }
@@ -131,22 +191,26 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
             @DisplayName("상세를 호출하고 업데이트한다")
             void callsDetailAndUpdatesOnStatusTransition() {
                 // given
-                String hallId = "FC001114-1";
                 String concertCode = "PF004";
-                concertHallRepository.save(createConcertHall(hallId));
+                concertHallRepository.save(createConcertHall(HALL_ID));
                 concertRepository.save(createScheduledConcert(concertCode));
 
-                given(concertDataSyncPort.fetchDailyConcertSummaries(
-                                anyString(), anyString(), anyString(), anyString()))
-                        .willReturn(List.of(new ConcertSummary(concertCode, ConcertStatus.IN_PROGRESS)));
-                given(concertDataSyncPort.fetchConcertDetail(hallId, concertCode))
-                        .willReturn(createInProgressConcertWithTitle(concertCode, "공연중"));
+                stubFor(get(urlPathEqualTo("/openApi/restful/pblprfr"))
+                        .withQueryParam("prfplccd", equalTo(HALL_ID))
+                        .willReturn(aResponse()
+                                .withHeader("Content-Type", "application/xml;charset=UTF-8")
+                                .withBody(CONCERT_CODE_LIST_XML.formatted(concertCode, "공연중"))));
+
+                stubFor(get(urlPathMatching("/openApi/restful/pblprfr/" + concertCode + ".*"))
+                        .willReturn(aResponse()
+                                .withHeader("Content-Type", "application/xml;charset=UTF-8")
+                                .withBody(CONCERT_DETAIL_XML.formatted(concertCode, "공연중"))));
 
                 // when
                 concertSyncScheduler.fetchDailyConcertInfoList("20260424");
 
                 // then
-                verify(concertDataSyncPort, times(1)).fetchConcertDetail(hallId, concertCode);
+                verify(1, getRequestedFor(urlPathMatching("/openApi/restful/pblprfr/" + concertCode + ".*")));
                 Concert result = concertRepository.findById(concertCode).orElseThrow();
                 assertThat(result.getConcertInfo().getTitle()).isEqualTo("공연중");
             }
@@ -165,8 +229,7 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
                 concertSyncScheduler.fetchDailyConcertInfoList("20260424");
 
                 // then
-                verify(concertDataSyncPort, never())
-                        .fetchDailyConcertSummaries(anyString(), anyString(), anyString(), anyString());
+                verify(0, getRequestedFor(urlPathEqualTo("/openApi/restful/pblprfr")));
             }
         }
     }
@@ -183,33 +246,45 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
             @DisplayName("공연장 정보를 DB에 업데이트한다")
             void updatesConcertHallInfoInDb() {
                 // given
-                String hallId = "FC001114-1";
-                concertHallRepository.save(createConcertHall(hallId));
+                concertHallRepository.save(createConcertHall(HALL_ID));
 
-                ConcertHall updatedHall = ConcertHall.builder()
-                        .id(hallId)
-                        .name("업데이트된 공연장")
-                        .seatScale(20000)
-                        .convenienceInfo(ConvenienceInfo.builder()
-                                .hasParkingLot(false)
-                                .hasRestaurant(true)
-                                .hasCafe(true)
-                                .hasDisabledParking(false)
-                                .build())
-                        .location(Location.builder()
-                                .longitude(127.013079)
-                                .latitude(37.518486)
-                                .address("서울특별시 송파구 올림픽로 424")
-                                .build())
-                        .build();
-                given(concertHallDataSyncPort.fetchConcertHallDetails("FC001114"))
-                        .willReturn(List.of(updatedHall));
+                String updatedHallXml = """
+                        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                        <dbs>
+                            <db>
+                                <fcltynm>업데이트된 공연장</fcltynm>
+                                <adres>서울특별시 송파구 올림픽로 424</adres>
+                                <la>37.518486</la>
+                                <lo>127.013079</lo>
+                                <restaurant>Y</restaurant>
+                                <cafe>Y</cafe>
+                                <store>N</store>
+                                <parkbarrier>N</parkbarrier>
+                                <restbarrier>N</restbarrier>
+                                <runwbarrier>N</runwbarrier>
+                                <elevbarrier>N</elevbarrier>
+                                <parkinglot>N</parkinglot>
+                                <mt13s>
+                                    <mt13>
+                                        <prfplcnm>업데이트된 공연장</prfplcnm>
+                                        <mt13id>FC001114-1</mt13id>
+                                        <seatscale>20000</seatscale>
+                                    </mt13>
+                                </mt13s>
+                            </db>
+                        </dbs>
+                        """;
+
+                stubFor(get(urlPathMatching("/openApi/restful/prfplc/" + FACILITY_CODE + ".*"))
+                        .willReturn(aResponse()
+                                .withHeader("Content-Type", "application/xml;charset=UTF-8")
+                                .withBody(updatedHallXml)));
 
                 // when
                 concertHallSyncScheduler.fetchConcertHallInfoList();
 
                 // then
-                ConcertHall result = concertHallRepository.findById(hallId).orElseThrow();
+                ConcertHall result = concertHallRepository.findById(HALL_ID).orElseThrow();
                 assertSoftly(softly -> {
                     softly.assertThat(result.getName()).isEqualTo("업데이트된 공연장");
                     softly.assertThat(result.getSeatScale()).isEqualTo(20000);
@@ -225,50 +300,51 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
             @DisplayName("hallId가 일치하는 공연장만 저장한다")
             void savesOnlyMatchingHalls() {
                 // given
-                String hallId = "FC001114-1";
-                concertHallRepository.save(createConcertHall(hallId));
+                concertHallRepository.save(createConcertHall(HALL_ID));
 
-                ConcertHall matchingHall = ConcertHall.builder()
-                        .id(hallId)
-                        .name("KSPO돔")
-                        .seatScale(15000)
-                        .convenienceInfo(ConvenienceInfo.builder()
-                                .hasParkingLot(true)
-                                .hasRestaurant(true)
-                                .hasCafe(true)
-                                .hasDisabledParking(true)
-                                .build())
-                        .location(Location.builder()
-                                .longitude(127.013079)
-                                .latitude(37.518486)
-                                .address("서울특별시 송파구 올림픽로 424")
-                                .build())
-                        .build();
-                ConcertHall nonMatchingHall = ConcertHall.builder()
-                        .id("FC001114-2")
-                        .name("별관")
-                        .seatScale(500)
-                        .convenienceInfo(ConvenienceInfo.builder()
-                                .hasParkingLot(false)
-                                .hasRestaurant(false)
-                                .hasCafe(false)
-                                .hasDisabledParking(false)
-                                .build())
-                        .location(Location.builder()
-                                .longitude(127.013079)
-                                .latitude(37.518486)
-                                .address("서울특별시 송파구 올림픽로 424")
-                                .build())
-                        .build();
-                given(concertHallDataSyncPort.fetchConcertHallDetails("FC001114"))
-                        .willReturn(List.of(matchingHall, nonMatchingHall));
+                String multiHallXml = """
+                        <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+                        <dbs>
+                            <db>
+                                <fcltynm>KSPO돔</fcltynm>
+                                <adres>서울특별시 송파구 올림픽로 424</adres>
+                                <la>37.518486</la>
+                                <lo>127.013079</lo>
+                                <restaurant>Y</restaurant>
+                                <cafe>Y</cafe>
+                                <store>N</store>
+                                <parkbarrier>Y</parkbarrier>
+                                <restbarrier>N</restbarrier>
+                                <runwbarrier>N</runwbarrier>
+                                <elevbarrier>N</elevbarrier>
+                                <parkinglot>Y</parkinglot>
+                                <mt13s>
+                                    <mt13>
+                                        <prfplcnm>KSPO돔</prfplcnm>
+                                        <mt13id>FC001114-1</mt13id>
+                                        <seatscale>15000</seatscale>
+                                    </mt13>
+                                    <mt13>
+                                        <prfplcnm>별관</prfplcnm>
+                                        <mt13id>FC001114-2</mt13id>
+                                        <seatscale>500</seatscale>
+                                    </mt13>
+                                </mt13s>
+                            </db>
+                        </dbs>
+                        """;
+
+                stubFor(get(urlPathMatching("/openApi/restful/prfplc/" + FACILITY_CODE + ".*"))
+                        .willReturn(aResponse()
+                                .withHeader("Content-Type", "application/xml;charset=UTF-8")
+                                .withBody(multiHallXml)));
 
                 // when
                 concertHallSyncScheduler.fetchConcertHallInfoList();
 
                 // then
                 assertThat(concertHallRepository.findById("FC001114-2")).isEmpty();
-                assertThat(concertHallRepository.findById(hallId)).isPresent();
+                assertThat(concertHallRepository.findById(HALL_ID)).isPresent();
             }
         }
 
@@ -285,7 +361,7 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
                 concertHallSyncScheduler.fetchConcertHallInfoList();
 
                 // then
-                verify(concertHallDataSyncPort, never()).fetchConcertHallDetails(anyString());
+                verify(0, getRequestedFor(urlPathMatching("/openApi/restful/prfplc/.*")));
             }
         }
     }

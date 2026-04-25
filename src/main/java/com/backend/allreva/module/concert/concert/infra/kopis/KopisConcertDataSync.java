@@ -6,7 +6,6 @@ import com.backend.allreva.module.concert.concert.domain.Concert;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,15 +17,17 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class KopisConcertDataSync implements ConcertDataSyncPort {
-    private final KopisConcertClient kopisConcertClient;
+    private static final String POPULAR_MUSIC_GENRE_CODE = "CCCD";
 
-    @Value("${public-data.kopis.genre-code}")
-    private String genreCode;
+    private final KopisConcertClient kopisConcertClient;
 
     @Override
     public List<ConcertSummary> fetchDailyConcertSummaries(
             final String hallCode, final String startDate, final String endDate, final String today) {
-        return kopisConcertClient.fetchConcertCodes(hallCode, startDate, endDate, today, genreCode).getDbList().stream()
+        return kopisConcertClient
+                .fetchConcertCodes(hallCode, startDate, endDate, today, POPULAR_MUSIC_GENRE_CODE)
+                .getDbList()
+                .stream()
                 .map(ConcertSummary::from)
                 .toList();
     }
