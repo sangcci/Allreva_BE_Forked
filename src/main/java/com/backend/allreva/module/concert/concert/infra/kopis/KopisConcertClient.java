@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public interface KopisConcertClient {
 
     @GetMapping("/pblprfr?rows=100&cpage=1")
-    KopisConcertCodeResponse fetchConcertCodes(
+    KopisConcertSummaryResponse fetchConcertSummaries(
             @RequestParam(value = "prfplccd") String hallCode,
             @RequestParam(value = "stdate") String startDate,
             @RequestParam(value = "eddate") String endDate,
@@ -18,5 +18,5 @@ public interface KopisConcertClient {
             @RequestParam(value = "shcate", required = false) String genreCode);
 
     @GetMapping("/pblprfr/{concertCode}")
-    KopisConcertResponse fetchConcertDetail(@PathVariable(value = "concertCode") String concertCode);
+    KopisConcertDetailResponse fetchConcertDetail(@PathVariable(value = "concertCode") String concertCode);
 }

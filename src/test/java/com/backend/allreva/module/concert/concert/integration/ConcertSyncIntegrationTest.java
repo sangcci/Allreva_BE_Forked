@@ -22,6 +22,7 @@ import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import com.backend.allreva.support.IntegrationTestSupport;
 import com.github.tomakehurst.wiremock.client.WireMock;
+import java.time.LocalDate;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -144,7 +145,7 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
                                 .withBody(CONCERT_DETAIL_XML.formatted(concertCode, "진행 중인 공연"))));
 
                 // when
-                concertSyncScheduler.fetchDailyConcertInfoList("20260424");
+                concertSyncScheduler.fetchDailyConcertInfoList(LocalDate.of(2026, 4, 24));
 
                 // then
                 Concert saved = concertRepository.findById(concertCode).orElseThrow();
@@ -174,7 +175,7 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
                                 .withBody(CONCERT_CODE_LIST_XML.formatted(concertCode, "공연완료"))));
 
                 // when
-                concertSyncScheduler.fetchDailyConcertInfoList("20260424");
+                concertSyncScheduler.fetchDailyConcertInfoList(LocalDate.of(2026, 4, 24));
 
                 // then
                 verify(0, getRequestedFor(urlPathMatching("/openApi/restful/pblprfr/" + concertCode + ".*")));
@@ -207,7 +208,7 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
                                 .withBody(CONCERT_DETAIL_XML.formatted(concertCode, "공연중"))));
 
                 // when
-                concertSyncScheduler.fetchDailyConcertInfoList("20260424");
+                concertSyncScheduler.fetchDailyConcertInfoList(LocalDate.of(2026, 4, 24));
 
                 // then
                 verify(1, getRequestedFor(urlPathMatching("/openApi/restful/pblprfr/" + concertCode + ".*")));
@@ -226,7 +227,7 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
                 // given: no halls in DB
 
                 // when
-                concertSyncScheduler.fetchDailyConcertInfoList("20260424");
+                concertSyncScheduler.fetchDailyConcertInfoList(LocalDate.of(2026, 4, 24));
 
                 // then
                 verify(0, getRequestedFor(urlPathEqualTo("/openApi/restful/pblprfr")));

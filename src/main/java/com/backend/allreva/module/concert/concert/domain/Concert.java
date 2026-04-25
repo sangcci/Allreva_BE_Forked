@@ -40,10 +40,6 @@ public class Concert extends BaseEntity {
     @Embedded
     private ConcertInfo concertInfo;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb", nullable = false)
-    private List<String> episodes = new ArrayList<>();
-
     @Embedded
     @AttributeOverride(name = "url", column = @Column(name = "poster"))
     private Image poster;
@@ -61,7 +57,6 @@ public class Concert extends BaseEntity {
     public void updateFrom(final Concert fetched) {
         this.hallCode = fetched.hallCode;
         this.concertInfo = fetched.concertInfo;
-        this.episodes = fetched.episodes;
         this.poster = fetched.poster;
         this.detailImages = fetched.detailImages;
         this.sellers = fetched.sellers;
@@ -72,14 +67,12 @@ public class Concert extends BaseEntity {
             final String concertCode,
             final String hallCode,
             final ConcertInfo concertInfo,
-            final List<String> episodes,
             final Image poster,
             final List<Image> detailImages,
             final Set<Seller> sellers) {
         this.concertCode = concertCode;
         this.hallCode = hallCode;
         this.concertInfo = concertInfo;
-        this.episodes = episodes != null ? episodes : this.episodes;
         this.poster = poster;
         this.detailImages = detailImages != null ? detailImages : this.detailImages;
         this.sellers = sellers != null ? sellers : this.sellers;
