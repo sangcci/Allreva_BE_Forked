@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class ConcertHall {
 
     @Id
-    private String id;
+    private String hallCode;
 
     @Column(nullable = false)
     private String name;
@@ -32,12 +32,12 @@ public class ConcertHall {
 
     @Builder
     private ConcertHall(
-            final String id,
+            final String hallCode,
             final String name,
             final int seatScale,
             final ConvenienceInfo convenienceInfo,
             final Location location) {
-        this.id = id;
+        this.hallCode = hallCode;
         this.name = name;
         this.seatScale = seatScale;
         this.convenienceInfo = convenienceInfo;

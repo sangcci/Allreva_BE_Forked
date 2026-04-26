@@ -73,7 +73,7 @@ public class ConcertRepositoryImpl implements ConcertRepository {
                         concert.concertCode))
                 .from(concert)
                 .leftJoin(concertHall)
-                .on(concert.hallCode.eq(concertHall.id))
+                .on(concert.hallCode.eq(concertHall.hallCode))
                 .where(concert.concertInfo.dateInfo.endDate.goe(LocalDate.now()))
                 .orderBy(concert.concertInfo.dateInfo.startDate.asc())
                 .limit(5)
