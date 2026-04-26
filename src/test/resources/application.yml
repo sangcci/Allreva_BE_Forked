@@ -41,16 +41,6 @@ spring:
       region:
         static: us-east-1
 
-    openfeign:
-      client:
-        config:
-          spotify:
-            defaultQueryParameters:
-              type: artist
-              limit: 3
-            defaultRequestHeaders:
-              Authorization: Bearer
-
 oauth2:
   kakao:
     redirect-uri: http://localhost:3000/signup/callback
@@ -77,11 +67,6 @@ view:
   count:
     schedule:
       rate: 3000
-
-spotify:
-  client:
-    id: test-spotify-client-id
-    secret: test-spotify-client-secret
 
 fcm:
   project-id: test-fcm-project-id

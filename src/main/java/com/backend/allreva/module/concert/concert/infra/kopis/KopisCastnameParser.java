@@ -4,6 +4,8 @@ import java.util.List;
 
 public final class KopisCastnameParser {
 
+    private KopisCastnameParser() {}
+
     public static List<String> parseCastNames(final String prfcast) {
         if (prfcast == null || prfcast.isBlank()) {
             return List.of();

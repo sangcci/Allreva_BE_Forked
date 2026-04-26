@@ -5,6 +5,8 @@ import java.time.format.DateTimeFormatter;
 
 public final class KopisDateConverter {
 
+    private KopisDateConverter() {}
+
     private static final DateTimeFormatter KOPIS_RESPONSE_FORMAT = DateTimeFormatter.ofPattern("yyyy.MM.dd");
     private static final DateTimeFormatter KOPIS_REQUEST_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
 
