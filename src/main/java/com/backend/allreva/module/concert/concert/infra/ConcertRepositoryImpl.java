@@ -2,13 +2,10 @@ package com.backend.allreva.module.concert.concert.infra;
 
 import static com.backend.allreva.module.concert.concert.domain.QConcert.concert;
 
-import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailResponse;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.infra.jpa.ConcertJpaRepository;
 import com.backend.allreva.module.concert.place.application.dto.RelatedConcertResponse;
-import com.backend.allreva.module.concert.place.domain.ConcertHall;
-import com.backend.allreva.module.concert.place.infra.jpa.ConcertHallJpaRepository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
@@ -21,13 +18,7 @@ import org.springframework.stereotype.Repository;
 public class ConcertRepositoryImpl implements ConcertRepository {
 
     private final ConcertJpaRepository jpa;
-    private final ConcertHallJpaRepository concertHallJpa;
     private final JPAQueryFactory queryFactory;
-
-    @Override
-    public Concert save(final Concert concertEntity) {
-        return jpa.save(concertEntity);
-    }
 
     @Override
     public Optional<Concert> findById(final String concertCode) {
@@ -37,17 +28,6 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     @Override
     public List<Concert> findAll() {
         return jpa.findAll();
-    }
-
-    @Override
-    public ConcertDetailResponse findDetailById(final String concertCode) {
-        return jpa.findById(concertCode)
-                .map(concertEntity -> {
-                    ConcertHall hall =
-                            concertHallJpa.findById(concertEntity.getHallCode()).orElse(null);
-                    return ConcertDetailResponse.from(concertEntity, hall);
-                })
-                .orElse(ConcertDetailResponse.EMPTY);
     }
 
     @Override
@@ -62,6 +42,11 @@ public class ConcertRepositoryImpl implements ConcertRepository {
                 .stream()
                 .map(RelatedConcertResponse::from)
                 .toList();
+    }
+
+    @Override
+    public Concert save(final Concert concertEntity) {
+        return jpa.save(concertEntity);
     }
 
     @Override
