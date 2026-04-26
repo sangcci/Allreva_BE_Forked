@@ -54,12 +54,17 @@ public class Concert extends BaseEntity {
     @Column(columnDefinition = "jsonb", nullable = false)
     private Set<Seller> sellers = new HashSet<>();
 
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "cast_names", columnDefinition = "jsonb", nullable = false)
+    private List<String> castNames = new ArrayList<>();
+
     public void updateFrom(final Concert fetched) {
         this.hallCode = fetched.hallCode;
         this.concertInfo = fetched.concertInfo;
         this.poster = fetched.poster;
         this.detailImages = fetched.detailImages;
         this.sellers = fetched.sellers;
+        this.castNames = fetched.castNames;
     }
 
     @Builder
@@ -69,12 +74,14 @@ public class Concert extends BaseEntity {
             final ConcertInfo concertInfo,
             final Image poster,
             final List<Image> detailImages,
-            final Set<Seller> sellers) {
+            final Set<Seller> sellers,
+            final List<String> castNames) {
         this.concertCode = concertCode;
         this.hallCode = hallCode;
         this.concertInfo = concertInfo;
         this.poster = poster;
         this.detailImages = detailImages != null ? detailImages : this.detailImages;
         this.sellers = sellers != null ? sellers : this.sellers;
+        this.castNames = castNames != null ? castNames : this.castNames;
     }
 }

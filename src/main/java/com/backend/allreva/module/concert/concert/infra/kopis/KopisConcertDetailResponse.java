@@ -40,6 +40,9 @@ public class KopisConcertDetailResponse {
         @JacksonXmlProperty(localName = "prfpdto")
         private String prfpdto; // 종료 날짜
 
+        @JacksonXmlProperty(localName = "prfcast")
+        private String prfcast; // 공연 출연진
+
         @JacksonXmlProperty(localName = "poster")
         private String poster; // 포스터
 

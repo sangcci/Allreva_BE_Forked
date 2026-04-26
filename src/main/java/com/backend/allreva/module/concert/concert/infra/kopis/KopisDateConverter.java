@@ -3,7 +3,7 @@ package com.backend.allreva.module.concert.concert.infra.kopis;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-public class KopisDateConverter {
+public final class KopisDateConverter {
 
     private static final DateTimeFormatter KOPIS_RESPONSE_FORMAT = DateTimeFormatter.ofPattern("yyyy.MM.dd");
     private static final DateTimeFormatter KOPIS_REQUEST_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd");
