@@ -1,4 +1,4 @@
-package com.backend.allreva.module.concert.place.application.dto;
+package com.backend.allreva.module.concert.concert.application.dto;
 
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import java.time.LocalDate;

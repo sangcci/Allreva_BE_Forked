@@ -2,10 +2,10 @@ package com.backend.allreva.module.concert.concert.infra;
 
 import static com.backend.allreva.module.concert.concert.domain.QConcert.concert;
 
+import com.backend.allreva.module.concert.concert.application.dto.RelatedConcertResponse;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.infra.jpa.ConcertJpaRepository;
-import com.backend.allreva.module.concert.place.application.dto.RelatedConcertResponse;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
@@ -35,13 +35,17 @@ public class ConcertRepositoryImpl implements ConcertRepository {
             final String hallCode, final String lastConcertCode, final int pageSize) {
         return queryFactory
                 .selectFrom(concert)
-                .where(eqHallCode(hallCode), ltConcertCode(lastConcertCode))
+                .where(concert.hallCode.eq(hallCode), ltConcertCode(lastConcertCode))
                 .orderBy(concert.concertCode.desc())
                 .limit(pageSize)
                 .fetch()
                 .stream()
                 .map(RelatedConcertResponse::from)
                 .toList();
+    }
+
+    private BooleanExpression ltConcertCode(final String lastConcertCode) {
+        return lastConcertCode != null ? concert.concertCode.lt(lastConcertCode) : null;
     }
 
     @Override
@@ -52,13 +56,5 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     @Override
     public void deleteAll() {
         jpa.deleteAll();
-    }
-
-    private BooleanExpression eqHallCode(final String hallCode) {
-        return hallCode != null ? concert.hallCode.eq(hallCode) : null;
-    }
-
-    private BooleanExpression ltConcertCode(final String lastConcertCode) {
-        return lastConcertCode != null ? concert.concertCode.lt(lastConcertCode) : null;
     }
 }
