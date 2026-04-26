@@ -51,16 +51,6 @@ spring:
       region:
         static: ${AWS_REGION:ap-northeast-2}
 
-    openfeign:
-      client:
-        config:
-          spotify:
-            defaultQueryParameters:
-              type: artist
-              limit: 3
-            defaultRequestHeaders:
-              Authorization: Bearer
-
 management:
   endpoints:
     web:
@@ -109,11 +99,6 @@ view:
   count:
     schedule:
       rate: 3000
-
-spotify:
-  client:
-    id: ${SPOTIFY_CLIENT_ID}
-    secret: ${SPOTIFY_CLIENT_SECRET}
 
 fcm:
   project-id: ${FCM_PROJECT_ID}

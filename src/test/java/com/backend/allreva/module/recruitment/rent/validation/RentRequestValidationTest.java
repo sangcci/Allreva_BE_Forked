@@ -45,7 +45,6 @@ class RentRequestValidationTest {
             return new RentRegisterRequest(
                     "PFMOCK001",
                     "제목",
-                    "아티스트",
                     "서울",
                     boardingType,
                     upRoute,
@@ -184,7 +183,6 @@ class RentRequestValidationTest {
                 var req = new RentRegisterRequest(
                         "PFMOCK001",
                         "",
-                        "아티스트",
                         "서울",
                         BoardingType.ROUND,
                         VALID_UP_ROUTE,
@@ -208,7 +206,6 @@ class RentRequestValidationTest {
                 var req = new RentRegisterRequest(
                         "PFMOCK001",
                         "제목",
-                        "아티스트",
                         "서울",
                         BoardingType.ROUND,
                         VALID_UP_ROUTE,
@@ -232,7 +229,6 @@ class RentRequestValidationTest {
                 var req = new RentRegisterRequest(
                         "PFMOCK001",
                         "제목",
-                        "아티스트",
                         "서울",
                         BoardingType.ROUND,
                         VALID_UP_ROUTE,
@@ -256,7 +252,6 @@ class RentRequestValidationTest {
                 var req = new RentRegisterRequest(
                         "PFMOCK001",
                         "제목",
-                        "아티스트",
                         "서울",
                         BoardingType.ROUND,
                         VALID_UP_ROUTE,
@@ -280,7 +275,6 @@ class RentRequestValidationTest {
                 var req = new RentRegisterRequest(
                         "PFMOCK001",
                         "제목",
-                        "아티스트",
                         "서울",
                         BoardingType.ROUND,
                         VALID_UP_ROUTE,

@@ -5,17 +5,11 @@ import com.backend.allreva.common.model.Image;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.member.domain.value.LoginProvider;
 import com.backend.allreva.module.member.domain.value.MemberRole;
-import java.util.List;
 import lombok.Builder;
 
 @Builder
 public record MemberRegisterRequest(
-        String email,
-        String nickname,
-        String introduce,
-        LoginProvider loginProvider,
-        List<MemberArtistRequest> memberArtistRequests,
-        Image image) {
+        String email, String nickname, String introduce, LoginProvider loginProvider, Image image) {
 
     public Member toEntity() {
         return Member.builder()

@@ -42,9 +42,6 @@ public class Survey extends BaseEntity {
     private List<LocalDate> boardingDates = new ArrayList<>();
 
     @Column(nullable = false)
-    private String artistName;
-
-    @Column(nullable = false)
     private Region region;
 
     @Column(nullable = false, name = "eddate")
@@ -70,7 +67,6 @@ public class Survey extends BaseEntity {
             final Long memberId,
             final String concertCode,
             final String title,
-            final String artistName,
             final Region region,
             final LocalDate endDate,
             final int maxPassenger,
@@ -79,7 +75,6 @@ public class Survey extends BaseEntity {
         this.memberId = memberId;
         this.concertCode = concertCode;
         this.title = title;
-        this.artistName = artistName;
         this.region = region;
         this.endDate = endDate;
         this.maxPassenger = maxPassenger;

@@ -60,9 +60,6 @@ public class Rent extends BaseEntity {
     private Image image;
 
     @Column(nullable = false)
-    private String artistName;
-
-    @Column(nullable = false)
     private String region;
 
     @Enumerated(EnumType.STRING)

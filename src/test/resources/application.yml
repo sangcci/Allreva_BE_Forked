@@ -16,7 +16,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        show_sql: true
+        show_sql: false
 
   flyway:
     enabled: false
@@ -40,16 +40,6 @@ spring:
         secret-key: test
       region:
         static: us-east-1
-
-    openfeign:
-      client:
-        config:
-          spotify:
-            defaultQueryParameters:
-              type: artist
-              limit: 3
-            defaultRequestHeaders:
-              Authorization: Bearer
 
 oauth2:
   kakao:
@@ -78,18 +68,13 @@ view:
     schedule:
       rate: 3000
 
-spotify:
-  client:
-    id: test-spotify-client-id
-    secret: test-spotify-client-secret
-
 fcm:
   project-id: test-fcm-project-id
   service-account-key: classpath:firebase/firebase-service-account-key.json
 
 logging:
   level:
-    "[com.backend.allreva]": INFO
+    "[com.backend.allreva]": WARN
     "[org.hibernate.SQL]": OFF
     "[org.hibernate.type.descriptor.sql.BasicBinder]": OFF
     "[org.springframework.web]": WARN

@@ -40,7 +40,6 @@ public final class RentFixture {
         return new RentRegisterRequest(
                 concertCode,
                 "테스트 차대절",
-                "테스트 아티스트",
                 "서울",
                 BoardingType.ROUND,
                 UP_ROUTE,

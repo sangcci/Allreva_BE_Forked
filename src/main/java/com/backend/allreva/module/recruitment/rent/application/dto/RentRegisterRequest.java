@@ -22,7 +22,6 @@ import java.util.List;
 public record RentRegisterRequest(
         @NotBlank String concertCode,
         @NotBlank String title,
-        @NotBlank String artistName,
         @NotBlank String region,
         @NotNull BoardingType boardingType,
         @Valid Route upRoute,
@@ -64,7 +63,6 @@ public record RentRegisterRequest(
                 .concertCode(concertCode)
                 .title(title)
                 .image(image)
-                .artistName(artistName)
                 .region(region)
                 .boardingType(boardingType)
                 .upRoute(upRoute)

@@ -40,7 +40,6 @@ public class SurveyService {
     private final SurveyParticipantRepository surveyParticipantRepository;
     private final ConcertRepository concertRepository;
 
-    /** 수요조사 개설 */
     @Transactional
     public Long openSurvey(final Long memberId, final OpenSurveyRequest request) {
         validateBoardingDates(request.concertCode(), request.boardingDates());
@@ -51,7 +50,6 @@ public class SurveyService {
                 .title(request.title())
                 .endDate(request.endDate())
                 .information(request.information())
-                .artistName(request.artistName())
                 .region(request.region())
                 .maxPassenger(request.maxPassenger())
                 .boardingDates(request.boardingDates())

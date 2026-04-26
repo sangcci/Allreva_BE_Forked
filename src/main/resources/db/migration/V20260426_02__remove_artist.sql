@@ -1,0 +1,10 @@
+ALTER TABLE rent
+    DROP COLUMN IF EXISTS artist_name;
+
+ALTER TABLE survey
+    DROP COLUMN IF EXISTS artist_name;
+
+DROP TABLE IF EXISTS member_artist CASCADE;
+
+DROP TABLE IF EXISTS artist CASCADE;
+
