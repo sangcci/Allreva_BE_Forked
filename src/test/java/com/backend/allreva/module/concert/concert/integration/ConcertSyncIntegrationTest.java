@@ -285,7 +285,7 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
                 concertHallSyncScheduler.fetchConcertHallInfoList();
 
                 // then
-                ConcertHall result = concertHallRepository.findById(HALL_ID).orElseThrow();
+                ConcertHall result = concertHallRepository.findByHallCode(HALL_ID).orElseThrow();
                 assertSoftly(softly -> {
                     softly.assertThat(result.getName()).isEqualTo("업데이트된 공연장");
                     softly.assertThat(result.getSeatScale()).isEqualTo(20000);
@@ -344,8 +344,8 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
                 concertHallSyncScheduler.fetchConcertHallInfoList();
 
                 // then
-                assertThat(concertHallRepository.findById("FC001114-2")).isEmpty();
-                assertThat(concertHallRepository.findById(HALL_ID)).isPresent();
+                assertThat(concertHallRepository.findByHallCode("FC001114-2")).isEmpty();
+                assertThat(concertHallRepository.findByHallCode(HALL_ID)).isPresent();
             }
         }
 

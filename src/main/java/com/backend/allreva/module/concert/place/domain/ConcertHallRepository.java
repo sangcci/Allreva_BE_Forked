@@ -9,17 +9,17 @@ public interface ConcertHallRepository {
 
     ConcertHall save(ConcertHall concertHall);
 
-    Optional<ConcertHall> findByIdWithLock(String hallId);
+    Optional<ConcertHall> findByHallCodeWithLock(String hallCode);
 
     ConcertHallDetailResponse findDetailByHallCode(String hallCode);
 
-    Optional<ConcertHall> findById(String id);
+    Optional<ConcertHall> findByHallCode(String hallCode);
 
-    List<String> findAllIds();
+    List<String> findAllHallCodes();
 
     Set<String> findAllFacilityCodes();
 
-    Set<String> findIdsByFacilityCode(String facilityCode);
+    Set<String> findHallCodesByFacilityCode(String facilityCode);
 
     void deleteAll();
 }

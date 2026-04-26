@@ -12,15 +12,16 @@ import org.springframework.data.repository.query.Param;
 public interface ConcertHallJpaRepository extends JpaRepository<ConcertHall, String> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    @Query("SELECT c FROM ConcertHall c WHERE c.id = :hallId")
-    Optional<ConcertHall> findByIdWithLock(@Param("hallId") String hallId);
+    @Query("SELECT c FROM ConcertHall c WHERE c.hallCode = :hallCode")
+    Optional<ConcertHall> findByHallCodeWithLock(@Param("hallCode") String hallCode);
 
-    @Query("SELECT c.id FROM ConcertHall c")
-    List<String> findAllIds();
+    @Query("SELECT c.hallCode FROM ConcertHall c")
+    List<String> findAllHallCodes();
 
-    @Query("SELECT DISTINCT SUBSTRING(c.id, 1, LOCATE('-', c.id) - 1) FROM ConcertHall c WHERE c.id LIKE '%-%'")
+    @Query(
+            "SELECT DISTINCT SUBSTRING(c.hallCode, 1, LOCATE('-', c.hallCode) - 1) FROM ConcertHall c WHERE c.hallCode LIKE '%-%'")
     List<String> findAllFacilityCodes();
 
-    @Query("SELECT c.id FROM ConcertHall c WHERE c.id LIKE CONCAT(:facilityCode, '-%')")
-    List<String> findIdsByFacilityCode(@Param("facilityCode") String facilityCode);
+    @Query("SELECT c.hallCode FROM ConcertHall c WHERE c.hallCode LIKE CONCAT(:facilityCode, '-%')")
+    List<String> findHallCodesByFacilityCode(@Param("facilityCode") String facilityCode);
 }

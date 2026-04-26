@@ -49,7 +49,7 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
             void 공연_상세_정보와_공연장_정보가_반환된다() {
                 // given
                 ConcertHall hall = concertHallRepository.save(createTestConcertHall());
-                Concert concert = concertRepository.save(createConcertWithHallCode(hall.getId()));
+                Concert concert = concertRepository.save(createConcertWithHallCode(hall.getHallCode()));
 
                 // when
                 ConcertDetailResponse result = concertService.findDetailById(concert.getConcertCode());
@@ -57,7 +57,7 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
                 // then
                 assertSoftly(softly -> {
                     softly.assertThat(result).isNotNull();
-                    softly.assertThat(result.hallCode()).isEqualTo(hall.getId());
+                    softly.assertThat(result.hallCode()).isEqualTo(hall.getHallCode());
                     softly.assertThat(result.hallName()).isEqualTo(hall.getName());
                     softly.assertThat(result.concertInfo().getTitle()).isEqualTo("Sample Concert");
                     softly.assertThat(result.sellers()).isNotEmpty();

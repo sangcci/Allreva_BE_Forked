@@ -33,7 +33,7 @@ public record ConcertDetailResponse(
                 .concertInfo(concert.getConcertInfo())
                 .sellers(concert.getSellers());
         if (hall != null) {
-            builder.hallCode(hall.getId())
+            builder.hallCode(hall.getHallCode())
                     .hallName(hall.getName())
                     .seatScale(hall.getSeatScale())
                     .convenienceInfo(hall.getConvenienceInfo())

@@ -28,12 +28,12 @@ public class PlaceSearchRepositoryImpl implements PlaceSearchRepository {
         List<ConcertHall> results = queryFactory
                 .selectFrom(hall)
                 .where(addressCondition(address), seatScaleCondition(minSeatSize), cursorCondition(cursorId))
-                .orderBy(primarySortOrder(address, minSeatSize), hall.id.asc())
+                .orderBy(primarySortOrder(address, minSeatSize), hall.hallCode.asc())
                 .limit(pageSize + 1L)
                 .fetch();
 
         String nextCursorId =
-                results.size() > pageSize ? results.get(pageSize - 1).getId() : null;
+                results.size() > pageSize ? results.get(pageSize - 1).getHallCode() : null;
 
         List<ConcertHallThumbnail> thumbnails =
                 results.stream().limit(pageSize).map(ConcertHallThumbnail::from).toList();
@@ -51,7 +51,7 @@ public class PlaceSearchRepositoryImpl implements PlaceSearchRepository {
     }
 
     private BooleanExpression cursorCondition(final String cursorId) {
-        return cursorId != null ? hall.id.gt(cursorId) : null;
+        return cursorId != null ? hall.hallCode.gt(cursorId) : null;
     }
 
     private OrderSpecifier<?> primarySortOrder(final String address, final int minSeatSize) {
@@ -60,6 +60,6 @@ public class PlaceSearchRepositoryImpl implements PlaceSearchRepository {
             return Expressions.numberTemplate(Double.class, "similarity({0}, {1})", hall.location.address, address)
                     .desc();
         }
-        return hall.id.asc();
+        return hall.hallCode.asc();
     }
 }

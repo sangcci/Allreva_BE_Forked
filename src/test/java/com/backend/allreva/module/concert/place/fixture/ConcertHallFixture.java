@@ -12,7 +12,7 @@ public final class ConcertHallFixture {
 
     public static ConcertHall createTestConcertHall() {
         return ConcertHall.builder()
-                .id("hall-001")
+                .hallCode("hall-001")
                 .name("서울 예술의전당")
                 .seatScale(2500)
                 .convenienceInfo(ConvenienceInfo.builder()
@@ -29,9 +29,9 @@ public final class ConcertHallFixture {
                 .build();
     }
 
-    public static ConcertHall createConcertHall(String id) {
+    public static ConcertHall createConcertHall(String hallCode) {
         return ConcertHall.builder()
-                .id(id)
+                .hallCode(hallCode)
                 .name("서울 예술의전당")
                 .seatScale(2500)
                 .convenienceInfo(ConvenienceInfo.builder()
@@ -48,9 +48,9 @@ public final class ConcertHallFixture {
                 .build();
     }
 
-    public static ConcertHall createConcertHallWithStar(String id, double star, int reviewCount) {
+    public static ConcertHall createConcertHallWithStar(String hallCode, double star, int reviewCount) {
         ConcertHall concertHall = ConcertHall.builder()
-                .id(id)
+                .hallCode(hallCode)
                 .name("서울 예술의전당")
                 .seatScale(2500)
                 .convenienceInfo(ConvenienceInfo.builder()

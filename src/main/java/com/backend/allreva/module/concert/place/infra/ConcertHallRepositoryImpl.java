@@ -29,13 +29,13 @@ public class ConcertHallRepositoryImpl implements ConcertHallRepository {
     }
 
     @Override
-    public Optional<ConcertHall> findByIdWithLock(final String hallId) {
-        return jpa.findByIdWithLock(hallId);
+    public Optional<ConcertHall> findByHallCodeWithLock(final String hallCode) {
+        return jpa.findByHallCodeWithLock(hallCode);
     }
 
     @Override
-    public Optional<ConcertHall> findById(final String id) {
-        return jpa.findById(id);
+    public Optional<ConcertHall> findByHallCode(final String hallCode) {
+        return jpa.findById(hallCode);
     }
 
     @Override
@@ -44,8 +44,8 @@ public class ConcertHallRepositoryImpl implements ConcertHallRepository {
     }
 
     @Override
-    public List<String> findAllIds() {
-        return jpa.findAllIds();
+    public List<String> findAllHallCodes() {
+        return jpa.findAllHallCodes();
     }
 
     @Override
@@ -54,8 +54,8 @@ public class ConcertHallRepositoryImpl implements ConcertHallRepository {
     }
 
     @Override
-    public Set<String> findIdsByFacilityCode(final String facilityCode) {
-        return new HashSet<>(jpa.findIdsByFacilityCode(facilityCode));
+    public Set<String> findHallCodesByFacilityCode(final String facilityCode) {
+        return new HashSet<>(jpa.findHallCodesByFacilityCode(facilityCode));
     }
 
     @Override
@@ -63,7 +63,7 @@ public class ConcertHallRepositoryImpl implements ConcertHallRepository {
         return queryFactory
                 .select(hallDetailProjections())
                 .from(concertHall)
-                .where(concertHall.id.eq(hallCode))
+                .where(concertHall.hallCode.eq(hallCode))
                 .fetchFirst();
     }
 

@@ -39,14 +39,14 @@ public class ConcertHallSyncScheduler {
         for (String facilityCode : facilityCodes) {
             try {
                 List<ConcertHall> halls = concertHallDataSyncPort.fetchConcertHallDetails(facilityCode);
-                Set<String> existingIds = concertHallRepository.findIdsByFacilityCode(facilityCode);
+                Set<String> existingHallCodes = concertHallRepository.findHallCodesByFacilityCode(facilityCode);
 
                 for (ConcertHall hall : halls) {
-                    // Save only if hallId exists in whitelist (already in DB)
-                    if (existingIds.contains(hall.getId())) {
+                    // Save only if hallCode exists in whitelist (already in DB)
+                    if (existingHallCodes.contains(hall.getHallCode())) {
                         concertHallRepository.save(hall);
                     } else {
-                        log.debug("Skipping non-whitelisted hall: {}", hall.getId());
+                        log.debug("Skipping non-whitelisted hall: {}", hall.getHallCode());
                     }
                 }
                 log.debug("Hall detail fetch complete for facility: {}", facilityCode);

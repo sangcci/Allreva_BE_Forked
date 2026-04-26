@@ -89,7 +89,7 @@ public class KopisHallDetailResponse {
         String hallName = getHallName(db, idx);
 
         return ConcertHall.builder()
-                .id(db.mt13s.mt13List.get(idx).mt13id)
+                .hallCode(db.mt13s.mt13List.get(idx).mt13id)
                 .name(hallName)
                 .seatScale(Integer.parseInt(db.mt13s.mt13List.get(idx).seatscale.replace(",", "")))
                 .convenienceInfo(ConvenienceInfo.builder()
