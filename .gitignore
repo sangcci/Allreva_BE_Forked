@@ -64,3 +64,6 @@ load-test/
 
 ### Query Optimization Test ###
 query-optimization-test/
+
+### Git Worktrees ###
+.worktrees/
