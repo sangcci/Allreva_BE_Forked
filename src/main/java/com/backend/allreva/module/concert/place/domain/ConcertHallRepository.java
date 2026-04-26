@@ -9,8 +9,6 @@ public interface ConcertHallRepository {
 
     ConcertHall save(ConcertHall concertHall);
 
-    Optional<ConcertHall> findByHallCodeWithLock(String hallCode);
-
     ConcertHallDetailResponse findDetailByHallCode(String hallCode);
 
     Optional<ConcertHall> findByHallCode(String hallCode);
