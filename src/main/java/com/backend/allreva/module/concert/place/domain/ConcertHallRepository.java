@@ -6,8 +6,6 @@ import java.util.Set;
 
 public interface ConcertHallRepository {
 
-    ConcertHall save(ConcertHall concertHall);
-
     Optional<ConcertHall> findById(String hallCode);
 
     List<String> findAllHallCodes();
@@ -15,6 +13,8 @@ public interface ConcertHallRepository {
     Set<String> findAllFacilityCodes();
 
     Set<String> findHallCodesByFacilityCode(String facilityCode);
+
+    ConcertHall save(ConcertHall concertHall);
 
     void deleteAll();
 }

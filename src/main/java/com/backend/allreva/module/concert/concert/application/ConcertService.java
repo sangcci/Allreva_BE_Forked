@@ -28,7 +28,7 @@ public class ConcertService {
             key = "#hallCode + '_' + #lastConcertCode + '_' + #pageSize",
             unless = "#result == null",
             cacheManager = "relatedConcertCacheManager")
-    public List<RelatedConcertResponse> getRelatedConcertsByHallCode(
+    public List<RelatedConcertResponse> getRelatedConcerts(
             final String hallCode, final String lastConcertCode, final int pageSize) {
         return concertRepository.findAllByHallCode(hallCode, lastConcertCode, pageSize).stream()
                 .map(RelatedConcertResponse::from)

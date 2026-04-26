@@ -13,12 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class HallService {
+public class ConcertHallService {
 
     private final ConcertHallRepository concertHallRepository;
 
     @Transactional(readOnly = true)
-    public ConcertHallDetailResponse findDetailByHallCode(final String hallCode) {
+    public ConcertHallDetailResponse getConcertHallDetail(final String hallCode) {
         ConcertHall hall = concertHallRepository
                 .findById(hallCode)
                 .orElseThrow(() -> new CustomException(ConcertHallErrorCode.CONCERT_HALL_NOT_FOUND));

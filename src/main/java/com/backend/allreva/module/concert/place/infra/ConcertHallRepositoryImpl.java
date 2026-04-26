@@ -17,18 +17,8 @@ public class ConcertHallRepositoryImpl implements ConcertHallRepository {
     private final ConcertHallJpaRepository jpa;
 
     @Override
-    public ConcertHall save(final ConcertHall concertHallEntity) {
-        return jpa.save(concertHallEntity);
-    }
-
-    @Override
     public Optional<ConcertHall> findById(final String hallCode) {
         return jpa.findById(hallCode);
-    }
-
-    @Override
-    public void deleteAll() {
-        jpa.deleteAll();
     }
 
     @Override
@@ -44,5 +34,15 @@ public class ConcertHallRepositoryImpl implements ConcertHallRepository {
     @Override
     public Set<String> findHallCodesByFacilityCode(final String facilityCode) {
         return new HashSet<>(jpa.findHallCodesByFacilityCode(facilityCode));
+    }
+
+    @Override
+    public ConcertHall save(final ConcertHall concertHallEntity) {
+        return jpa.save(concertHallEntity);
+    }
+
+    @Override
+    public void deleteAll() {
+        jpa.deleteAll();
     }
 }
