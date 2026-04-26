@@ -96,6 +96,7 @@ public class KopisConcertDetailResponse {
                 .poster(new Image(db.poster))
                 .detailImages(convertToImage(db.styurls))
                 .sellers(convertToSellers(db.relates))
+                .castNames(KopisCastnameParser.parseCastNames(db.prfcast))
                 .build();
     }
 
