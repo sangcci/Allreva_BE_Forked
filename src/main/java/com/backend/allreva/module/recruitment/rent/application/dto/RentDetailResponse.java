@@ -8,13 +8,14 @@ import com.backend.allreva.module.recruitment.rent.domain.value.BusSize;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusType;
 import com.backend.allreva.module.recruitment.rent.domain.value.Route;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 public record RentDetailResponse(
         String concertName,
         String imageUrl,
         String title,
-        String artistName,
+        List<String> castNames,
         String region,
         BoardingType boardingType,
         Route upRoute,
@@ -38,7 +39,7 @@ public record RentDetailResponse(
                 concert != null ? concert.getConcertInfo().getTitle() : null,
                 rent.getImage().getUrl(),
                 rent.getTitle(),
-                rent.getArtistName(),
+                concert != null ? concert.getCastNames() : Collections.emptyList(),
                 rent.getRegion(),
                 rent.getBoardingType(),
                 rent.getUpRoute(),
