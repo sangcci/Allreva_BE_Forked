@@ -89,7 +89,7 @@ fcm:
 
 logging:
   level:
-    "[com.backend.allreva]": INFO
+    "[com.backend.allreva]": WARN
     "[org.hibernate.SQL]": OFF
     "[org.hibernate.type.descriptor.sql.BasicBinder]": OFF
     "[org.springframework.web]": WARN
