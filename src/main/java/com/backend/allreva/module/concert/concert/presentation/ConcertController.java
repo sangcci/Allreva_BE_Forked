@@ -30,16 +30,16 @@ public class ConcertController implements ConcertControllerSwagger {
     @Operation(summary = "공연 상세 조회", description = "공연 상세 조회 API")
     @ApiResponses(value = {@ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json"))})
     @GetMapping("/{concertCode}")
-    public Response<ConcertDetailResponse> findConcertDetail(@PathVariable("concertCode") final String concertCode) {
+    public Response<ConcertDetailResponse> getConcertDetail(@PathVariable("concertCode") final String concertCode) {
         ConcertDetailResponse detail = concertService.findDetailById(concertCode);
         return Response.onSuccess(detail);
     }
 
     @GetMapping("/by-hall")
-    public Response<List<RelatedConcertResponse>> findRelatedConcertsByHall(
+    public Response<List<RelatedConcertResponse>> getRelatedConcertsByHallCode(
             @NotBlank @RequestParam final String hallCode,
             @RequestParam(required = false) final String lastConcertCode,
             @Positive @RequestParam(defaultValue = "3") final int pageSize) {
-        return Response.onSuccess(concertService.findRelatedConcertsByHall(hallCode, lastConcertCode, pageSize));
+        return Response.onSuccess(concertService.getRelatedConcertsByHallCode(hallCode, lastConcertCode, pageSize));
     }
 }

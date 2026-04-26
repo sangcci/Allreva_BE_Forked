@@ -2,7 +2,6 @@ package com.backend.allreva.module.concert.concert.infra;
 
 import static com.backend.allreva.module.concert.concert.domain.QConcert.concert;
 
-import com.backend.allreva.module.concert.concert.application.dto.RelatedConcertResponse;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.infra.jpa.ConcertJpaRepository;
@@ -31,17 +30,13 @@ public class ConcertRepositoryImpl implements ConcertRepository {
     }
 
     @Override
-    public List<RelatedConcertResponse> findRelatedConcertsByHall(
-            final String hallCode, final String lastConcertCode, final int pageSize) {
+    public List<Concert> findAllByHallCode(final String hallCode, final String lastConcertCode, final int pageSize) {
         return queryFactory
                 .selectFrom(concert)
                 .where(concert.hallCode.eq(hallCode), ltConcertCode(lastConcertCode))
                 .orderBy(concert.concertCode.desc())
                 .limit(pageSize)
-                .fetch()
-                .stream()
-                .map(RelatedConcertResponse::from)
-                .toList();
+                .fetch();
     }
 
     private BooleanExpression ltConcertCode(final String lastConcertCode) {

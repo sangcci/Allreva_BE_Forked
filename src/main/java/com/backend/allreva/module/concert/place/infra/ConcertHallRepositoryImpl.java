@@ -1,6 +1,5 @@
 package com.backend.allreva.module.concert.place.infra;
 
-import com.backend.allreva.module.concert.place.application.dto.ConcertHallDetailResponse;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import com.backend.allreva.module.concert.place.infra.jpa.ConcertHallJpaRepository;
@@ -23,13 +22,8 @@ public class ConcertHallRepositoryImpl implements ConcertHallRepository {
     }
 
     @Override
-    public Optional<ConcertHall> findByHallCode(final String hallCode) {
+    public Optional<ConcertHall> findById(final String hallCode) {
         return jpa.findById(hallCode);
-    }
-
-    @Override
-    public ConcertHallDetailResponse findDetailByHallCode(final String hallCode) {
-        return jpa.findById(hallCode).map(ConcertHallDetailResponse::from).orElse(null);
     }
 
     @Override

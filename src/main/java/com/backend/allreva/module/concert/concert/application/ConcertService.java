@@ -28,9 +28,11 @@ public class ConcertService {
             key = "#hallCode + '_' + #lastConcertCode + '_' + #pageSize",
             unless = "#result == null",
             cacheManager = "relatedConcertCacheManager")
-    public List<RelatedConcertResponse> findRelatedConcertsByHall(
+    public List<RelatedConcertResponse> getRelatedConcertsByHallCode(
             final String hallCode, final String lastConcertCode, final int pageSize) {
-        return concertRepository.findRelatedConcertsByHall(hallCode, lastConcertCode, pageSize);
+        return concertRepository.findAllByHallCode(hallCode, lastConcertCode, pageSize).stream()
+                .map(RelatedConcertResponse::from)
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -39,7 +41,7 @@ public class ConcertService {
                 .findById(concertCode)
                 .orElseThrow(() -> new CustomException(ConcertErrorCode.CONCERT_NOT_FOUND));
         ConcertHall hall = concertHallRepository
-                .findByHallCode(concert.getHallCode())
+                .findById(concert.getHallCode())
                 .orElseThrow(() -> new CustomException(ConcertHallErrorCode.CONCERT_HALL_NOT_FOUND));
         return ConcertDetailResponse.from(concert, hall);
     }

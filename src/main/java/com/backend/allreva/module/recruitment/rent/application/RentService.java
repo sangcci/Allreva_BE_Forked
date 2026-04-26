@@ -67,7 +67,7 @@ public class RentService {
         Rent rent = rentRepository.findById(id).orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
         Concert concert = concertRepository.findById(rent.getConcertCode()).orElse(null);
         ConcertHall concertHall = concert != null
-                ? concertHallRepository.findByHallCode(concert.getHallCode()).orElse(null)
+                ? concertHallRepository.findById(concert.getHallCode()).orElse(null)
                 : null;
         return RentDetailResponse.from(rent, concert, concertHall);
     }
