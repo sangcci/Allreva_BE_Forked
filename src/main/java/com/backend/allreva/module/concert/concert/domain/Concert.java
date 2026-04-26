@@ -14,6 +14,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -57,6 +58,12 @@ public class Concert extends BaseEntity {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "cast_names", columnDefinition = "jsonb", nullable = false)
     private List<String> castNames = new ArrayList<>();
+
+    public boolean isValidBoardingDate(final LocalDate date) {
+        LocalDate startDate = concertInfo.getDateInfo().getStartDate();
+        LocalDate endDate = concertInfo.getDateInfo().getEndDate();
+        return !date.isBefore(startDate) && !date.isAfter(endDate);
+    }
 
     public void updateFrom(final Concert fetched) {
         this.hallCode = fetched.hallCode;

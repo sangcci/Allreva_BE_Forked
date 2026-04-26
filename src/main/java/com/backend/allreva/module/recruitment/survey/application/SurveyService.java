@@ -2,7 +2,7 @@ package com.backend.allreva.module.recruitment.survey.application;
 
 import com.backend.allreva.common.event.Events;
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.module.concert.concert.application.dto.ConcertDateInfoResponse;
+import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.exception.ConcertErrorCode;
 import com.backend.allreva.module.notification.domain.event.NotificationEvent;
@@ -167,22 +167,15 @@ public class SurveyService {
     }
 
     private void validateBoardingDates(final String concertCode, final List<LocalDate> boardingDates) {
-        ConcertDateInfoResponse dateInfo = findStartDateAndEndDateById(concertCode);
+        Concert concert = concertRepository
+                .findById(concertCode)
+                .orElseThrow(() -> new CustomException(ConcertErrorCode.CONCERT_NOT_FOUND));
 
-        LocalDate concertStartDate = dateInfo.getStartDate();
-        LocalDate concertEndDate = dateInfo.getEndDate();
-
-        for (LocalDate boardingDate : boardingDates) {
-            if (boardingDate.isBefore(concertStartDate) || boardingDate.isAfter(concertEndDate)) {
+        boardingDates.forEach(date -> {
+            if (!concert.isValidBoardingDate(date)) {
                 throw new CustomException(SurveyErrorCode.SURVEY_INVALID_BOARDING_DATE);
             }
-        }
-    }
-
-    private ConcertDateInfoResponse findStartDateAndEndDateById(final String concertCode) {
-        return concertRepository
-                .findStartDateAndEndDateById(concertCode)
-                .orElseThrow(() -> new CustomException(ConcertErrorCode.CONCERT_NOT_FOUND));
+        });
     }
 
     private Survey findSurvey(final Long surveyId) {
