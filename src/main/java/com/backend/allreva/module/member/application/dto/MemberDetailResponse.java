@@ -1,27 +1,17 @@
 package com.backend.allreva.module.member.application.dto;
 
-import com.backend.allreva.module.member.domain.value.RefundAccount;
-import java.util.List;
+import com.backend.allreva.module.member.domain.Member;
 
 public record MemberDetailResponse(
-        String email,
-        String nickname,
-        String introduce,
-        String profileImageUrl,
-        List<MemberArtistDetail> artists,
-        String bank,
-        String number) {
+        String email, String nickname, String introduce, String profileImageUrl, String bank, String number) {
 
-    // for querydsl projections
-    public MemberDetailResponse(
-            final String email,
-            final String nickname,
-            final String introduce,
-            final String profileImageUrl,
-            final List<MemberArtistDetail> artists,
-            final RefundAccount refundAccount) {
-        this(email, nickname, introduce, profileImageUrl, artists, refundAccount.getBank(), refundAccount.getNumber());
+    public static MemberDetailResponse from(final Member member) {
+        return new MemberDetailResponse(
+                member.getEmail().getEmail(),
+                member.getMemberInfo().getNickname(),
+                member.getMemberInfo().getIntroduce(),
+                member.getMemberInfo().getProfileImageUrl(),
+                member.getRefundAccount().getBank(),
+                member.getRefundAccount().getNumber());
     }
-
-    public record MemberArtistDetail(String name, String artistId) {}
 }

@@ -5,25 +5,18 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.module.concert.artist.domain.Artist;
-import com.backend.allreva.module.concert.artist.infra.jpa.ArtistJpaRepository;
 import com.backend.allreva.module.member.application.MemberService;
-import com.backend.allreva.module.member.application.dto.MemberArtistRequest;
 import com.backend.allreva.module.member.application.dto.MemberRegisterRequest;
 import com.backend.allreva.module.member.application.dto.NicknameDuplication;
 import com.backend.allreva.module.member.application.dto.OAuthRegisterRequest;
 import com.backend.allreva.module.member.application.dto.RefundAccountRequest;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.member.domain.MemberRepository;
-import com.backend.allreva.module.member.domain.artist.MemberArtist;
-import com.backend.allreva.module.member.domain.artist.MemberArtistRepository;
 import com.backend.allreva.module.member.domain.value.LoginProvider;
 import com.backend.allreva.module.member.exception.MemberErrorCode;
 import com.backend.allreva.module.member.fixture.MemberFixture;
 import com.backend.allreva.module.member.fixture.MemberRequestFixture;
 import com.backend.allreva.support.IntegrationTestSupport;
-import java.util.Collections;
-import java.util.List;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -40,17 +33,9 @@ class MemberIntegrationTest extends IntegrationTestSupport {
     @Autowired
     private MemberRepository memberRepository;
 
-    @Autowired
-    private MemberArtistRepository memberArtistRepository;
-
-    @Autowired
-    private ArtistJpaRepository artistJpaRepository;
-
     @AfterEach
     void tearDown() {
-        memberArtistRepository.deleteAll();
         jdbcTemplate.execute("DELETE FROM member");
-        artistJpaRepository.deleteAll();
     }
 
     @Nested
@@ -128,8 +113,7 @@ class MemberIntegrationTest extends IntegrationTestSupport {
             @Test
             void 회원_정보가_성공적으로_수정된다() {
                 Member member = memberRepository.save(MemberFixture.createTestMember());
-                MemberRegisterRequest request =
-                        MemberRequestFixture.createMemberRegisterRequestWithArtists(Collections.emptyList());
+                MemberRegisterRequest request = MemberRequestFixture.createMemberRegisterRequest();
 
                 memberService.updateMemberInfo(request, member);
 
@@ -137,53 +121,6 @@ class MemberIntegrationTest extends IntegrationTestSupport {
                     softly.assertThat(member.getMemberInfo().getNickname()).isEqualTo(request.nickname());
                     softly.assertThat(member.getMemberInfo().getIntroduce()).isEqualTo(request.introduce());
                 });
-            }
-        }
-    }
-
-    @Nested
-    @DisplayName("관심 아티스트 수정")
-    class Describe_관심_아티스트_수정 {
-
-        @Nested
-        @DisplayName("새로운 관심 아티스트를 추가할 때")
-        class Context_새로운_아티스트_추가 {
-
-            @Test
-            void 아티스트가_성공적으로_추가된다() {
-                Member member = memberRepository.save(MemberFixture.createTestMember());
-                artistJpaRepository.save(
-                        Artist.builder().id("spotifyId1").name("Artist1").build());
-                List<MemberArtistRequest> artistRequests = List.of(new MemberArtistRequest("spotifyId1", "Artist1"));
-                MemberRegisterRequest request =
-                        MemberRequestFixture.createMemberRegisterRequestWithArtists(artistRequests);
-
-                memberService.updateMemberInfo(request, member);
-
-                List<MemberArtist> saved = memberArtistRepository.findByMemberId(member.getId());
-                assertThat(saved).hasSize(1);
-                assertThat(saved.get(0).getArtistId()).isEqualTo("spotifyId1");
-            }
-        }
-
-        @Nested
-        @DisplayName("기존 관심 아티스트를 삭제할 때")
-        class Context_기존_아티스트_삭제 {
-
-            @Test
-            void 아티스트가_성공적으로_삭제된다() {
-                Member member = memberRepository.save(MemberFixture.createTestMember());
-                memberArtistRepository.save(MemberArtist.builder()
-                        .memberId(member.getId())
-                        .artistId("oldArtistId")
-                        .build());
-                MemberRegisterRequest request =
-                        MemberRequestFixture.createMemberRegisterRequestWithArtists(Collections.emptyList());
-
-                memberService.updateMemberInfo(request, member);
-
-                assertThat(memberArtistRepository.findByMemberId(member.getId()))
-                        .isEmpty();
             }
         }
     }
