@@ -1,10 +1,11 @@
 package com.backend.allreva.module.concert.concert.infra.kopis;
 
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class KopisCastnameParser {
-
-    private KopisCastnameParser() {}
 
     public static List<String> parseCastNames(final String prfcast) {
         if (prfcast == null || prfcast.isBlank()) {
