@@ -3,11 +3,9 @@ package com.backend.allreva.common.storage.upload;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.model.Image;
 import com.backend.allreva.common.storage.exception.StorageErrorCode;
-import com.backend.allreva.module.review.concert_review.application.dto.FileData;
 import io.awspring.cloud.s3.ObjectMetadata;
 import io.awspring.cloud.s3.S3Operations;
 import io.awspring.cloud.s3.S3Resource;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -69,31 +67,6 @@ public class StorageUploadService {
         }
 
         return uploadedImages;
-    }
-
-    /**
-     * 바이트 배열로 파일 업로드 (FileData)
-     *
-     * @param fileData 파일 데이터 (바이트 배열과 파일명)
-     * @return 업로드된 파일의 S3 URL을 담은 Image 객체
-     */
-    public Image uploadFromBytes(FileData fileData) {
-        if (fileData.bytes() == null || fileData.bytes().length == 0) {
-            return new Image("");
-        }
-
-        ObjectMetadata objectMetadata =
-                ObjectMetadata.builder().contentType("application/octet-stream").build();
-
-        String storeKey = generateStoreKey(fileData.filename());
-
-        try (ByteArrayInputStream inputStream = new ByteArrayInputStream(fileData.bytes())) {
-            S3Resource resource = s3Operations.upload(bucketName, storeKey, inputStream, objectMetadata);
-            return new Image(resource.getURL().toString());
-        } catch (Exception e) {
-            log.error("Failed to upload file from bytes - key: {}", storeKey, e);
-            throw new CustomException(StorageErrorCode.FILE_UPLOAD_FAILED, e);
-        }
     }
 
     /**
