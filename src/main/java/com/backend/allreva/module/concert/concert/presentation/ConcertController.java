@@ -3,15 +3,16 @@ package com.backend.allreva.module.concert.concert.presentation;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.module.concert.concert.application.ConcertService;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailResponse;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import com.backend.allreva.module.concert.concert.application.dto.RelatedConcertResponse;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -22,11 +23,19 @@ public class ConcertController implements ConcertControllerSwagger {
 
     private final ConcertService concertService;
 
-    @Operation(summary = "공연 상세 조회", description = "공연 상세 조회 API")
-    @ApiResponses(value = {@ApiResponse(responseCode = "200", content = @Content(mediaType = "application/json"))})
+    @Override
     @GetMapping("/{concertCode}")
-    public Response<ConcertDetailResponse> findConcertDetail(@PathVariable("concertCode") final String concertCode) {
-        ConcertDetailResponse detail = concertService.findDetailById(concertCode);
-        return Response.onSuccess(detail);
+    public Response<ConcertDetailResponse> getConcertDetail(
+            @NotBlank @PathVariable("concertCode") final String concertCode) {
+        return Response.onSuccess(concertService.findDetailById(concertCode));
+    }
+
+    @Override
+    @GetMapping
+    public Response<List<RelatedConcertResponse>> getRelatedConcerts(
+            @NotBlank @RequestParam final String hallCode,
+            @RequestParam(required = false) final String lastConcertCode,
+            @Positive @RequestParam(defaultValue = "3") final int pageSize) {
+        return Response.onSuccess(concertService.getRelatedConcerts(hallCode, lastConcertCode, pageSize));
     }
 }

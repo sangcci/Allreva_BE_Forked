@@ -135,4 +135,25 @@ public final class ConcertFixture {
                 .sellers(Set.of())
                 .build();
     }
+
+    public static Concert createConcertWithoutPoster(final String concertCode, final String hallCode) {
+        return Concert.builder()
+                .concertCode(concertCode)
+                .hallCode(hallCode)
+                .concertInfo(ConcertInfo.builder()
+                        .title("포스터 없는 공연")
+                        .price("price")
+                        .performStatus(ConcertStatus.IN_PROGRESS)
+                        .host("host")
+                        .dateInfo(DateInfo.builder()
+                                .startDate(LocalDate.of(2030, 12, 1))
+                                .endDate(LocalDate.of(2030, 12, 2))
+                                .timeTable("timetable")
+                                .build())
+                        .build())
+                .poster(null)
+                .detailImages(List.of())
+                .sellers(Set.of())
+                .build();
+    }
 }
