@@ -37,7 +37,8 @@ class JsonConverterIntegrationTest extends IntegrationTestSupport {
             @DisplayName("detailImages가 jsonb 컬럼에 정상 저장되고 조회된다")
             void detailImages_저장_조회() {
                 // given
-                Concert concert = Instancio.of(ConcertFixture.inProgressConcertModel()).create();
+                Concert concert =
+                        Instancio.of(ConcertFixture.inProgressConcertModel()).create();
 
                 // when
                 Concert saved = concertRepository.save(concert);
@@ -67,7 +68,8 @@ class JsonConverterIntegrationTest extends IntegrationTestSupport {
             @DisplayName("sellers가 jsonb 컬럼에 정상 저장되고 조회된다")
             void sellers_저장_조회() {
                 // given
-                Concert concert = Instancio.of(ConcertFixture.inProgressConcertModel()).create();
+                Concert concert =
+                        Instancio.of(ConcertFixture.inProgressConcertModel()).create();
 
                 // when
                 Concert saved = concertRepository.save(concert);

@@ -114,7 +114,8 @@ class MemberIntegrationTest extends IntegrationTestSupport {
             @Test
             void 회원_정보가_성공적으로_수정된다() {
                 Member member = memberRepository.save(MemberFixture.createTestMember());
-                MemberRegisterRequest request = Instancio.of(MemberRequestFixture.memberRegisterRequestModel()).create();
+                MemberRegisterRequest request = Instancio.of(MemberRequestFixture.memberRegisterRequestModel())
+                        .create();
 
                 memberService.updateMemberInfo(request, member);
 
@@ -137,7 +138,8 @@ class MemberIntegrationTest extends IntegrationTestSupport {
             @Test
             void 환불_계좌가_성공적으로_등록된다() {
                 Member member = memberRepository.save(MemberFixture.createTestMember());
-                RefundAccountRequest request = Instancio.of(MemberRequestFixture.refundAccountRequestModel()).create();
+                RefundAccountRequest request = Instancio.of(MemberRequestFixture.refundAccountRequestModel())
+                        .create();
 
                 memberService.registerRefundAccount(request, member);
 

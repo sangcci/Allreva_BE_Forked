@@ -72,7 +72,8 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
     @BeforeEach
     void setUp() {
         savedMember = memberRepository.save(MemberFixture.createTestMember());
-        Concert concert = concertJpaRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel()).create());
+        Concert concert = concertJpaRepository.save(
+                Instancio.of(ConcertFixture.inProgressConcertModel()).create());
         concertCode = concert.getConcertCode();
         doNothing().when(storageUploadService).deleteImage(any());
     }
@@ -164,8 +165,10 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
             @DisplayName("차대절 필드가 수정된다")
             void it_updates_rent_fields() {
                 var rent = rentRepository.findById(savedRentId).orElseThrow();
-                assertThat(rent.getUpRoute().getBoardingArea()).isEqualTo(updateRequest.upRoute().getBoardingArea());
-                assertThat(rent.getUpRoute().getTime()).isEqualTo(updateRequest.upRoute().getTime());
+                assertThat(rent.getUpRoute().getBoardingArea())
+                        .isEqualTo(updateRequest.upRoute().getBoardingArea());
+                assertThat(rent.getUpRoute().getTime())
+                        .isEqualTo(updateRequest.upRoute().getTime());
             }
 
             @Test
@@ -460,7 +463,8 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("참여 정보가 수정된다")
             void it_updates_participant_fields() {
-                var participant = rentParticipantJpaRepository.findById(participantId).orElseThrow();
+                var participant =
+                        rentParticipantJpaRepository.findById(participantId).orElseThrow();
                 assertThat(participant.getDepositor().getDepositorName()).isEqualTo(updateRequest.depositorName());
                 assertThat(participant.getPassengerNum()).isEqualTo(updateRequest.passengerNum());
             }

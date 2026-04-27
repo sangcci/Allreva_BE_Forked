@@ -1,7 +1,6 @@
 package com.backend.allreva.module.concert.concert.integration;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static org.instancio.Select.field;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor;
@@ -11,6 +10,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.instancio.Select.field;
 
 import com.backend.allreva.module.concert.concert.application.ConcertSyncScheduler;
 import com.backend.allreva.module.concert.concert.domain.Concert;
@@ -22,9 +22,9 @@ import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import com.backend.allreva.module.concert.place.fixture.ConcertHallFixture;
 import com.backend.allreva.support.IntegrationTestSupport;
-import org.instancio.Instancio;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import java.time.LocalDate;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;

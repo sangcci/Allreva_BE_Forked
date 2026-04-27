@@ -198,7 +198,8 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("수요조사가 소프트 삭제된다")
             void it_soft_deletes_survey() {
-                surveyService.removeSurvey(savedMember.getId(),
+                surveyService.removeSurvey(
+                        savedMember.getId(),
                         Instancio.of(SurveyFixture.surveyIdRequestModel())
                                 .set(field(SurveyIdRequest.class, "surveyId"), savedSurveyId)
                                 .create());
@@ -243,8 +244,8 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("참여자가 저장된다")
             void it_saves_participant() {
-                Long participantId = surveyService.joinSurvey(
-                        savedMember.getId(), buildJoinRequest(savedSurveyId, TARGET_DATE));
+                Long participantId =
+                        surveyService.joinSurvey(savedMember.getId(), buildJoinRequest(savedSurveyId, TARGET_DATE));
                 assertThat(participantId).isNotNull();
             }
         }
@@ -288,8 +289,8 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("참여자가 삭제된다")
             void it_deletes_participant() {
-                Long participantId = surveyService.joinSurvey(
-                        savedMember.getId(), buildJoinRequest(savedSurveyId, TARGET_DATE));
+                Long participantId =
+                        surveyService.joinSurvey(savedMember.getId(), buildJoinRequest(savedSurveyId, TARGET_DATE));
                 surveyService.cancelJoin(savedMember.getId(), participantId);
                 assertThat(surveyParticipantRepository.findById(participantId)).isEmpty();
             }
@@ -302,8 +303,8 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("접근 거부 예외가 발생한다")
             void it_throws_access_denied() {
-                Long participantId = surveyService.joinSurvey(
-                        savedMember.getId(), buildJoinRequest(savedSurveyId, TARGET_DATE));
+                Long participantId =
+                        surveyService.joinSurvey(savedMember.getId(), buildJoinRequest(savedSurveyId, TARGET_DATE));
                 Member otherMember = memberRepository.save(MemberFixture.createOtherTestMember());
                 assertThatThrownBy(() -> surveyService.cancelJoin(otherMember.getId(), participantId))
                         .isInstanceOf(CustomException.class)

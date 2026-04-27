@@ -225,7 +225,8 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
                     softly.assertThat(result).isNotNull();
                     softly.assertThat(result.hallCode()).isEqualTo(hall.getHallCode());
                     softly.assertThat(result.hallName()).isEqualTo(hall.getName());
-                    softly.assertThat(result.concertInfo().getTitle()).isEqualTo(concert.getConcertInfo().getTitle());
+                    softly.assertThat(result.concertInfo().getTitle())
+                            .isEqualTo(concert.getConcertInfo().getTitle());
                     softly.assertThat(result.sellers()).isNotEmpty();
                     softly.assertThat(result.convenienceInfo()).isNotNull();
                 });

@@ -73,7 +73,8 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
     @BeforeEach
     void setUp() {
         savedMember = memberRepository.save(MemberFixture.createTestMember());
-        Concert concert = concertJpaRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel()).create());
+        Concert concert = concertJpaRepository.save(
+                Instancio.of(ConcertFixture.inProgressConcertModel()).create());
         concertCode = concert.getConcertCode();
         doNothing().when(storageUploadService).deleteImage(any());
     }

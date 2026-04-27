@@ -74,7 +74,8 @@ class RentConcurrencyTest extends IntegrationTestSupport {
                 memberRepository.save(MemberFixture.createTestMemberWithIndex(4)),
                 memberRepository.save(MemberFixture.createTestMemberWithIndex(5)));
 
-        Concert concert = concertJpaRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel()).create());
+        Concert concert = concertJpaRepository.save(
+                Instancio.of(ConcertFixture.inProgressConcertModel()).create());
         rentId = rentService.registerRent(
                 Instancio.of(RentFixture.rentRegisterRequestModel())
                         .set(field(RentRegisterRequest.class, "concertCode"), concert.getConcertCode())
