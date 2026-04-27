@@ -1,4 +1,4 @@
-package com.backend.allreva.util.converter;
+package com.backend.allreva.common.converter;
 
 import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createTestConcert;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
