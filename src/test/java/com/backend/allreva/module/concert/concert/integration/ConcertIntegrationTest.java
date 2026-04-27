@@ -62,7 +62,8 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
 
                 // then
                 assertThat(result).hasSize(2);
-                assertThat(result).extracting(RelatedConcertResponse::concertCode)
+                assertThat(result)
+                        .extracting(RelatedConcertResponse::concertCode)
                         .containsExactlyInAnyOrder("PF0001", "PF0002");
             }
 
@@ -93,7 +94,8 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
                 List<RelatedConcertResponse> result = concertService.getRelatedConcerts("HALL-D", null, 10);
 
                 // then
-                assertThat(result).extracting(RelatedConcertResponse::concertCode)
+                assertThat(result)
+                        .extracting(RelatedConcertResponse::concertCode)
                         .containsExactly("PF0003", "PF0002", "PF0001");
             }
         }
@@ -114,7 +116,8 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
                 List<RelatedConcertResponse> result = concertService.getRelatedConcerts("HALL-E", "PF0003", 10);
 
                 // then
-                assertThat(result).extracting(RelatedConcertResponse::concertCode)
+                assertThat(result)
+                        .extracting(RelatedConcertResponse::concertCode)
                         .containsExactly("PF0002", "PF0001");
             }
         }
