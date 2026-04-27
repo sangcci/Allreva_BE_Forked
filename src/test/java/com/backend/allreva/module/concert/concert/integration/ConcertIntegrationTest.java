@@ -1,21 +1,21 @@
 package com.backend.allreva.module.concert.concert.integration;
 
-import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createConcertWithCodes;
-import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createConcertWithHallCode;
-import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createConcertWithoutPoster;
-import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createTestConcertHall;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.instancio.Select.field;
 
 import com.backend.allreva.module.concert.concert.application.ConcertService;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailResponse;
 import com.backend.allreva.module.concert.concert.application.dto.RelatedConcertResponse;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
+import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
+import com.backend.allreva.module.concert.place.fixture.ConcertHallFixture;
 import com.backend.allreva.support.IntegrationTestSupport;
 import java.util.List;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -53,9 +53,18 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
             @DisplayName("hallCode에 해당하는 공연만 반환된다")
             void hallCode에_해당하는_공연만_반환된다() {
                 // given
-                concertRepository.save(createConcertWithCodes("PF0001", "HALL-A"));
-                concertRepository.save(createConcertWithCodes("PF0002", "HALL-A"));
-                concertRepository.save(createConcertWithCodes("PF0003", "HALL-B"));
+                concertRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel())
+                        .set(field(Concert.class, "concertCode"), "PF0001")
+                        .set(field(Concert.class, "hallCode"), "HALL-A")
+                        .create());
+                concertRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel())
+                        .set(field(Concert.class, "concertCode"), "PF0002")
+                        .set(field(Concert.class, "hallCode"), "HALL-A")
+                        .create());
+                concertRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel())
+                        .set(field(Concert.class, "concertCode"), "PF0003")
+                        .set(field(Concert.class, "hallCode"), "HALL-B")
+                        .create());
 
                 // when
                 List<RelatedConcertResponse> result = concertService.getRelatedConcerts("HALL-A", null, 10);
@@ -71,9 +80,18 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
             @DisplayName("pageSize만큼만 반환된다")
             void pageSize만큼만_반환된다() {
                 // given
-                concertRepository.save(createConcertWithCodes("PF0001", "HALL-C"));
-                concertRepository.save(createConcertWithCodes("PF0002", "HALL-C"));
-                concertRepository.save(createConcertWithCodes("PF0003", "HALL-C"));
+                concertRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel())
+                        .set(field(Concert.class, "concertCode"), "PF0001")
+                        .set(field(Concert.class, "hallCode"), "HALL-C")
+                        .create());
+                concertRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel())
+                        .set(field(Concert.class, "concertCode"), "PF0002")
+                        .set(field(Concert.class, "hallCode"), "HALL-C")
+                        .create());
+                concertRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel())
+                        .set(field(Concert.class, "concertCode"), "PF0003")
+                        .set(field(Concert.class, "hallCode"), "HALL-C")
+                        .create());
 
                 // when
                 List<RelatedConcertResponse> result = concertService.getRelatedConcerts("HALL-C", null, 2);
@@ -86,9 +104,18 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
             @DisplayName("concertCode 내림차순으로 반환된다")
             void concertCode_내림차순으로_반환된다() {
                 // given
-                concertRepository.save(createConcertWithCodes("PF0001", "HALL-D"));
-                concertRepository.save(createConcertWithCodes("PF0003", "HALL-D"));
-                concertRepository.save(createConcertWithCodes("PF0002", "HALL-D"));
+                concertRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel())
+                        .set(field(Concert.class, "concertCode"), "PF0001")
+                        .set(field(Concert.class, "hallCode"), "HALL-D")
+                        .create());
+                concertRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel())
+                        .set(field(Concert.class, "concertCode"), "PF0003")
+                        .set(field(Concert.class, "hallCode"), "HALL-D")
+                        .create());
+                concertRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel())
+                        .set(field(Concert.class, "concertCode"), "PF0002")
+                        .set(field(Concert.class, "hallCode"), "HALL-D")
+                        .create());
 
                 // when
                 List<RelatedConcertResponse> result = concertService.getRelatedConcerts("HALL-D", null, 10);
@@ -108,9 +135,18 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
             @DisplayName("lastConcertCode보다 작은 concertCode의 공연만 반환된다")
             void lastConcertCode_이전_공연만_반환된다() {
                 // given
-                concertRepository.save(createConcertWithCodes("PF0001", "HALL-E"));
-                concertRepository.save(createConcertWithCodes("PF0002", "HALL-E"));
-                concertRepository.save(createConcertWithCodes("PF0003", "HALL-E"));
+                concertRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel())
+                        .set(field(Concert.class, "concertCode"), "PF0001")
+                        .set(field(Concert.class, "hallCode"), "HALL-E")
+                        .create());
+                concertRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel())
+                        .set(field(Concert.class, "concertCode"), "PF0002")
+                        .set(field(Concert.class, "hallCode"), "HALL-E")
+                        .create());
+                concertRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel())
+                        .set(field(Concert.class, "concertCode"), "PF0003")
+                        .set(field(Concert.class, "hallCode"), "HALL-E")
+                        .create());
 
                 // when
                 List<RelatedConcertResponse> result = concertService.getRelatedConcerts("HALL-E", "PF0003", 10);
@@ -130,7 +166,11 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
             @DisplayName("posterUrl이 null로 매핑된다")
             void posterUrl이_null로_매핑된다() {
                 // given
-                concertRepository.save(createConcertWithoutPoster("PF0001", "HALL-F"));
+                concertRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel())
+                        .set(field(Concert.class, "concertCode"), "PF0001")
+                        .set(field(Concert.class, "hallCode"), "HALL-F")
+                        .ignore(field(Concert.class, "poster"))
+                        .create());
 
                 // when
                 List<RelatedConcertResponse> result = concertService.getRelatedConcerts("HALL-F", null, 10);
@@ -171,8 +211,11 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
             @DisplayName("공연 상세 정보와 공연장 정보가 함께 반환된다")
             void 공연_상세_정보와_공연장_정보가_반환된다() {
                 // given
-                ConcertHall hall = concertHallRepository.save(createTestConcertHall());
-                Concert concert = concertRepository.save(createConcertWithHallCode(hall.getHallCode()));
+                ConcertHall hall = concertHallRepository.save(
+                        Instancio.of(ConcertHallFixture.concertHallModel()).create());
+                Concert concert = concertRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel())
+                        .set(field(Concert.class, "hallCode"), hall.getHallCode())
+                        .create());
 
                 // when
                 ConcertDetailResponse result = concertService.findDetailById(concert.getConcertCode());
@@ -182,7 +225,7 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
                     softly.assertThat(result).isNotNull();
                     softly.assertThat(result.hallCode()).isEqualTo(hall.getHallCode());
                     softly.assertThat(result.hallName()).isEqualTo(hall.getName());
-                    softly.assertThat(result.concertInfo().getTitle()).isEqualTo("Sample Concert");
+                    softly.assertThat(result.concertInfo().getTitle()).isEqualTo(concert.getConcertInfo().getTitle());
                     softly.assertThat(result.sellers()).isNotEmpty();
                     softly.assertThat(result.convenienceInfo()).isNotNull();
                 });

@@ -1,34 +1,39 @@
 package com.backend.allreva.module.recruitment.survey.fixture;
 
+import static org.instancio.Select.field;
+
 import com.backend.allreva.module.recruitment.survey.application.dto.JoinSurveyRequest;
 import com.backend.allreva.module.recruitment.survey.application.dto.OpenSurveyRequest;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveyIdRequest;
 import com.backend.allreva.module.recruitment.survey.application.dto.UpdateSurveyRequest;
-import com.backend.allreva.module.recruitment.survey.domain.value.BoardingType;
 import com.backend.allreva.module.recruitment.survey.domain.value.Region;
 import java.time.LocalDate;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.instancio.Instancio;
+import org.instancio.Model;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SurveyFixture {
 
-    public static OpenSurveyRequest createOpenSurveyRequest(String concertCode, List<LocalDate> dates) {
-        return new OpenSurveyRequest(
-                "테스트 수요조사", concertCode, dates, Region.서울, LocalDate.of(2030, 11, 30), 45, "테스트 수요조사 정보");
+    public static Model<OpenSurveyRequest> openSurveyRequestModel() {
+        return Instancio.of(OpenSurveyRequest.class)
+                .set(field(OpenSurveyRequest.class, "endDate"), LocalDate.of(2030, 11, 30))
+                .set(field(OpenSurveyRequest.class, "region"), Region.서울)
+                .toModel();
     }
 
-    public static UpdateSurveyRequest createUpdateSurveyRequest(Long surveyId, List<LocalDate> dates) {
-        return new UpdateSurveyRequest(
-                surveyId, "수정된 수요조사", dates, Region.서울, LocalDate.of(2030, 11, 30), 30, "수정된 정보");
+    public static Model<UpdateSurveyRequest> updateSurveyRequestModel() {
+        return Instancio.of(UpdateSurveyRequest.class)
+                .set(field(UpdateSurveyRequest.class, "endDate"), LocalDate.of(2030, 11, 30))
+                .toModel();
     }
 
-    public static SurveyIdRequest createSurveyIdRequest(Long surveyId) {
-        return new SurveyIdRequest(surveyId);
+    public static Model<SurveyIdRequest> surveyIdRequestModel() {
+        return Instancio.of(SurveyIdRequest.class).toModel();
     }
 
-    public static JoinSurveyRequest createJoinSurveyRequest(Long surveyId, LocalDate boardingDate) {
-        return new JoinSurveyRequest(surveyId, boardingDate, BoardingType.ROUND, 2, false);
+    public static Model<JoinSurveyRequest> joinSurveyRequestModel() {
+        return Instancio.of(JoinSurveyRequest.class).toModel();
     }
 }

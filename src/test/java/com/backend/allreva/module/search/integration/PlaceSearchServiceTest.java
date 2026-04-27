@@ -1,15 +1,18 @@
 package com.backend.allreva.module.search.integration;
 
-import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createConcertHall;
-import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createTestConcertHall;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.instancio.Select.field;
 
 import com.backend.allreva.module.concert.place.application.dto.ConcertHallMainResponse;
+import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
+import com.backend.allreva.module.concert.place.domain.value.Location;
+import com.backend.allreva.module.concert.place.fixture.ConcertHallFixture;
 import com.backend.allreva.module.search.application.PlaceSearchService;
 import com.backend.allreva.support.IntegrationTestSupport;
 import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
@@ -52,7 +55,10 @@ class PlaceSearchServiceTest extends IntegrationTestSupport {
             @DisplayName("해당 지역의 공연장이 반환된다")
             void 해당_지역의_공연장이_반환된다() {
                 // given
-                concertHallRepository.save(createTestConcertHall());
+                concertHallRepository.save(Instancio.of(ConcertHallFixture.concertHallModel())
+                        .set(field(Location.class, "address"), "서울특별시 종로구")
+                        .set(field(ConcertHall.class, "seatScale"), 5000)
+                        .create());
                 String address = "서울";
                 int seatScale = 0;
                 int size = 10;
@@ -76,7 +82,10 @@ class PlaceSearchServiceTest extends IntegrationTestSupport {
             @DisplayName("지정한 좌석 규모 이상의 공연장만 반환된다")
             void 지정한_좌석_규모_이상의_공연장만_반환된다() {
                 // given
-                concertHallRepository.save(createTestConcertHall());
+                concertHallRepository.save(Instancio.of(ConcertHallFixture.concertHallModel())
+                        .set(field(Location.class, "address"), "서울특별시 종로구")
+                        .set(field(ConcertHall.class, "seatScale"), 5000)
+                        .create());
                 String address = "";
                 int seatScale = 2000;
                 int size = 10;
@@ -104,7 +113,9 @@ class PlaceSearchServiceTest extends IntegrationTestSupport {
             void nextCursorId를_사용하여_다음_페이지를_조회할_수_있다() {
                 // given - 각각 다른 ID로 5개 저장
                 for (int i = 1; i <= 5; i++) {
-                    concertHallRepository.save(createConcertHall(String.format("hall-%03d", i)));
+                    concertHallRepository.save(Instancio.of(ConcertHallFixture.concertHallModel())
+                            .set(field(ConcertHall.class, "hallCode"), String.format("hall-%03d", i))
+                            .create());
                 }
                 String address = "";
                 int seatScale = 0;

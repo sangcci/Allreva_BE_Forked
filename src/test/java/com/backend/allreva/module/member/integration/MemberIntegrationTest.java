@@ -17,6 +17,7 @@ import com.backend.allreva.module.member.exception.MemberErrorCode;
 import com.backend.allreva.module.member.fixture.MemberFixture;
 import com.backend.allreva.module.member.fixture.MemberRequestFixture;
 import com.backend.allreva.support.IntegrationTestSupport;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -113,7 +114,7 @@ class MemberIntegrationTest extends IntegrationTestSupport {
             @Test
             void 회원_정보가_성공적으로_수정된다() {
                 Member member = memberRepository.save(MemberFixture.createTestMember());
-                MemberRegisterRequest request = MemberRequestFixture.createMemberRegisterRequest();
+                MemberRegisterRequest request = Instancio.of(MemberRequestFixture.memberRegisterRequestModel()).create();
 
                 memberService.updateMemberInfo(request, member);
 
@@ -136,7 +137,7 @@ class MemberIntegrationTest extends IntegrationTestSupport {
             @Test
             void 환불_계좌가_성공적으로_등록된다() {
                 Member member = memberRepository.save(MemberFixture.createTestMember());
-                RefundAccountRequest request = MemberRequestFixture.createRefundAccountRequest();
+                RefundAccountRequest request = Instancio.of(MemberRequestFixture.refundAccountRequestModel()).create();
 
                 memberService.registerRefundAccount(request, member);
 

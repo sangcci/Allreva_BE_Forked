@@ -2,6 +2,7 @@ package com.backend.allreva.module.recruitment.rent.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.instancio.Select.field;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 
@@ -16,7 +17,10 @@ import com.backend.allreva.module.recruitment.rent.application.RentService;
 import com.backend.allreva.module.recruitment.rent.application.dto.HostedRentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.JoinedRentResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentIdRequest;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentParticipantResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
 import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
@@ -29,6 +33,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -68,7 +73,7 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
     @BeforeEach
     void setUp() {
         savedMember = memberRepository.save(MemberFixture.createTestMember());
-        Concert concert = concertJpaRepository.save(ConcertFixture.createTestConcert());
+        Concert concert = concertJpaRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel()).create());
         concertCode = concert.getConcertCode();
         doNothing().when(storageUploadService).deleteImage(any());
     }
@@ -82,6 +87,21 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
         jdbcTemplate.execute("DELETE FROM member");
     }
 
+    private RentRegisterRequest buildRegisterRequest() {
+        return Instancio.of(RentFixture.rentRegisterRequestModel())
+                .set(field(RentRegisterRequest.class, "concertCode"), concertCode)
+                .set(field(RentRegisterRequest.class, "rentBoardingDateRequests"), SLOT_DATES)
+                .create();
+    }
+
+    private RentJoinRequest buildJoinRequest(final Long rentId, final LocalDate boardingDate, final int passengerNum) {
+        return Instancio.of(RentFixture.rentJoinRequestModel())
+                .set(field(RentJoinRequest.class, "rentId"), rentId)
+                .set(field(RentJoinRequest.class, "boardingDate"), boardingDate)
+                .set(field(RentJoinRequest.class, "passengerNum"), passengerNum)
+                .create();
+    }
+
     @Nested
     @DisplayName("getRentDetail 테스트")
     class Describe_getRentDetail {
@@ -90,8 +110,7 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
 
         @BeforeEach
         void setUp() {
-            savedRentId = rentService.registerRent(
-                    RentFixture.createRentRegisterRequest(concertCode, SLOT_DATES), savedMember.getId());
+            savedRentId = rentService.registerRent(buildRegisterRequest(), savedMember.getId());
         }
 
         @Nested
@@ -130,10 +149,8 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
 
             @BeforeEach
             void setUp() {
-                // rent 15개 등록, 각 rent마다 slot 3개
                 for (int i = 0; i < 15; i++) {
-                    rentService.registerRent(
-                            RentFixture.createRentRegisterRequest(concertCode, SLOT_DATES), savedMember.getId());
+                    rentService.registerRent(buildRegisterRequest(), savedMember.getId());
                 }
             }
 
@@ -147,10 +164,13 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("마감된 차대절은 목록에 포함되지 않는다")
             void it_excludes_closed_rents() {
-                // 15개 중 1개 마감
                 List<RentSummaryResponse> all = rentService.getRentSummaries(null, SortType.LATEST, null, null, 15);
                 Long firstRentId = all.get(0).rentId();
-                rentService.closeRent(RentFixture.createRentIdRequest(firstRentId), savedMember.getId());
+                rentService.closeRent(
+                        Instancio.of(RentFixture.rentIdRequestModel())
+                                .set(field(RentIdRequest.class, "rentId"), firstRentId)
+                                .create(),
+                        savedMember.getId());
 
                 List<RentSummaryResponse> result = rentService.getRentSummaries(null, SortType.LATEST, null, null, 15);
                 assertThat(result).hasSize(14);
@@ -160,12 +180,10 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("커서 기반으로 다음 페이지를 조회할 수 있다")
             void it_paginates_with_cursor() {
-                // 1페이지: 최신순 10개
                 List<RentSummaryResponse> firstPage =
                         rentService.getRentSummaries(null, SortType.LATEST, null, null, 10);
                 assertThat(firstPage).hasSize(10);
 
-                // 2페이지: 마지막 rentId를 커서로
                 Long lastId = firstPage.get(firstPage.size() - 1).rentId();
                 List<RentSummaryResponse> secondPage =
                         rentService.getRentSummaries(null, SortType.LATEST, null, lastId, 10);
@@ -186,16 +204,12 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
 
             @BeforeEach
             void setUp() {
-                // 본인 rent 15개
                 for (int i = 0; i < 15; i++) {
-                    rentService.registerRent(
-                            RentFixture.createRentRegisterRequest(concertCode, SLOT_DATES), savedMember.getId());
+                    rentService.registerRent(buildRegisterRequest(), savedMember.getId());
                 }
-                // 타인 rent 5개
                 otherMember = memberRepository.save(MemberFixture.createOtherTestMember());
                 for (int i = 0; i < 5; i++) {
-                    rentService.registerRent(
-                            RentFixture.createRentRegisterRequest(concertCode, SLOT_DATES), otherMember.getId());
+                    rentService.registerRent(buildRegisterRequest(), otherMember.getId());
                 }
             }
 
@@ -218,12 +232,10 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("커서 기반으로 다음 페이지를 조회할 수 있다")
             void it_paginates_with_cursor() {
-                // 1페이지
                 List<HostedRentSummaryResponse> firstPage =
                         rentService.getRentHostSummaries(savedMember.getId(), null, 10);
                 assertThat(firstPage).hasSize(10);
 
-                // 2페이지: 마지막 rentId를 커서로
                 Long lastId = firstPage.get(firstPage.size() - 1).rentId();
                 List<HostedRentSummaryResponse> secondPage =
                         rentService.getRentHostSummaries(savedMember.getId(), lastId, 10);
@@ -254,8 +266,7 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
 
         @BeforeEach
         void setUp() {
-            savedRentId = rentService.registerRent(
-                    RentFixture.createRentRegisterRequest(concertCode, SLOT_DATES), savedMember.getId());
+            savedRentId = rentService.registerRent(buildRegisterRequest(), savedMember.getId());
         }
 
         @Nested
@@ -264,11 +275,10 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
 
             @BeforeEach
             void setUp() {
-                // member2, member3이 TARGET_DATE에 각각 참여
                 Member member2 = memberRepository.save(MemberFixture.createTestMemberWithIndex(2));
                 Member member3 = memberRepository.save(MemberFixture.createTestMemberWithIndex(3));
-                rentService.joinRent(RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 1), member2.getId());
-                rentService.joinRent(RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 1), member3.getId());
+                rentService.joinRent(buildJoinRequest(savedRentId, TARGET_DATE, 1), member2.getId());
+                rentService.joinRent(buildJoinRequest(savedRentId, TARGET_DATE, 1), member3.getId());
             }
 
             @Test
@@ -323,23 +333,22 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
     class Describe_getJoinedRentSummaries {
 
         // rent 5개 × slot 3개(12-01, 12-02, 12-03) = 15 slot
-        // savedMember: 15 slot 전체 참여 (15건)
-        // otherMember: 15 slot 전체 참여 (15건, savedMember 조회 결과에 포함되면 안 됨)
         private final List<Long> rentIds = new ArrayList<>();
         private Member otherMember;
+        private RentRegisterRequest savedRegisterRequest;
 
         @BeforeEach
         void setUp() {
             otherMember = memberRepository.save(MemberFixture.createOtherTestMember());
+            savedRegisterRequest = buildRegisterRequest();
 
             for (int i = 0; i < 5; i++) {
-                Long rentId = rentService.registerRent(
-                        RentFixture.createRentRegisterRequest(concertCode, SLOT_DATES), savedMember.getId());
+                Long rentId = rentService.registerRent(savedRegisterRequest, savedMember.getId());
                 rentIds.add(rentId);
 
                 for (LocalDate date : SLOT_DATES) {
-                    rentService.joinRent(RentFixture.createRentJoinRequest(rentId, date, 1), savedMember.getId());
-                    rentService.joinRent(RentFixture.createRentJoinRequest(rentId, date, 1), otherMember.getId());
+                    rentService.joinRent(buildJoinRequest(rentId, date, 1), savedMember.getId());
+                    rentService.joinRent(buildJoinRequest(rentId, date, 1), otherMember.getId());
                 }
             }
         }
@@ -364,12 +373,12 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
         }
 
         @Test
-        @DisplayName("slot 정보(recruitmentCount=30, participateCount=2)가 정확히 매핑된다")
+        @DisplayName("slot 정보(recruitmentCount, participateCount=2)가 정확히 매핑된다")
         void it_maps_slot_info_correctly() {
             // savedMember + otherMember 각 1명씩 동일 slot 참여 → participateCount=2
             List<JoinedRentResponse> result = rentService.getJoinedRentSummaries(savedMember.getId(), null, 1);
             JoinedRentResponse response = result.get(0);
-            assertThat(response.recruitmentCount()).isEqualTo(30);
+            assertThat(response.recruitmentCount()).isEqualTo(savedRegisterRequest.recruitmentCount());
             assertThat(response.participateCount()).isEqualTo(2);
         }
 
@@ -408,13 +417,14 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
     class Describe_getJoinedRentDetail {
 
         private Long savedRentId;
+        private RentJoinRequest savedJoinRequest;
         private static final LocalDate TARGET_DATE = LocalDate.of(2030, 12, 1);
 
         @BeforeEach
         void setUp() {
-            savedRentId = rentService.registerRent(
-                    RentFixture.createRentRegisterRequest(concertCode, SLOT_DATES), savedMember.getId());
-            rentService.joinRent(RentFixture.createRentJoinRequest(savedRentId, TARGET_DATE, 2), savedMember.getId());
+            savedRentId = rentService.registerRent(buildRegisterRequest(), savedMember.getId());
+            savedJoinRequest = buildJoinRequest(savedRentId, TARGET_DATE, 2);
+            rentService.joinRent(savedJoinRequest, savedMember.getId());
         }
 
         @Nested
@@ -426,7 +436,7 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             void it_returns_participant_detail() {
                 RentParticipantResponse result =
                         rentService.getJoinedRentDetail(savedMember.getId(), TARGET_DATE, savedRentId);
-                assertThat(result.depositorName()).isEqualTo("홍길동");
+                assertThat(result.depositorName()).isEqualTo(savedJoinRequest.depositorName());
                 assertThat(result.passengerNum()).isEqualTo(2);
             }
         }

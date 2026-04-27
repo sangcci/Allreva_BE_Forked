@@ -1,12 +1,16 @@
 package com.backend.allreva.module.member.fixture;
 
+import static org.instancio.Select.field;
+
+import com.backend.allreva.common.model.BaseEntity;
 import com.backend.allreva.common.model.Email;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.member.domain.value.LoginProvider;
 import com.backend.allreva.module.member.domain.value.MemberRole;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.instancio.Instancio;
+import org.instancio.Model;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MemberFixture {
@@ -15,39 +19,37 @@ public final class MemberFixture {
     public static final String OTHER_EMAIL = "other@example.com";
     public static final LoginProvider PROVIDER = LoginProvider.GOOGLE;
 
+    public static Model<Member> memberModel() {
+        return Instancio.of(Member.class)
+                .ignore(field(Member.class, "id"))
+                .ignore(field(BaseEntity.class, "deletedAt"))
+                .set(field(Member.class, "memberRole"), MemberRole.USER)
+                .set(field(Member.class, "loginProvider"), LoginProvider.GOOGLE)
+                .toModel();
+    }
+
     public static Member createTestMember() {
-        return createTestMember(EMAIL, PROVIDER);
+        return Instancio.of(memberModel())
+                .set(field(Email.class, "email"), EMAIL)
+                .create();
     }
 
     public static Member createOtherTestMember() {
-        return createTestMember(OTHER_EMAIL, PROVIDER);
+        return Instancio.of(memberModel())
+                .set(field(Email.class, "email"), OTHER_EMAIL)
+                .create();
     }
 
     public static Member createTestMemberWithIndex(final int index) {
-        return createTestMember("member" + index + "@example.com", PROVIDER);
+        return Instancio.of(memberModel())
+                .set(field(Email.class, "email"), "member" + index + "@example.com")
+                .create();
     }
 
     public static Member createTestMember(final String email, final LoginProvider loginProvider) {
-        return Member.builder()
-                .email(new Email(email))
-                .memberRole(MemberRole.USER)
-                .loginProvider(loginProvider)
-                .nickname("JohnDoe")
-                .introduce("Hello, I'm John.")
-                .profileImageUrl("http://example.com/profile.jpg")
-                .build();
-    }
-
-    public static Member createMember(final Long memberId, final MemberRole memberRole) {
-        var member = Member.builder()
-                .email(Email.builder().email(EMAIL).build())
-                .nickname("testNickname")
-                .memberRole(memberRole)
-                .loginProvider(PROVIDER)
-                .introduce("introduce")
-                .profileImageUrl("https://example.com/profile.jpg")
-                .build();
-        ReflectionTestUtils.setField(member, "id", memberId);
-        return member;
+        return Instancio.of(memberModel())
+                .set(field(Email.class, "email"), email)
+                .set(field(Member.class, "loginProvider"), loginProvider)
+                .create();
     }
 }

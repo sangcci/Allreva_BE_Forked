@@ -1,29 +1,25 @@
 package com.backend.allreva.module.member.fixture;
 
-import com.backend.allreva.common.model.Image;
+import static org.instancio.Select.field;
+
 import com.backend.allreva.module.member.application.dto.MemberRegisterRequest;
 import com.backend.allreva.module.member.application.dto.RefundAccountRequest;
 import com.backend.allreva.module.member.domain.value.LoginProvider;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.instancio.Instancio;
+import org.instancio.Model;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MemberRequestFixture {
 
-    public static MemberRegisterRequest createMemberRegisterRequest() {
-        return MemberRegisterRequest.builder()
-                .email("test@email.com")
-                .nickname("testNickname")
-                .loginProvider(LoginProvider.GOOGLE)
-                .introduce("introduce")
-                .image(new Image("https://example.com/profile.jpg"))
-                .build();
+    public static Model<MemberRegisterRequest> memberRegisterRequestModel() {
+        return Instancio.of(MemberRegisterRequest.class)
+                .set(field(MemberRegisterRequest.class, "loginProvider"), LoginProvider.GOOGLE)
+                .toModel();
     }
 
-    public static RefundAccountRequest createRefundAccountRequest() {
-        return RefundAccountRequest.builder()
-                .bank("국민은행")
-                .number("123-456-789012")
-                .build();
+    public static Model<RefundAccountRequest> refundAccountRequestModel() {
+        return Instancio.of(RefundAccountRequest.class).toModel();
     }
 }

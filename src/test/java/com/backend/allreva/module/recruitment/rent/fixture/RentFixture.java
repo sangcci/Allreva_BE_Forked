@@ -1,109 +1,54 @@
 package com.backend.allreva.module.recruitment.rent.fixture;
 
-import com.backend.allreva.common.model.Image;
+import static org.instancio.Select.field;
+
 import com.backend.allreva.module.recruitment.rent.application.dto.RentIdRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinIdRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
-import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
-import com.backend.allreva.module.recruitment.rent.domain.value.BusSize;
-import com.backend.allreva.module.recruitment.rent.domain.value.BusType;
 import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
-import com.backend.allreva.module.recruitment.rent.domain.value.Route;
 import java.time.LocalDate;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.instancio.Instancio;
+import org.instancio.Model;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RentFixture {
 
-    private static final Route UP_ROUTE = Route.builder()
-            .boardingArea("서울역 앞")
-            .dropOffArea("공연장 B건물")
-            .time("10:00")
-            .build();
-    private static final Route DOWN_ROUTE = Route.builder()
-            .boardingArea("공연장 정문")
-            .dropOffArea("서울역 앞")
-            .time("22:00")
-            .build();
-
-    public static RentRegisterRequest createRentRegisterRequest(String concertCode, List<LocalDate> dates) {
-        return createRentRegisterRequest(concertCode, dates, 30);
+    public static Model<RentRegisterRequest> rentRegisterRequestModel() {
+        return Instancio.of(RentRegisterRequest.class)
+                .set(field(RentRegisterRequest.class, "endDate"), LocalDate.of(2030, 11, 30))
+                .toModel();
     }
 
-    public static RentRegisterRequest createRentRegisterRequest(
-            String concertCode, List<LocalDate> dates, int recruitmentCount) {
-        return new RentRegisterRequest(
-                concertCode,
-                "테스트 차대절",
-                "서울",
-                BoardingType.ROUND,
-                UP_ROUTE,
-                DOWN_ROUTE,
-                dates,
-                BusSize.LARGE,
-                BusType.STANDARD,
-                45,
-                50000,
-                recruitmentCount,
-                LocalDate.of(2030, 11, 30),
-                "테스트 차대절 정보",
-                new Image("https://example.com/rent.jpg"));
+    public static Model<RentUpdateRequest> rentUpdateRequestModel() {
+        return Instancio.of(RentUpdateRequest.class)
+                .set(field(RentUpdateRequest.class, "endDate"), LocalDate.of(2030, 11, 30))
+                .toModel();
     }
 
-    public static RentUpdateRequest createRentUpdateRequest(Long rentId, List<LocalDate> dates) {
-        return new RentUpdateRequest(
-                rentId,
-                "서울",
-                BoardingType.ROUND,
-                Route.builder()
-                        .boardingArea("부산역 앞")
-                        .dropOffArea("공연장 C건물")
-                        .time("09:00")
-                        .build(),
-                Route.builder()
-                        .boardingArea("공연장 정문")
-                        .dropOffArea("부산역 앞")
-                        .time("23:00")
-                        .build(),
-                dates,
-                BusSize.MEDIUM,
-                BusType.DELUXE,
-                40,
-                60000,
-                20,
-                LocalDate.of(2030, 11, 30),
-                "수정된 차대절 정보",
-                new Image("https://example.com/rent-updated.jpg"));
+    public static Model<RentJoinRequest> rentJoinRequestModel() {
+        return Instancio.of(RentJoinRequest.class)
+                .set(field(RentJoinRequest.class, "phone"), "010-1234-5678")
+                .set(field(RentJoinRequest.class, "refundType"), RefundType.REFUND)
+                .toModel();
     }
 
-    public static RentIdRequest createRentIdRequest(Long rentId) {
-        return new RentIdRequest(rentId);
+    public static Model<RentJoinUpdateRequest> rentJoinUpdateRequestModel() {
+        return Instancio.of(RentJoinUpdateRequest.class)
+                .set(field(RentJoinUpdateRequest.class, "phone"), "010-1234-5678")
+                .set(field(RentJoinUpdateRequest.class, "refundType"), RefundType.REFUND)
+                .toModel();
     }
 
-    public static RentJoinRequest createRentJoinRequest(Long rentId, LocalDate date, int passengerNum) {
-        return RentJoinRequest.builder()
-                .rentId(rentId)
-                .boardingDate(date)
-                .passengerNum(passengerNum)
-                .depositorName("홍길동")
-                .depositorTime("12:00")
-                .phone("010-1234-5678")
-                .refundType(RefundType.REFUND)
-                .refundAccount("국민은행 99999")
-                .build();
+    public static Model<RentIdRequest> rentIdRequestModel() {
+        return Instancio.of(RentIdRequest.class).toModel();
     }
 
-    public static RentJoinUpdateRequest createRentJoinUpdateRequest(final Long participantId, final LocalDate date) {
-        return new RentJoinUpdateRequest(
-                participantId, date, 3, "수정된홍길동", "15:00", "010-9999-8888", RefundType.REFUND, "신한은행 11111");
-    }
-
-    public static RentJoinIdRequest createRentJoinIdRequest(final Long participantId) {
-        return new RentJoinIdRequest(participantId);
+    public static Model<RentJoinIdRequest> rentJoinIdRequestModel() {
+        return Instancio.of(RentJoinIdRequest.class).toModel();
     }
 }

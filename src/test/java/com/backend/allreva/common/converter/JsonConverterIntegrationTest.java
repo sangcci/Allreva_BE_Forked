@@ -1,11 +1,12 @@
 package com.backend.allreva.common.converter;
 
-import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createTestConcert;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
+import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
 import com.backend.allreva.support.IntegrationTestSupport;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -36,7 +37,7 @@ class JsonConverterIntegrationTest extends IntegrationTestSupport {
             @DisplayName("detailImages가 jsonb 컬럼에 정상 저장되고 조회된다")
             void detailImages_저장_조회() {
                 // given
-                Concert concert = createTestConcert();
+                Concert concert = Instancio.of(ConcertFixture.inProgressConcertModel()).create();
 
                 // when
                 Concert saved = concertRepository.save(concert);
@@ -66,7 +67,7 @@ class JsonConverterIntegrationTest extends IntegrationTestSupport {
             @DisplayName("sellers가 jsonb 컬럼에 정상 저장되고 조회된다")
             void sellers_저장_조회() {
                 // given
-                Concert concert = createTestConcert();
+                Concert concert = Instancio.of(ConcertFixture.inProgressConcertModel()).create();
 
                 // when
                 Concert saved = concertRepository.save(concert);
