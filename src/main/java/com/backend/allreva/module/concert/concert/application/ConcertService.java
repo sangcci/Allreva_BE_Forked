@@ -8,7 +8,6 @@ import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.exception.ConcertErrorCode;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
-import com.backend.allreva.module.concert.place.exception.ConcertHallErrorCode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -40,9 +39,9 @@ public class ConcertService {
         Concert concert = concertRepository
                 .findById(concertCode)
                 .orElseThrow(() -> new CustomException(ConcertErrorCode.CONCERT_NOT_FOUND));
-        ConcertHall hall = concertHallRepository
-                .findById(concert.getHallCode())
-                .orElseThrow(() -> new CustomException(ConcertHallErrorCode.CONCERT_HALL_NOT_FOUND));
+        ConcertHall hall = concert != null
+                ? concertHallRepository.findById(concert.getHallCode()).orElse(null)
+                : null;
         return ConcertDetailResponse.from(concert, hall);
     }
 }

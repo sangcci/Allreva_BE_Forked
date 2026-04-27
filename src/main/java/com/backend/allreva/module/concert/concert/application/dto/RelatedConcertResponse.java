@@ -12,6 +12,6 @@ public record RelatedConcertResponse(
                 concert.getConcertInfo().getTitle(),
                 concert.getConcertInfo().getDateInfo().getStartDate(),
                 concert.getConcertInfo().getDateInfo().getEndDate(),
-                concert.getPoster().getUrl());
+                concert.getPoster() != null ? concert.getPoster().getUrl() : null);
     }
 }
