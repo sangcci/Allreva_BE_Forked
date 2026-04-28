@@ -1,8 +1,5 @@
 package com.backend.allreva.module.concert.concert.integration;
 
-import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createCompletedConcert;
-import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createScheduledConcert;
-import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createConcertHall;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.equalTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
@@ -13,16 +10,21 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathMatching;
 import static com.github.tomakehurst.wiremock.client.WireMock.verify;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.instancio.Select.field;
 
 import com.backend.allreva.module.concert.concert.application.ConcertSyncScheduler;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
+import com.backend.allreva.module.concert.concert.domain.value.ConcertInfo;
+import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
 import com.backend.allreva.module.concert.place.application.ConcertHallSyncScheduler;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
+import com.backend.allreva.module.concert.place.fixture.ConcertHallFixture;
 import com.backend.allreva.support.IntegrationTestSupport;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import java.time.LocalDate;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -131,7 +133,9 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
             void savesNewConcertToDb() {
                 // given
                 String concertCode = "PF001";
-                concertHallRepository.save(createConcertHall(HALL_ID));
+                concertHallRepository.save(Instancio.of(ConcertHallFixture.concertHallModel())
+                        .set(field(ConcertHall.class, "hallCode"), HALL_ID)
+                        .create());
 
                 stubFor(get(urlPathEqualTo("/openApi/restful/pblprfr"))
                         .withQueryParam("prfplccd", equalTo(HALL_ID))
@@ -165,8 +169,13 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
             void skipsCompletedConcert() {
                 // given
                 String concertCode = "PF003";
-                concertHallRepository.save(createConcertHall(HALL_ID));
-                concertRepository.save(createCompletedConcert(concertCode));
+                concertHallRepository.save(Instancio.of(ConcertHallFixture.concertHallModel())
+                        .set(field(ConcertHall.class, "hallCode"), HALL_ID)
+                        .create());
+                concertRepository.save(Instancio.of(ConcertFixture.completedConcertModel())
+                        .set(field(Concert.class, "concertCode"), concertCode)
+                        .set(field(ConcertInfo.class, "title"), "종료된 공연")
+                        .create());
 
                 stubFor(get(urlPathEqualTo("/openApi/restful/pblprfr"))
                         .withQueryParam("prfplccd", equalTo(HALL_ID))
@@ -193,8 +202,12 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
             void callsDetailAndUpdatesOnStatusTransition() {
                 // given
                 String concertCode = "PF004";
-                concertHallRepository.save(createConcertHall(HALL_ID));
-                concertRepository.save(createScheduledConcert(concertCode));
+                concertHallRepository.save(Instancio.of(ConcertHallFixture.concertHallModel())
+                        .set(field(ConcertHall.class, "hallCode"), HALL_ID)
+                        .create());
+                concertRepository.save(Instancio.of(ConcertFixture.scheduledConcertModel())
+                        .set(field(Concert.class, "concertCode"), concertCode)
+                        .create());
 
                 stubFor(get(urlPathEqualTo("/openApi/restful/pblprfr"))
                         .withQueryParam("prfplccd", equalTo(HALL_ID))
@@ -247,7 +260,9 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
             @DisplayName("공연장 정보를 DB에 업데이트한다")
             void updatesConcertHallInfoInDb() {
                 // given
-                concertHallRepository.save(createConcertHall(HALL_ID));
+                concertHallRepository.save(Instancio.of(ConcertHallFixture.concertHallModel())
+                        .set(field(ConcertHall.class, "hallCode"), HALL_ID)
+                        .create());
 
                 String updatedHallXml = """
                         <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -301,7 +316,9 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
             @DisplayName("hallId가 일치하는 공연장만 저장한다")
             void savesOnlyMatchingHalls() {
                 // given
-                concertHallRepository.save(createConcertHall(HALL_ID));
+                concertHallRepository.save(Instancio.of(ConcertHallFixture.concertHallModel())
+                        .set(field(ConcertHall.class, "hallCode"), HALL_ID)
+                        .create());
 
                 String multiHallXml = """
                         <?xml version="1.0" encoding="UTF-8" standalone="yes"?>

@@ -1,15 +1,18 @@
 package com.backend.allreva.module.search.integration;
 
-import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createConcertWithCodes;
-import static com.backend.allreva.module.concert.concert.fixture.ConcertFixture.createConcertWithHallCode;
-import static com.backend.allreva.module.concert.place.fixture.ConcertHallFixture.createConcertHall;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.instancio.Select.field;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
+import com.backend.allreva.module.concert.concert.domain.value.ConcertInfo;
+import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
+import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
+import com.backend.allreva.module.concert.place.fixture.ConcertHallFixture;
 import com.backend.allreva.module.search.application.ConcertSearchService;
 import com.backend.allreva.module.search.application.dto.ConcertMainResponse;
 import com.backend.allreva.module.search.application.dto.ConcertSearchListResponse;
@@ -18,6 +21,7 @@ import com.backend.allreva.module.search.application.dto.SortDirection;
 import com.backend.allreva.support.IntegrationTestSupport;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -55,11 +59,17 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
             @Test
             @DisplayName("검색 결과가 반환된다")
             void 검색_결과가_반환된다() {
-                // given - ConcertFixture의 hallCode "123"과 일치하는 hall 저장
+                // given
                 String hallCode = "FCMOCK01-1";
                 String concertCode = "PFMOCK001";
-                concertHallRepository.save(createConcertHall(hallCode));
-                concertRepository.save(createConcertWithHallCode(concertCode)); // title: "Sample Concert"
+                concertHallRepository.save(Instancio.of(ConcertHallFixture.concertHallModel())
+                        .set(field(ConcertHall.class, "hallCode"), hallCode)
+                        .create());
+                concertRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel())
+                        .set(field(Concert.class, "concertCode"), concertCode)
+                        .set(field(Concert.class, "hallCode"), hallCode)
+                        .set(field(ConcertInfo.class, "title"), "Sample Concert")
+                        .create());
 
                 // when
                 List<ConcertThumbnail> result = concertSearchService.searchConcertThumbnails("Sample");
@@ -84,9 +94,15 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
             void cursorId로_다음_페이지를_조회할_수_있다() {
                 // given
                 String hallCode = "FCMOCK01-1";
-                concertHallRepository.save(createConcertHall(hallCode));
+                concertHallRepository.save(Instancio.of(ConcertHallFixture.concertHallModel())
+                        .set(field(ConcertHall.class, "hallCode"), hallCode)
+                        .create());
                 for (int i = 0; i < 3; i++) {
-                    concertRepository.save(createConcertWithCodes("PFMOCK00" + i, hallCode));
+                    concertRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel())
+                            .set(field(Concert.class, "concertCode"), "PFMOCK00" + i)
+                            .set(field(Concert.class, "hallCode"), hallCode)
+                            .set(field(ConcertInfo.class, "title"), "Sample Concert")
+                            .create());
                 }
 
                 // when
@@ -122,9 +138,15 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
         void 날짜_정렬로_메인_콘서트를_조회한다() {
             // given
             String hallCode = "FCMOCK01-1";
-            concertHallRepository.save(createConcertHall(hallCode));
+            concertHallRepository.save(Instancio.of(ConcertHallFixture.concertHallModel())
+                    .set(field(ConcertHall.class, "hallCode"), hallCode)
+                    .create());
             for (int i = 0; i < 5; i++) {
-                concertRepository.save(createConcertWithCodes("PFMOCK00" + i, hallCode));
+                concertRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel())
+                        .set(field(Concert.class, "concertCode"), "PFMOCK00" + i)
+                        .set(field(Concert.class, "hallCode"), hallCode)
+                        .set(field(ConcertInfo.class, "title"), "Sample Concert")
+                        .create());
             }
 
             // when

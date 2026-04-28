@@ -2,18 +2,24 @@ package com.backend.allreva.module.recruitment.survey.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.instancio.Select.field;
 
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.module.concert.concert.domain.Concert;
+import com.backend.allreva.module.concert.concert.domain.value.DateInfo;
 import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
 import com.backend.allreva.module.concert.concert.infra.jpa.ConcertJpaRepository;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.member.domain.MemberRepository;
 import com.backend.allreva.module.member.fixture.MemberFixture;
 import com.backend.allreva.module.recruitment.survey.application.SurveyService;
+import com.backend.allreva.module.recruitment.survey.application.dto.JoinSurveyRequest;
+import com.backend.allreva.module.recruitment.survey.application.dto.OpenSurveyRequest;
 import com.backend.allreva.module.recruitment.survey.application.dto.SortType;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveyDetailResponse;
+import com.backend.allreva.module.recruitment.survey.application.dto.SurveyIdRequest;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveySummaryResponse;
+import com.backend.allreva.module.recruitment.survey.application.dto.UpdateSurveyRequest;
 import com.backend.allreva.module.recruitment.survey.domain.SurveyRepository;
 import com.backend.allreva.module.recruitment.survey.domain.participant.SurveyParticipantRepository;
 import com.backend.allreva.module.recruitment.survey.domain.value.Region;
@@ -24,6 +30,7 @@ import com.backend.allreva.module.recruitment.survey.infra.jpa.SurveyParticipant
 import com.backend.allreva.support.IntegrationTestSupport;
 import java.time.LocalDate;
 import java.util.List;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -63,7 +70,10 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
     @BeforeEach
     void setUp() {
         savedMember = memberRepository.save(MemberFixture.createTestMember());
-        Concert concert = concertJpaRepository.save(ConcertFixture.createTestConcert());
+        Concert concert = concertJpaRepository.save(Instancio.of(ConcertFixture.inProgressConcertModel())
+                .set(field(DateInfo.class, "startDate"), LocalDate.of(2030, 11, 1))
+                .set(field(DateInfo.class, "endDate"), LocalDate.of(2030, 12, 31))
+                .create());
         concertCode = concert.getConcertCode();
     }
 
@@ -75,6 +85,20 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
         jdbcTemplate.execute("DELETE FROM member");
     }
 
+    private OpenSurveyRequest buildOpenRequest() {
+        return Instancio.of(SurveyFixture.openSurveyRequestModel())
+                .set(field(OpenSurveyRequest.class, "concertCode"), concertCode)
+                .set(field(OpenSurveyRequest.class, "boardingDates"), BOARDING_DATES)
+                .create();
+    }
+
+    private JoinSurveyRequest buildJoinRequest(final Long surveyId, final LocalDate boardingDate) {
+        return Instancio.of(SurveyFixture.joinSurveyRequestModel())
+                .set(field(JoinSurveyRequest.class, "surveyId"), surveyId)
+                .set(field(JoinSurveyRequest.class, "boardingDate"), boardingDate)
+                .create();
+    }
+
     @Nested
     @DisplayName("openSurvey 테스트")
     class Describe_openSurvey {
@@ -84,24 +108,31 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
         class Context_valid_request {
 
             private Long savedSurveyId;
+            private OpenSurveyRequest savedOpenRequest;
 
             @BeforeEach
             void setUp() {
-                savedSurveyId = surveyService.openSurvey(
-                        savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertCode, BOARDING_DATES));
+                savedOpenRequest = buildOpenRequest();
+                savedSurveyId = surveyService.openSurvey(savedMember.getId(), savedOpenRequest);
             }
 
             @Test
             @DisplayName("수요조사가 저장된다")
             void it_saves_survey() {
+                // when
                 var survey = surveyRepository.findById(savedSurveyId).orElseThrow();
-                assertThat(survey.getTitle()).isEqualTo("테스트 수요조사");
+
+                // then
+                assertThat(survey.getTitle()).isEqualTo(savedOpenRequest.title());
             }
 
             @Test
             @DisplayName("탑승 날짜가 JSONB로 저장된다")
             void it_saves_boarding_dates_as_jsonb() {
+                // when
                 var survey = surveyRepository.findById(savedSurveyId).orElseThrow();
+
+                // then
                 assertThat(survey.getBoardingDates()).hasSize(2);
                 assertThat(survey.getBoardingDates()).containsAll(BOARDING_DATES);
             }
@@ -116,8 +147,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
 
         @BeforeEach
         void setUp() {
-            savedSurveyId = surveyService.openSurvey(
-                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertCode, BOARDING_DATES));
+            savedSurveyId = surveyService.openSurvey(savedMember.getId(), buildOpenRequest());
         }
 
         @Nested
@@ -127,10 +157,18 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("수요조사가 수정된다")
             void it_updates_survey() {
-                surveyService.updateSurvey(
-                        savedMember.getId(), SurveyFixture.createUpdateSurveyRequest(savedSurveyId, BOARDING_DATES));
+                // given
+                UpdateSurveyRequest updateRequest = Instancio.of(SurveyFixture.updateSurveyRequestModel())
+                        .set(field(UpdateSurveyRequest.class, "surveyId"), savedSurveyId)
+                        .set(field(UpdateSurveyRequest.class, "boardingDates"), BOARDING_DATES)
+                        .create();
+
+                // when
+                surveyService.updateSurvey(savedMember.getId(), updateRequest);
+
+                // then
                 var survey = surveyRepository.findById(savedSurveyId).orElseThrow();
-                assertThat(survey.getTitle()).isEqualTo("수정된 수요조사");
+                assertThat(survey.getTitle()).isEqualTo(updateRequest.title());
             }
         }
 
@@ -141,10 +179,15 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("접근 거부 예외가 발생한다")
             void it_throws_access_denied() {
+                // given
                 Member otherMember = memberRepository.save(MemberFixture.createOtherTestMember());
-                assertThatThrownBy(() -> surveyService.updateSurvey(
-                                otherMember.getId(),
-                                SurveyFixture.createUpdateSurveyRequest(savedSurveyId, BOARDING_DATES)))
+                UpdateSurveyRequest updateRequest = Instancio.of(SurveyFixture.updateSurveyRequestModel())
+                        .set(field(UpdateSurveyRequest.class, "surveyId"), savedSurveyId)
+                        .set(field(UpdateSurveyRequest.class, "boardingDates"), BOARDING_DATES)
+                        .create();
+
+                // when & then
+                assertThatThrownBy(() -> surveyService.updateSurvey(otherMember.getId(), updateRequest))
                         .isInstanceOf(CustomException.class)
                         .hasMessageContaining(SurveyErrorCode.SURVEY_NOT_WRITER.getMessage());
             }
@@ -159,8 +202,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
 
         @BeforeEach
         void setUp() {
-            savedSurveyId = surveyService.openSurvey(
-                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertCode, BOARDING_DATES));
+            savedSurveyId = surveyService.openSurvey(savedMember.getId(), buildOpenRequest());
         }
 
         @Nested
@@ -170,7 +212,15 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("수요조사가 소프트 삭제된다")
             void it_soft_deletes_survey() {
-                surveyService.removeSurvey(savedMember.getId(), SurveyFixture.createSurveyIdRequest(savedSurveyId));
+                // given
+                SurveyIdRequest idRequest = Instancio.of(SurveyFixture.surveyIdRequestModel())
+                        .set(field(SurveyIdRequest.class, "surveyId"), savedSurveyId)
+                        .create();
+
+                // when
+                surveyService.removeSurvey(savedMember.getId(), idRequest);
+
+                // then
                 assertThat(surveyRepository.findById(savedSurveyId)).isEmpty();
             }
         }
@@ -182,9 +232,14 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("접근 거부 예외가 발생한다")
             void it_throws_access_denied() {
+                // given
                 Member otherMember = memberRepository.save(MemberFixture.createOtherTestMember());
-                assertThatThrownBy(() -> surveyService.removeSurvey(
-                                otherMember.getId(), SurveyFixture.createSurveyIdRequest(savedSurveyId)))
+                SurveyIdRequest idRequest = Instancio.of(SurveyFixture.surveyIdRequestModel())
+                        .set(field(SurveyIdRequest.class, "surveyId"), savedSurveyId)
+                        .create();
+
+                // when & then
+                assertThatThrownBy(() -> surveyService.removeSurvey(otherMember.getId(), idRequest))
                         .isInstanceOf(CustomException.class)
                         .hasMessageContaining(SurveyErrorCode.SURVEY_NOT_WRITER.getMessage());
             }
@@ -200,8 +255,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
 
         @BeforeEach
         void setUp() {
-            savedSurveyId = surveyService.openSurvey(
-                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertCode, BOARDING_DATES));
+            savedSurveyId = surveyService.openSurvey(savedMember.getId(), buildOpenRequest());
         }
 
         @Nested
@@ -211,8 +265,11 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("참여자가 저장된다")
             void it_saves_participant() {
-                Long participantId = surveyService.joinSurvey(
-                        savedMember.getId(), SurveyFixture.createJoinSurveyRequest(savedSurveyId, TARGET_DATE));
+                // when
+                Long participantId =
+                        surveyService.joinSurvey(savedMember.getId(), buildJoinRequest(savedSurveyId, TARGET_DATE));
+
+                // then
                 assertThat(participantId).isNotNull();
             }
         }
@@ -223,15 +280,15 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
 
             @BeforeEach
             void setUp() {
-                surveyService.joinSurvey(
-                        savedMember.getId(), SurveyFixture.createJoinSurveyRequest(savedSurveyId, TARGET_DATE));
+                surveyService.joinSurvey(savedMember.getId(), buildJoinRequest(savedSurveyId, TARGET_DATE));
             }
 
             @Test
             @DisplayName("중복 참여 예외가 발생한다")
             void it_throws_already_exists() {
+                // when & then
                 assertThatThrownBy(() -> surveyService.joinSurvey(
-                                savedMember.getId(), SurveyFixture.createJoinSurveyRequest(savedSurveyId, TARGET_DATE)))
+                                savedMember.getId(), buildJoinRequest(savedSurveyId, TARGET_DATE)))
                         .isInstanceOf(CustomException.class)
                         .hasMessageContaining(SurveyErrorCode.SURVEY_JOIN_ALREADY_EXISTS.getMessage());
             }
@@ -247,8 +304,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
 
         @BeforeEach
         void setUp() {
-            savedSurveyId = surveyService.openSurvey(
-                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertCode, BOARDING_DATES));
+            savedSurveyId = surveyService.openSurvey(savedMember.getId(), buildOpenRequest());
         }
 
         @Nested
@@ -258,9 +314,14 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("참여자가 삭제된다")
             void it_deletes_participant() {
-                Long participantId = surveyService.joinSurvey(
-                        savedMember.getId(), SurveyFixture.createJoinSurveyRequest(savedSurveyId, TARGET_DATE));
+                // given
+                Long participantId =
+                        surveyService.joinSurvey(savedMember.getId(), buildJoinRequest(savedSurveyId, TARGET_DATE));
+
+                // when
                 surveyService.cancelJoin(savedMember.getId(), participantId);
+
+                // then
                 assertThat(surveyParticipantRepository.findById(participantId)).isEmpty();
             }
         }
@@ -272,9 +333,12 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("접근 거부 예외가 발생한다")
             void it_throws_access_denied() {
-                Long participantId = surveyService.joinSurvey(
-                        savedMember.getId(), SurveyFixture.createJoinSurveyRequest(savedSurveyId, TARGET_DATE));
+                // given
+                Long participantId =
+                        surveyService.joinSurvey(savedMember.getId(), buildJoinRequest(savedSurveyId, TARGET_DATE));
                 Member otherMember = memberRepository.save(MemberFixture.createOtherTestMember());
+
+                // when & then
                 assertThatThrownBy(() -> surveyService.cancelJoin(otherMember.getId(), participantId))
                         .isInstanceOf(CustomException.class)
                         .hasMessageContaining(SurveyErrorCode.SURVEY_JOIN_ACCESS_DENIED.getMessage());
@@ -290,8 +354,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
 
         @BeforeEach
         void setUp() {
-            savedSurveyId = surveyService.openSurvey(
-                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertCode, BOARDING_DATES));
+            savedSurveyId = surveyService.openSurvey(savedMember.getId(), buildOpenRequest());
         }
 
         @Nested
@@ -301,7 +364,10 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("상세 정보가 반환된다")
             void it_returns_detail() {
+                // when
                 SurveyDetailResponse detail = surveyService.findSurveyDetail(savedSurveyId);
+
+                // then
                 assertThat(detail).isNotNull();
             }
         }
@@ -313,6 +379,7 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("NOT_FOUND 예외가 발생한다")
             void it_throws_not_found() {
+                // when & then
                 assertThatThrownBy(() -> surveyService.findSurveyDetail(999L))
                         .isInstanceOf(CustomException.class)
                         .hasMessageContaining(SurveyErrorCode.SURVEY_NOT_FOUND.getMessage());
@@ -326,26 +393,30 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
 
         @BeforeEach
         void setUp() {
-            surveyService.openSurvey(
-                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertCode, BOARDING_DATES));
+            surveyService.openSurvey(savedMember.getId(), buildOpenRequest());
         }
 
         @Test
         @DisplayName("지역 필터링이 동작한다")
         void it_filters_by_region() {
+            // when
             List<SurveySummaryResponse> seoulResults =
                     surveyService.findSurveyList(Region.서울, SortType.LATEST, null, null, 10);
-            assertThat(seoulResults).isNotEmpty();
-
             List<SurveySummaryResponse> busanResults =
                     surveyService.findSurveyList(Region.부산, SortType.LATEST, null, null, 10);
+
+            // then
+            assertThat(seoulResults).isNotEmpty();
             assertThat(busanResults).isEmpty();
         }
 
         @Test
         @DisplayName("최신순 정렬로 목록이 반환된다")
         void it_sorts_by_latest() {
+            // when
             List<SurveySummaryResponse> results = surveyService.findSurveyList(null, SortType.LATEST, null, null, 10);
+
+            // then
             assertThat(results).isNotEmpty();
         }
     }
@@ -356,18 +427,21 @@ class SurveyIntegrationTest extends IntegrationTestSupport {
 
         @BeforeEach
         void setUp() {
-            surveyService.openSurvey(
-                    savedMember.getId(), SurveyFixture.createOpenSurveyRequest(concertCode, BOARDING_DATES));
+            surveyService.openSurvey(savedMember.getId(), buildOpenRequest());
         }
 
         @Test
         @DisplayName("개설자의 수요조사 목록이 반환된다")
         void it_returns_own_surveys() {
-            var ownSurveys = surveyService.findCreatedSurveyList(savedMember.getId(), null, null, 10);
-            assertThat(ownSurveys).isNotEmpty();
-
+            // given
             Member otherMember = memberRepository.save(MemberFixture.createOtherTestMember());
+
+            // when
+            var ownSurveys = surveyService.findCreatedSurveyList(savedMember.getId(), null, null, 10);
             var otherSurveys = surveyService.findCreatedSurveyList(otherMember.getId(), null, null, 10);
+
+            // then
+            assertThat(ownSurveys).isNotEmpty();
             assertThat(otherSurveys).isEmpty();
         }
     }

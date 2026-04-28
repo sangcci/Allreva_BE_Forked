@@ -2,6 +2,7 @@ package com.backend.allreva.module.recruitment.rent.integration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.instancio.Select.field;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 
@@ -13,6 +14,8 @@ import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.member.domain.MemberRepository;
 import com.backend.allreva.module.member.fixture.MemberFixture;
 import com.backend.allreva.module.recruitment.rent.application.RentService;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinRequest;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
 import com.backend.allreva.module.recruitment.rent.fixture.RentFixture;
 import com.backend.allreva.module.recruitment.rent.infra.jpa.RentBoardingSlotJpaRepository;
 import com.backend.allreva.module.recruitment.rent.infra.jpa.RentJpaRepository;
@@ -24,6 +27,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -70,10 +74,14 @@ class RentConcurrencyTest extends IntegrationTestSupport {
                 memberRepository.save(MemberFixture.createTestMemberWithIndex(4)),
                 memberRepository.save(MemberFixture.createTestMemberWithIndex(5)));
 
-        Concert concert = concertJpaRepository.save(ConcertFixture.createTestConcert());
+        Concert concert = concertJpaRepository.save(
+                Instancio.of(ConcertFixture.inProgressConcertModel()).create());
         rentId = rentService.registerRent(
-                RentFixture.createRentRegisterRequest(
-                        concert.getConcertCode(), List.of(BOARDING_DATE), RECRUITMENT_COUNT),
+                Instancio.of(RentFixture.rentRegisterRequestModel())
+                        .set(field(RentRegisterRequest.class, "concertCode"), concert.getConcertCode())
+                        .set(field(RentRegisterRequest.class, "rentBoardingDateRequests"), List.of(BOARDING_DATE))
+                        .set(field(RentRegisterRequest.class, "recruitmentCount"), RECRUITMENT_COUNT)
+                        .create(),
                 members.get(0).getId());
     }
 
@@ -106,7 +114,13 @@ class RentConcurrencyTest extends IntegrationTestSupport {
                 ready.countDown();
                 try {
                     start.await();
-                    rentService.joinRent(RentFixture.createRentJoinRequest(rentId, BOARDING_DATE, 1), memberId);
+                    rentService.joinRent(
+                            Instancio.of(RentFixture.rentJoinRequestModel())
+                                    .set(field(RentJoinRequest.class, "rentId"), rentId)
+                                    .set(field(RentJoinRequest.class, "boardingDate"), BOARDING_DATE)
+                                    .set(field(RentJoinRequest.class, "passengerNum"), 1)
+                                    .create(),
+                            memberId);
                     successCount.incrementAndGet();
                 } catch (CustomException e) {
                     failCount.incrementAndGet();

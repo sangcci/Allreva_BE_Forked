@@ -17,6 +17,7 @@ import com.backend.allreva.module.member.exception.MemberErrorCode;
 import com.backend.allreva.module.member.fixture.MemberFixture;
 import com.backend.allreva.module.member.fixture.MemberRequestFixture;
 import com.backend.allreva.support.IntegrationTestSupport;
+import org.instancio.Instancio;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -48,11 +49,14 @@ class MemberIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void 닉네임이_user_로_시작하는_랜덤값으로_저장된다() {
+                // given
                 OAuthRegisterRequest request = new OAuthRegisterRequest(
                         "newuser@kakao.com", LoginProvider.KAKAO, "https://example.com/profile.jpg");
 
+                // when
                 Member saved = memberService.registerByOAuth(request);
 
+                // then
                 assertThat(saved.getMemberInfo().getNickname()).startsWith("user-");
                 assertThat(memberRepository.findById(saved.getId())).isPresent();
             }
@@ -64,10 +68,12 @@ class MemberIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void DUPLICATE_OAUTH_MEMBER_예외가_발생한다() {
+                // given
                 memberRepository.save(MemberFixture.createTestMember(MemberFixture.EMAIL, LoginProvider.KAKAO));
                 OAuthRegisterRequest request = new OAuthRegisterRequest(
                         MemberFixture.EMAIL, LoginProvider.KAKAO, "https://example.com/profile.jpg");
 
+                // when & then
                 assertThatThrownBy(() -> memberService.registerByOAuth(request))
                         .isInstanceOf(CustomException.class)
                         .hasFieldOrPropertyWithValue("errorCode", MemberErrorCode.DUPLICATE_OAUTH_MEMBER);
@@ -85,18 +91,25 @@ class MemberIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void 중복된_닉네임이_있으면_true를_반환한다() {
+                // given
                 Member saved = memberRepository.save(MemberFixture.createTestMember());
                 String existingNickname = saved.getMemberInfo().getNickname();
 
+                // when
                 NicknameDuplication result = memberService.isDuplicatedNickname(existingNickname);
 
+                // then
                 assertThat(result.isDuplicated()).isTrue();
             }
 
             @Test
             void 중복된_닉네임이_없으면_false를_반환한다() {
+                // given: DB에 해당 닉네임 없음
+
+                // when
                 NicknameDuplication result = memberService.isDuplicatedNickname("nonexistentNickname");
 
+                // then
                 assertThat(result.isDuplicated()).isFalse();
             }
         }
@@ -112,11 +125,15 @@ class MemberIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void 회원_정보가_성공적으로_수정된다() {
+                // given
                 Member member = memberRepository.save(MemberFixture.createTestMember());
-                MemberRegisterRequest request = MemberRequestFixture.createMemberRegisterRequest();
+                MemberRegisterRequest request = Instancio.of(MemberRequestFixture.memberRegisterRequestModel())
+                        .create();
 
+                // when
                 memberService.updateMemberInfo(request, member);
 
+                // then
                 assertSoftly(softly -> {
                     softly.assertThat(member.getMemberInfo().getNickname()).isEqualTo(request.nickname());
                     softly.assertThat(member.getMemberInfo().getIntroduce()).isEqualTo(request.introduce());
@@ -135,11 +152,15 @@ class MemberIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void 환불_계좌가_성공적으로_등록된다() {
+                // given
                 Member member = memberRepository.save(MemberFixture.createTestMember());
-                RefundAccountRequest request = MemberRequestFixture.createRefundAccountRequest();
+                RefundAccountRequest request = Instancio.of(MemberRequestFixture.refundAccountRequestModel())
+                        .create();
 
+                // when
                 memberService.registerRefundAccount(request, member);
 
+                // then
                 assertSoftly(softly -> {
                     softly.assertThat(member.getRefundAccount().getBank()).isEqualTo(request.bank());
                     softly.assertThat(member.getRefundAccount().getNumber()).isEqualTo(request.number());
@@ -153,11 +174,14 @@ class MemberIntegrationTest extends IntegrationTestSupport {
 
             @Test
             void 환불_계좌가_성공적으로_삭제된다() {
+                // given
                 Member member = memberRepository.save(MemberFixture.createTestMember());
                 member.setRefundAccount("국민은행", "123-456-789");
 
+                // when
                 memberService.deleteRefundAccount(member);
 
+                // then
                 assertSoftly(softly -> {
                     softly.assertThat(member.getRefundAccount().getBank()).isEmpty();
                     softly.assertThat(member.getRefundAccount().getNumber()).isEmpty();
