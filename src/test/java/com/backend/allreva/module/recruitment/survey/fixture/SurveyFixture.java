@@ -6,6 +6,7 @@ import com.backend.allreva.module.recruitment.survey.application.dto.JoinSurveyR
 import com.backend.allreva.module.recruitment.survey.application.dto.OpenSurveyRequest;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveyIdRequest;
 import com.backend.allreva.module.recruitment.survey.application.dto.UpdateSurveyRequest;
+import com.backend.allreva.module.recruitment.survey.domain.value.BoardingType;
 import com.backend.allreva.module.recruitment.survey.domain.value.Region;
 import java.time.LocalDate;
 import lombok.AccessLevel;
@@ -20,6 +21,7 @@ public final class SurveyFixture {
         return Instancio.of(OpenSurveyRequest.class)
                 .set(field(OpenSurveyRequest.class, "endDate"), LocalDate.of(2030, 11, 30))
                 .set(field(OpenSurveyRequest.class, "region"), Region.서울)
+                .set(field(OpenSurveyRequest.class, "maxPassenger"), 1)
                 .toModel();
     }
 
@@ -34,6 +36,9 @@ public final class SurveyFixture {
     }
 
     public static Model<JoinSurveyRequest> joinSurveyRequestModel() {
-        return Instancio.of(JoinSurveyRequest.class).toModel();
+        return Instancio.of(JoinSurveyRequest.class)
+                .set(field(JoinSurveyRequest.class, "boardingType"), BoardingType.ROUND)
+                .set(field(JoinSurveyRequest.class, "passengerNum"), 1)
+                .toModel();
     }
 }

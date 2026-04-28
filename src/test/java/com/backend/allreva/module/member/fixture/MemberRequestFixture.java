@@ -2,6 +2,7 @@ package com.backend.allreva.module.member.fixture;
 
 import static org.instancio.Select.field;
 
+import com.backend.allreva.common.model.Image;
 import com.backend.allreva.module.member.application.dto.MemberRegisterRequest;
 import com.backend.allreva.module.member.application.dto.RefundAccountRequest;
 import com.backend.allreva.module.member.domain.value.LoginProvider;
@@ -16,6 +17,7 @@ public final class MemberRequestFixture {
     public static Model<MemberRegisterRequest> memberRegisterRequestModel() {
         return Instancio.of(MemberRegisterRequest.class)
                 .set(field(MemberRegisterRequest.class, "loginProvider"), LoginProvider.GOOGLE)
+                .set(field(MemberRegisterRequest.class, "image"), new Image("https://example.com/profile.png"))
                 .toModel();
     }
 

@@ -22,7 +22,6 @@ import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinUpdat
 import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.domain.RentRepository;
-import com.backend.allreva.module.recruitment.rent.domain.participant.RentParticipantRepository;
 import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
 import com.backend.allreva.module.recruitment.rent.fixture.RentFixture;
 import com.backend.allreva.module.recruitment.rent.infra.jpa.RentBoardingSlotJpaRepository;
@@ -49,9 +48,6 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
 
     @Autowired
     private RentRepository rentRepository;
-
-    @Autowired
-    private RentParticipantRepository rentParticipantRepository;
 
     @Autowired
     private RentJpaRepository rentJpaRepository;
