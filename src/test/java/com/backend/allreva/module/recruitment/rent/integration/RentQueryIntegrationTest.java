@@ -121,7 +121,10 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("탑승 날짜 3개와 concert 정보가 포함된 상세가 반환된다")
             void it_returns_detail_with_concert_info() {
+                // when
                 RentDetailResponse detail = rentService.getRentDetail(savedRentId);
+
+                // then
                 assertThat(detail.boardingDates()).hasSize(3);
             }
         }
@@ -133,6 +136,7 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("NOT_FOUND 예외가 발생한다")
             void it_throws_not_found() {
+                // when & then
                 assertThatThrownBy(() -> rentService.getRentDetail(999L))
                         .isInstanceOf(CustomException.class)
                         .hasMessageContaining(RentErrorCode.RENT_NOT_FOUND.getMessage());
@@ -158,13 +162,17 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("pageSize=10으로 조회하면 10개가 반환된다")
             void it_includes_open_rents() {
+                // when
                 List<RentSummaryResponse> result = rentService.getRentSummaries(null, SortType.LATEST, null, null, 10);
+
+                // then
                 assertThat(result).hasSize(10);
             }
 
             @Test
             @DisplayName("마감된 차대절은 목록에 포함되지 않는다")
             void it_excludes_closed_rents() {
+                // given
                 List<RentSummaryResponse> all = rentService.getRentSummaries(null, SortType.LATEST, null, null, 15);
                 Long firstRentId = all.get(0).rentId();
                 rentService.closeRent(
@@ -173,7 +181,10 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
                                 .create(),
                         savedMember.getId());
 
+                // when
                 List<RentSummaryResponse> result = rentService.getRentSummaries(null, SortType.LATEST, null, null, 15);
+
+                // then
                 assertThat(result).hasSize(14);
                 assertThat(result).noneMatch(r -> r.rentId().equals(firstRentId));
             }
@@ -181,13 +192,17 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("커서 기반으로 다음 페이지를 조회할 수 있다")
             void it_paginates_with_cursor() {
+                // given
                 List<RentSummaryResponse> firstPage =
                         rentService.getRentSummaries(null, SortType.LATEST, null, null, 10);
                 assertThat(firstPage).hasSize(10);
 
+                // when
                 Long lastId = firstPage.get(firstPage.size() - 1).rentId();
                 List<RentSummaryResponse> secondPage =
                         rentService.getRentSummaries(null, SortType.LATEST, null, lastId, 10);
+
+                // then
                 assertThat(secondPage).hasSize(5);
             }
         }
@@ -217,29 +232,39 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("본인이 주최한 차대절만 반환되고 타인 차대절은 포함되지 않는다")
             void it_returns_only_own_rents() {
+                // when
                 List<HostedRentSummaryResponse> result =
                         rentService.getRentHostSummaries(savedMember.getId(), null, 20);
+
+                // then
                 assertThat(result).hasSize(15);
             }
 
             @Test
             @DisplayName("pageSize=10으로 조회하면 10개가 반환된다")
             void it_paginates_first_page() {
+                // when
                 List<HostedRentSummaryResponse> result =
                         rentService.getRentHostSummaries(savedMember.getId(), null, 10);
+
+                // then
                 assertThat(result).hasSize(10);
             }
 
             @Test
             @DisplayName("커서 기반으로 다음 페이지를 조회할 수 있다")
             void it_paginates_with_cursor() {
+                // given
                 List<HostedRentSummaryResponse> firstPage =
                         rentService.getRentHostSummaries(savedMember.getId(), null, 10);
                 assertThat(firstPage).hasSize(10);
 
+                // when
                 Long lastId = firstPage.get(firstPage.size() - 1).rentId();
                 List<HostedRentSummaryResponse> secondPage =
                         rentService.getRentHostSummaries(savedMember.getId(), lastId, 10);
+
+                // then
                 assertThat(secondPage).hasSize(5);
             }
         }
@@ -251,8 +276,11 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("빈 목록이 반환된다")
             void it_returns_empty_list() {
+                // when
                 List<HostedRentSummaryResponse> result =
                         rentService.getRentHostSummaries(savedMember.getId(), null, 10);
+
+                // then
                 assertThat(result).isEmpty();
             }
         }
@@ -285,17 +313,25 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("해당 날짜의 참여자 목록이 반환된다")
             void it_returns_participants_of_date() {
+                // when
                 List<RentParticipantResponse> result =
                         rentService.getRentHostDetail(savedMember.getId(), TARGET_DATE, savedRentId);
+
+                // then
                 assertThat(result).hasSize(2);
             }
 
             @Test
             @DisplayName("다른 날짜의 참여자는 포함되지 않는다")
             void it_excludes_other_date_participants() {
+                // given
                 LocalDate otherDate = LocalDate.of(2030, 12, 2);
+
+                // when
                 List<RentParticipantResponse> result =
                         rentService.getRentHostDetail(savedMember.getId(), otherDate, savedRentId);
+
+                // then
                 assertThat(result).isEmpty();
             }
         }
@@ -307,7 +343,10 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("NOT_FOUND 예외가 발생한다")
             void it_throws_not_found() {
+                // given
                 Member otherMember = memberRepository.save(MemberFixture.createOtherTestMember());
+
+                // when & then
                 assertThatThrownBy(() -> rentService.getRentHostDetail(otherMember.getId(), TARGET_DATE, savedRentId))
                         .isInstanceOf(CustomException.class)
                         .hasMessageContaining(RentErrorCode.RENT_NOT_FOUND.getMessage());
@@ -321,7 +360,10 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("NOT_FOUND 예외가 발생한다")
             void it_throws_not_found() {
+                // given
                 LocalDate invalidDate = LocalDate.of(2030, 12, 31);
+
+                // when & then
                 assertThatThrownBy(() -> rentService.getRentHostDetail(savedMember.getId(), invalidDate, savedRentId))
                         .isInstanceOf(CustomException.class)
                         .hasMessageContaining(RentErrorCode.RENT_NOT_FOUND.getMessage());
@@ -357,28 +399,37 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
         @Test
         @DisplayName("pageSize=10으로 조회하면 10개가 반환된다")
         void it_returns_first_page() {
+            // when
             List<JoinedRentResponse> result = rentService.getJoinedRentSummaries(savedMember.getId(), null, 10);
+
+            // then
             assertThat(result).hasSize(10);
         }
 
         @Test
         @DisplayName("커서 기반으로 다음 페이지를 조회할 수 있다 (1페이지=10건, 2페이지=5건)")
         void it_paginates_with_cursor() {
+            // given
             List<JoinedRentResponse> firstPage = rentService.getJoinedRentSummaries(savedMember.getId(), null, 10);
             assertThat(firstPage).hasSize(10);
 
+            // when
             Long lastParticipantId = firstPage.get(firstPage.size() - 1).rentParticipantId();
             List<JoinedRentResponse> secondPage =
                     rentService.getJoinedRentSummaries(savedMember.getId(), lastParticipantId, 10);
+
+            // then
             assertThat(secondPage).hasSize(5);
         }
 
         @Test
         @DisplayName("slot 정보(recruitmentCount, participateCount=2)가 정확히 매핑된다")
         void it_maps_slot_info_correctly() {
-            // savedMember + otherMember 각 1명씩 동일 slot 참여 → participateCount=2
+            // when
             List<JoinedRentResponse> result = rentService.getJoinedRentSummaries(savedMember.getId(), null, 1);
             JoinedRentResponse response = result.get(0);
+
+            // then (savedMember + otherMember 각 1명씩 동일 slot 참여 → participateCount=2)
             assertThat(response.recruitmentCount()).isEqualTo(savedRegisterRequest.recruitmentCount());
             assertThat(response.participateCount()).isEqualTo(2);
         }
@@ -386,7 +437,10 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
         @Test
         @DisplayName("rent별이 아닌 slot별로 반환된다 (rent 5개 × slot 3개 = 15건)")
         void it_returns_per_slot_not_per_rent() {
+            // when
             List<JoinedRentResponse> result = rentService.getJoinedRentSummaries(savedMember.getId(), null, 20);
+
+            // then
             assertThat(result).hasSize(15);
             rentIds.forEach(rentId -> {
                 long count =
@@ -398,11 +452,13 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
         @Test
         @DisplayName("타인의 참여 내역이 포함되지 않는다 (otherMember도 15건, savedMember 것과 격리)")
         void it_isolates_by_member() {
+            // when
             List<JoinedRentResponse> savedMemberResult =
                     rentService.getJoinedRentSummaries(savedMember.getId(), null, 20);
             List<JoinedRentResponse> otherMemberResult =
                     rentService.getJoinedRentSummaries(otherMember.getId(), null, 20);
 
+            // then
             assertThat(savedMemberResult).hasSize(15);
             assertThat(otherMemberResult).hasSize(15);
             assertThat(savedMemberResult)
@@ -435,8 +491,11 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("참여 상세가 반환된다")
             void it_returns_participant_detail() {
+                // when
                 RentParticipantResponse result =
                         rentService.getJoinedRentDetail(savedMember.getId(), TARGET_DATE, savedRentId);
+
+                // then
                 assertThat(result.depositorName()).isEqualTo(savedJoinRequest.depositorName());
                 assertThat(result.passengerNum()).isEqualTo(2);
             }
@@ -449,6 +508,7 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("NOT_FOUND 예외가 발생한다")
             void it_throws_not_found() {
+                // when & then
                 assertThatThrownBy(() -> rentService.getJoinedRentDetail(savedMember.getId(), TARGET_DATE, 999L))
                         .isInstanceOf(CustomException.class)
                         .hasMessageContaining(RentErrorCode.RENT_NOT_FOUND.getMessage());
@@ -462,7 +522,10 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("NOT_FOUND 예외가 발생한다")
             void it_throws_not_found_for_other_member() {
+                // given
                 Member otherMember = memberRepository.save(MemberFixture.createOtherTestMember());
+
+                // when & then
                 assertThatThrownBy(() -> rentService.getJoinedRentDetail(otherMember.getId(), TARGET_DATE, savedRentId))
                         .isInstanceOf(CustomException.class)
                         .hasMessageContaining(RentErrorCode.RENT_NOT_FOUND.getMessage());
