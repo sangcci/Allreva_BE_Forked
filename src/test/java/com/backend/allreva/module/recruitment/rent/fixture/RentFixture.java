@@ -33,7 +33,7 @@ public final class RentFixture {
                 .set(field(RentRegisterRequest.class, "upRoute"), route)
                 .set(field(RentRegisterRequest.class, "downRoute"), route)
                 .set(field(RentRegisterRequest.class, "maxPassenger"), 45)
-                .set(field(RentRegisterRequest.class, "recruitmentCount"), 1)
+                .set(field(RentRegisterRequest.class, "recruitmentCount"), 45)
                 .set(field(RentRegisterRequest.class, "image"), new Image("https://example.com/rent.png"))
                 .toModel();
     }
