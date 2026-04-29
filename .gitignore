@@ -67,3 +67,6 @@ query-optimization-test/
 
 ### Git Worktrees ###
 .worktrees/
+
+### Seed Data ###
+src/main/resources/seed/
