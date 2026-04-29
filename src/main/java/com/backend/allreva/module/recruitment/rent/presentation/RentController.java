@@ -16,7 +16,6 @@ import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterR
 import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
-import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -61,7 +60,7 @@ public class RentController implements RentControllerSwagger {
     @Override
     @PostMapping
     public Response<Long> registerRent(
-            @RequestBody @Valid final RentRegisterRequest rentRegisterRequest, @AuthMember final Member member) {
+            @RequestBody final RentRegisterRequest rentRegisterRequest, @AuthMember final Member member) {
         Long rentId = rentService.registerRent(rentRegisterRequest, member.getId());
         return Response.onSuccess(rentId);
     }
@@ -69,23 +68,21 @@ public class RentController implements RentControllerSwagger {
     @Override
     @PatchMapping
     public Response<Void> updateRent(
-            @RequestBody @Valid final RentUpdateRequest rentUpdateRequest, @AuthMember final Member member) {
+            @RequestBody final RentUpdateRequest rentUpdateRequest, @AuthMember final Member member) {
         rentService.updateRent(rentUpdateRequest, member.getId());
         return Response.onSuccess();
     }
 
     @Override
     @PatchMapping("/close")
-    public Response<Void> closeRent(
-            @RequestBody @Valid final RentIdRequest rentIdRequest, @AuthMember final Member member) {
+    public Response<Void> closeRent(@RequestBody final RentIdRequest rentIdRequest, @AuthMember final Member member) {
         rentService.closeRent(rentIdRequest, member.getId());
         return Response.onSuccess();
     }
 
     @Override
     @DeleteMapping
-    public Response<Void> deleteRent(
-            @RequestBody @Valid final RentIdRequest rentIdRequest, @AuthMember final Member member) {
+    public Response<Void> deleteRent(@RequestBody final RentIdRequest rentIdRequest, @AuthMember final Member member) {
         rentService.deleteRent(rentIdRequest, member.getId());
         return Response.onSuccess();
     }
@@ -112,7 +109,7 @@ public class RentController implements RentControllerSwagger {
     @Override
     @PostMapping("/join")
     public Response<Long> joinRent(
-            @RequestBody @Valid final RentJoinRequest rentJoinRequest, @AuthMember final Member member) {
+            @RequestBody final RentJoinRequest rentJoinRequest, @AuthMember final Member member) {
         Long participantId = rentService.joinRent(rentJoinRequest, member.getId());
         return Response.onSuccess(participantId);
     }
@@ -120,7 +117,7 @@ public class RentController implements RentControllerSwagger {
     @Override
     @PatchMapping("/join")
     public Response<Void> updateRentJoin(
-            @RequestBody @Valid final RentJoinUpdateRequest rentJoinUpdateRequest, @AuthMember final Member member) {
+            @RequestBody final RentJoinUpdateRequest rentJoinUpdateRequest, @AuthMember final Member member) {
         rentService.updateRentJoin(rentJoinUpdateRequest, member.getId());
         return Response.onSuccess();
     }
@@ -128,14 +125,14 @@ public class RentController implements RentControllerSwagger {
     @Override
     @DeleteMapping("/join")
     public Response<Void> cancelRentJoin(
-            @RequestBody @Valid final RentJoinIdRequest rentJoinIdRequest, @AuthMember final Member member) {
+            @RequestBody final RentJoinIdRequest rentJoinIdRequest, @AuthMember final Member member) {
         rentService.cancelRentJoin(rentJoinIdRequest, member.getId());
         return Response.onSuccess();
     }
 
     @Override
     @GetMapping("/me/joined")
-    public Response<List<JoinedRentResponse>> getJoinedRentSummeries(
+    public Response<List<JoinedRentResponse>> getJoinedRentSummaries(
             @AuthMember final Member member,
             @RequestParam(name = "lastId", required = false) final Long lastId,
             @RequestParam(name = "pageSize", defaultValue = "10") final int pageSize) {

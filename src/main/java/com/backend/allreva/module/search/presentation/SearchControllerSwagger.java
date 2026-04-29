@@ -26,22 +26,26 @@ public interface SearchControllerSwagger {
     Response<List<ConcertThumbnail>> searchConcertThumbnail(String query);
 
     @Operation(summary = "콘서트 검색 목록 조회", description = "무한 스크롤. 관련도 순 정렬")
-    Response<ConcertSearchListResponse> searchConcertList(@NotEmpty String query, int pageSize, String cursorCode);
+    Response<ConcertSearchListResponse> searchConcertList(
+            @NotEmpty(message = "검색어를 입력해야 합니다.") String query, int pageSize, String cursorCode);
 
     @Operation(summary = "전체 기간 콘서트 검색 목록 조회", description = "과거 포함 전체 콘서트 무한 스크롤")
-    Response<ConcertSearchListResponse> searchAllConcertList(@NotEmpty String query, int pageSize, String cursorCode);
+    Response<ConcertSearchListResponse> searchAllConcertList(
+            @NotEmpty(message = "검색어를 입력해야 합니다.") String query, int pageSize, String cursorCode);
 
     @Operation(summary = "차 대절 썸네일 검색", description = "검색어 관련도 상위 2개")
     Response<List<RentThumbnail>> searchRentThumbnail(String query);
 
     @Operation(summary = "차 대절 검색 목록 조회", description = "무한 스크롤. 관련도 순 정렬")
-    Response<RentSearchListResponse> searchRentList(@NotEmpty String query, int pageSize, Long cursorId);
+    Response<RentSearchListResponse> searchRentList(
+            @NotEmpty(message = "검색어를 입력해야 합니다.") String query, int pageSize, Long cursorId);
 
     @Operation(summary = "수요조사 썸네일 검색", description = "검색어 관련도 상위 2개")
     Response<List<SurveyThumbnail>> searchSurveyThumbnail(String query);
 
     @Operation(summary = "수요조사 검색 목록 조회", description = "무한 스크롤. 관련도 순 정렬")
-    Response<SurveySearchListResponse> searchSurveyList(@NotEmpty String query, int pageSize, Long cursorId);
+    Response<SurveySearchListResponse> searchSurveyList(
+            @NotEmpty(message = "검색어를 입력해야 합니다.") String query, int pageSize, Long cursorId);
 
     @Operation(summary = "메인 콘서트 목록 조회", description = "지역별/정렬 기준으로 콘서트 목록 조회")
     Response<ConcertMainResponse> getConcertMainList(

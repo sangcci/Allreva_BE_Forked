@@ -15,6 +15,7 @@ import com.backend.allreva.module.recruitment.survey.domain.value.Region;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
 import java.util.List;
@@ -24,11 +25,11 @@ public interface SurveyControllerSwagger {
 
     @SecurityRequirement(name = "USER")
     @Operation(summary = "수요조사 개설", description = "**[HOST]**")
-    Response<Long> openSurvey(Member member, OpenSurveyRequest openSurveyRequest);
+    Response<Long> openSurvey(Member member, @Valid OpenSurveyRequest openSurveyRequest);
 
     @SecurityRequirement(name = "USER")
     @Operation(summary = "수요조사 수정", description = "**[HOST]**")
-    Response<Void> updateSurvey(Member member, UpdateSurveyRequest updateSurveyRequest);
+    Response<Void> updateSurvey(Member member, @Valid UpdateSurveyRequest updateSurveyRequest);
 
     @SecurityRequirement(name = "USER")
     @Operation(summary = "수요조사 삭제", description = "**[HOST]**")
@@ -46,7 +47,7 @@ public interface SurveyControllerSwagger {
 
     @SecurityRequirement(name = "USER")
     @Operation(summary = "수요조사 참여", description = "**[PARTICIPANT]**")
-    Response<Long> joinSurvey(Member member, JoinSurveyRequest joinSurveyRequest);
+    Response<Long> joinSurvey(Member member, @Valid JoinSurveyRequest joinSurveyRequest);
 
     @SecurityRequirement(name = "USER")
     @Operation(summary = "수요조사 참여 취소", description = "**[PARTICIPANT]**")

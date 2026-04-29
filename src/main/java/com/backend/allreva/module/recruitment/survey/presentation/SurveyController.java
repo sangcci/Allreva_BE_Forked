@@ -16,7 +16,6 @@ import com.backend.allreva.module.recruitment.survey.application.dto.SurveySumma
 import com.backend.allreva.module.recruitment.survey.application.dto.UpdateSurveyRequest;
 import com.backend.allreva.module.recruitment.survey.domain.value.Region;
 import com.backend.allreva.module.recruitment.survey.exception.SurveyErrorCode;
-import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -41,15 +40,14 @@ public class SurveyController implements SurveyControllerSwagger {
 
     @Override
     @PostMapping
-    public Response<Long> openSurvey(
-            @AuthMember Member member, @Valid @RequestBody OpenSurveyRequest openSurveyRequest) {
+    public Response<Long> openSurvey(@AuthMember Member member, @RequestBody OpenSurveyRequest openSurveyRequest) {
         return Response.onSuccess(surveyService.openSurvey(member.getId(), openSurveyRequest));
     }
 
     @Override
     @PatchMapping
     public Response<Void> updateSurvey(
-            @AuthMember Member member, @Valid @RequestBody UpdateSurveyRequest updateSurveyRequest) {
+            @AuthMember Member member, @RequestBody UpdateSurveyRequest updateSurveyRequest) {
         surveyService.updateSurvey(member.getId(), updateSurveyRequest);
         return Response.onSuccess();
     }
@@ -89,8 +87,7 @@ public class SurveyController implements SurveyControllerSwagger {
 
     @Override
     @PostMapping("/apply")
-    public Response<Long> joinSurvey(
-            @AuthMember Member member, @Valid @RequestBody JoinSurveyRequest joinSurveyRequest) {
+    public Response<Long> joinSurvey(@AuthMember Member member, @RequestBody JoinSurveyRequest joinSurveyRequest) {
         return Response.onSuccess(surveyService.joinSurvey(member.getId(), joinSurveyRequest));
     }
 

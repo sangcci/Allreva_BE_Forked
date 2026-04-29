@@ -17,6 +17,7 @@ import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
 import java.util.List;
@@ -33,19 +34,19 @@ public interface RentControllerSwagger {
 
     @SecurityRequirement(name = "USER")
     @Operation(summary = "차 대절 등록", description = "**[HOST]**")
-    Response<Long> registerRent(RentRegisterRequest rentRegisterRequest, Member member);
+    Response<Long> registerRent(@Valid RentRegisterRequest rentRegisterRequest, Member member);
 
     @SecurityRequirement(name = "USER")
     @Operation(summary = "차 대절 수정", description = "**[HOST]**")
-    Response<Void> updateRent(RentUpdateRequest rentUpdateRequest, Member member);
+    Response<Void> updateRent(@Valid RentUpdateRequest rentUpdateRequest, Member member);
 
     @SecurityRequirement(name = "USER")
     @Operation(summary = "차 대절 마감", description = "**[HOST]**")
-    Response<Void> closeRent(RentIdRequest rentIdRequest, Member member);
+    Response<Void> closeRent(@Valid RentIdRequest rentIdRequest, Member member);
 
     @SecurityRequirement(name = "USER")
     @Operation(summary = "차 대절 삭제", description = "**[HOST]**")
-    Response<Void> deleteRent(RentIdRequest rentIdRequest, Member member);
+    Response<Void> deleteRent(@Valid RentIdRequest rentIdRequest, Member member);
 
     @SecurityRequirement(name = "USER")
     @Operation(summary = "내가 개설한 차 대절 목록 조회", description = "**[HOST]** 무한 스크롤")
@@ -58,19 +59,19 @@ public interface RentControllerSwagger {
 
     @SecurityRequirement(name = "USER")
     @Operation(summary = "차 대절 참여", description = "**[PARTICIPANT]**")
-    Response<Long> joinRent(RentJoinRequest rentJoinRequest, Member member);
+    Response<Long> joinRent(@Valid RentJoinRequest rentJoinRequest, Member member);
 
     @SecurityRequirement(name = "USER")
     @Operation(summary = "차 대절 참여 수정", description = "**[PARTICIPANT]**")
-    Response<Void> updateRentJoin(RentJoinUpdateRequest rentJoinUpdateRequest, Member member);
+    Response<Void> updateRentJoin(@Valid RentJoinUpdateRequest rentJoinUpdateRequest, Member member);
 
     @SecurityRequirement(name = "USER")
     @Operation(summary = "차 대절 참여 취소", description = "**[PARTICIPANT]**")
-    Response<Void> cancelRentJoin(RentJoinIdRequest rentJoinIdRequest, Member member);
+    Response<Void> cancelRentJoin(@Valid RentJoinIdRequest rentJoinIdRequest, Member member);
 
     @SecurityRequirement(name = "USER")
     @Operation(summary = "내가 참여한 차 대절 목록 조회", description = "**[PARTICIPANT]** 무한 스크롤")
-    Response<List<JoinedRentResponse>> getJoinedRentSummeries(Member member, Long lastId, @Min(10) int pageSize);
+    Response<List<JoinedRentResponse>> getJoinedRentSummaries(Member member, Long lastId, @Min(10) int pageSize);
 
     @SecurityRequirement(name = "USER")
     @Operation(summary = "내가 참여한 차 대절 상세 조회", description = "**[PARTICIPANT]**")
