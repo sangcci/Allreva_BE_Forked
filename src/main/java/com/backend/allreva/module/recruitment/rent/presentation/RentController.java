@@ -17,7 +17,6 @@ import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryRe
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -36,27 +35,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/rents")
-public class RentController {
+public class RentController implements RentControllerSwagger {
 
     private final RentService rentService;
 
     // Anonymous EndPoints
+    @Override
     @GetMapping("/list")
     public Response<List<RentSummaryResponse>> getRentSummaries(
             @RequestParam(name = "region", required = false) final String region,
             @RequestParam(name = "sort", defaultValue = "LATEST") final SortType sortType,
             @RequestParam(name = "lastId", required = false) final Long lastId,
             @RequestParam(name = "lastEndDate", required = false) final LocalDate lastEndDate,
-            @RequestParam(name = "pageSize", defaultValue = "10") @Min(10) final int pageSize) {
+            @RequestParam(name = "pageSize", defaultValue = "10") final int pageSize) {
         return Response.onSuccess(rentService.getRentSummaries(region, sortType, lastEndDate, lastId, pageSize));
     }
 
+    @Override
     @GetMapping("/{id}")
     public Response<RentDetailResponse> getRentDetail(@PathVariable final Long id) {
         return Response.onSuccess(rentService.getRentDetail(id));
     }
 
     // Host Endpoints
+    @Override
     @PostMapping
     public Response<Long> registerRent(
             @RequestBody @Valid final RentRegisterRequest rentRegisterRequest, @AuthMember final Member member) {
@@ -64,6 +66,7 @@ public class RentController {
         return Response.onSuccess(rentId);
     }
 
+    @Override
     @PatchMapping
     public Response<Void> updateRent(
             @RequestBody @Valid final RentUpdateRequest rentUpdateRequest, @AuthMember final Member member) {
@@ -71,6 +74,7 @@ public class RentController {
         return Response.onSuccess();
     }
 
+    @Override
     @PatchMapping("/close")
     public Response<Void> closeRent(
             @RequestBody @Valid final RentIdRequest rentIdRequest, @AuthMember final Member member) {
@@ -78,6 +82,7 @@ public class RentController {
         return Response.onSuccess();
     }
 
+    @Override
     @DeleteMapping
     public Response<Void> deleteRent(
             @RequestBody @Valid final RentIdRequest rentIdRequest, @AuthMember final Member member) {
@@ -85,14 +90,16 @@ public class RentController {
         return Response.onSuccess();
     }
 
+    @Override
     @GetMapping("/me/hosted")
     public Response<List<HostedRentSummaryResponse>> getRentHostedRentSummaries(
             @AuthMember Member member,
             @RequestParam(name = "lastId", required = false) final Long lastId,
-            @RequestParam(name = "pageSize", defaultValue = "10") @Min(10) final int pageSize) {
+            @RequestParam(name = "pageSize", defaultValue = "10") final int pageSize) {
         return Response.onSuccess(rentService.getRentHostSummaries(member.getId(), lastId, pageSize));
     }
 
+    @Override
     @GetMapping("/me/hosted/{id}")
     public Response<List<RentParticipantResponse>> getHostedRentDetail(
             @PathVariable("id") final Long rentId,
@@ -102,6 +109,7 @@ public class RentController {
     }
 
     // Participant Endpoints
+    @Override
     @PostMapping("/join")
     public Response<Long> joinRent(
             @RequestBody @Valid final RentJoinRequest rentJoinRequest, @AuthMember final Member member) {
@@ -109,6 +117,7 @@ public class RentController {
         return Response.onSuccess(participantId);
     }
 
+    @Override
     @PatchMapping("/join")
     public Response<Void> updateRentJoin(
             @RequestBody @Valid final RentJoinUpdateRequest rentJoinUpdateRequest, @AuthMember final Member member) {
@@ -116,6 +125,7 @@ public class RentController {
         return Response.onSuccess();
     }
 
+    @Override
     @DeleteMapping("/join")
     public Response<Void> cancelRentJoin(
             @RequestBody @Valid final RentJoinIdRequest rentJoinIdRequest, @AuthMember final Member member) {
@@ -123,14 +133,16 @@ public class RentController {
         return Response.onSuccess();
     }
 
+    @Override
     @GetMapping("/me/joined")
     public Response<List<JoinedRentResponse>> getJoinedRentSummeries(
             @AuthMember final Member member,
             @RequestParam(name = "lastId", required = false) final Long lastId,
-            @RequestParam(name = "pageSize", defaultValue = "10") @Min(10) final int pageSize) {
+            @RequestParam(name = "pageSize", defaultValue = "10") final int pageSize) {
         return Response.onSuccess(rentService.getJoinedRentSummaries(member.getId(), lastId, pageSize));
     }
 
+    @Override
     @GetMapping("/me/joined/{id}")
     public Response<RentParticipantResponse> getJoinedRentDetail(
             @PathVariable("id") final Long rentId,

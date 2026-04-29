@@ -4,8 +4,6 @@ import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.module.concert.concert.application.ConcertService;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailResponse;
 import com.backend.allreva.module.concert.concert.application.dto.RelatedConcertResponse;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -25,17 +23,16 @@ public class ConcertController implements ConcertControllerSwagger {
 
     @Override
     @GetMapping("/{concertCode}")
-    public Response<ConcertDetailResponse> getConcertDetail(
-            @NotBlank @PathVariable("concertCode") final String concertCode) {
+    public Response<ConcertDetailResponse> getConcertDetail(@PathVariable("concertCode") final String concertCode) {
         return Response.onSuccess(concertService.findDetailById(concertCode));
     }
 
     @Override
     @GetMapping
     public Response<List<RelatedConcertResponse>> getRelatedConcerts(
-            @NotBlank @RequestParam final String hallCode,
+            @RequestParam final String hallCode,
             @RequestParam(required = false) final String lastConcertCode,
-            @Positive @RequestParam(defaultValue = "3") final int pageSize) {
+            @RequestParam(defaultValue = "3") final int pageSize) {
         return Response.onSuccess(concertService.getRelatedConcerts(hallCode, lastConcertCode, pageSize));
     }
 }

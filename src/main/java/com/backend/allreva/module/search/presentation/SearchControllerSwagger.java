@@ -1,0 +1,52 @@
+package com.backend.allreva.module.search.presentation;
+
+import com.backend.allreva.common.web.response.Response;
+import com.backend.allreva.module.concert.place.application.dto.ConcertHallMainResponse;
+import com.backend.allreva.module.search.application.dto.ConcertMainResponse;
+import com.backend.allreva.module.search.application.dto.ConcertSearchListResponse;
+import com.backend.allreva.module.search.application.dto.ConcertThumbnail;
+import com.backend.allreva.module.search.application.dto.PopularKeywordResponse;
+import com.backend.allreva.module.search.application.dto.RentSearchListResponse;
+import com.backend.allreva.module.search.application.dto.RentThumbnail;
+import com.backend.allreva.module.search.application.dto.SortDirection;
+import com.backend.allreva.module.search.application.dto.SurveySearchListResponse;
+import com.backend.allreva.module.search.application.dto.SurveyThumbnail;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.constraints.NotEmpty;
+import java.util.List;
+
+@Tag(name = "검색 API", description = "통합 검색 관련 API")
+public interface SearchControllerSwagger {
+
+    @Operation(summary = "인기 검색어 Top 10 조회")
+    Response<List<PopularKeywordResponse>> getPopularKeywordRank();
+
+    @Operation(summary = "콘서트 썸네일 검색", description = "검색어 관련도 상위 2개")
+    Response<List<ConcertThumbnail>> searchConcertThumbnail(String query);
+
+    @Operation(summary = "콘서트 검색 목록 조회", description = "무한 스크롤. 관련도 순 정렬")
+    Response<ConcertSearchListResponse> searchConcertList(@NotEmpty String query, int pageSize, String cursorCode);
+
+    @Operation(summary = "전체 기간 콘서트 검색 목록 조회", description = "과거 포함 전체 콘서트 무한 스크롤")
+    Response<ConcertSearchListResponse> searchAllConcertList(@NotEmpty String query, int pageSize, String cursorCode);
+
+    @Operation(summary = "차 대절 썸네일 검색", description = "검색어 관련도 상위 2개")
+    Response<List<RentThumbnail>> searchRentThumbnail(String query);
+
+    @Operation(summary = "차 대절 검색 목록 조회", description = "무한 스크롤. 관련도 순 정렬")
+    Response<RentSearchListResponse> searchRentList(@NotEmpty String query, int pageSize, Long cursorId);
+
+    @Operation(summary = "수요조사 썸네일 검색", description = "검색어 관련도 상위 2개")
+    Response<List<SurveyThumbnail>> searchSurveyThumbnail(String query);
+
+    @Operation(summary = "수요조사 검색 목록 조회", description = "무한 스크롤. 관련도 순 정렬")
+    Response<SurveySearchListResponse> searchSurveyList(@NotEmpty String query, int pageSize, Long cursorId);
+
+    @Operation(summary = "메인 콘서트 목록 조회", description = "지역별/정렬 기준으로 콘서트 목록 조회")
+    Response<ConcertMainResponse> getConcertMainList(
+            String region, SortDirection sortDirection, int pageSize, String cursorCode);
+
+    @Operation(summary = "메인 공연장 목록 조회", description = "주소/좌석 기준으로 공연장 목록 조회")
+    Response<ConcertHallMainResponse> getPlaceMainList(String address, int seatScale, int pageSize, String cursorId);
+}

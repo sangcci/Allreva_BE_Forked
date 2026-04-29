@@ -3,7 +3,6 @@ package com.backend.allreva.module.concert.place.presentation;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.module.concert.place.application.ConcertHallService;
 import com.backend.allreva.module.concert.place.application.dto.ConcertHallDetailResponse;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +20,7 @@ public class ConcertHallController implements ConcertHallControllerSwagger {
 
     @Override
     @GetMapping("/{hallCode}")
-    public Response<ConcertHallDetailResponse> getConcertHallDetail(
-            @NotBlank @PathVariable("hallCode") final String hallCode) {
+    public Response<ConcertHallDetailResponse> getConcertHallDetail(@PathVariable("hallCode") final String hallCode) {
         return Response.onSuccess(concertHallService.getConcertHallDetail(hallCode));
     }
 }

@@ -6,23 +6,26 @@ import com.backend.allreva.module.notification.application.dto.NotificationIdReq
 import com.backend.allreva.module.notification.application.dto.NotificationTargetRequest;
 import com.backend.allreva.module.notification.domain.Notification;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 
-@Tag(name = "알림 조회 API")
-public interface NotificationSwagger {
+@Tag(name = "알림 API", description = "알림 관련 API")
+public interface NotificationControllerSwagger {
 
-    @Operation(summary = "사용자 알림 조회", description = """
-            알림 종류를 type에 입력해주세요. default값은 ALL입니다. lastId와 lastEndDate는 무한 스크롤을 위한 값입니다.
-                """)
+    @SecurityRequirement(name = "USER")
+    @Operation(summary = "알림 목록 조회", description = "**[회원]** 무한 스크롤. lastId 미전달 시 첫 페이지 조회")
     Response<List<Notification>> getNotifications(Member member, Long lastId, int pageSize);
 
-    @Operation(summary = "사용자 알림 읽음 표시", description = "알림을 클릭했을 경우 읽음 상태로 전환되는 API 입니다. 알림 ID로 알림을 찾아 읽음 표시로 변경됩니다.")
+    @SecurityRequirement(name = "USER")
+    @Operation(summary = "알림 읽음 처리", description = "**[회원]**")
     Response<Void> markAsRead(Member member, NotificationIdRequest notificationIdRequest);
 
-    @Operation(summary = "디바이스 토큰 등록")
+    @SecurityRequirement(name = "USER")
+    @Operation(summary = "디바이스 토큰 등록", description = "**[회원]**")
     Response<Void> registerDeviceToken(Member member, NotificationTargetRequest deviceTokenRequest);
 
-    @Operation(summary = "디바이스 토큰 삭제")
+    @SecurityRequirement(name = "USER")
+    @Operation(summary = "디바이스 토큰 삭제", description = "**[회원]**")
     Response<Void> deleteDeviceToken(Member member);
 }

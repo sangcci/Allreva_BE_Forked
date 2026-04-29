@@ -3,7 +3,6 @@ package com.backend.allreva.common.config;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import java.text.MessageFormat;
@@ -25,16 +24,13 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
-        SecurityRequirement developerRequirement = new SecurityRequirement().addList("USER");
-
         Server server1 = new Server();
         server1.setUrl(MessageFormat.format("{0}://{1}", protocol, domain));
 
         return new OpenAPI()
                 .info(new Info().title("Allreva"))
                 .servers(List.of(server1))
-                .components(new Components().addSecuritySchemes("USER", createSecurityScheme()))
-                .addSecurityItem(developerRequirement);
+                .components(new Components().addSecuritySchemes("USER", createSecurityScheme()));
     }
 
     private SecurityScheme createSecurityScheme() {
