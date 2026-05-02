@@ -6,6 +6,7 @@ import static org.instancio.Select.field;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.common.web.response.SliceResponse;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.domain.value.ConcertInfo;
@@ -14,8 +15,6 @@ import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import com.backend.allreva.module.concert.place.fixture.ConcertHallFixture;
 import com.backend.allreva.module.search.application.ConcertSearchService;
-import com.backend.allreva.module.search.application.dto.ConcertMainResponse;
-import com.backend.allreva.module.search.application.dto.ConcertSearchListResponse;
 import com.backend.allreva.module.search.application.dto.ConcertThumbnail;
 import com.backend.allreva.module.search.application.dto.SortDirection;
 import com.backend.allreva.support.IntegrationTestSupport;
@@ -72,7 +71,7 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
                         .create());
 
                 // when
-                List<ConcertThumbnail> result = concertSearchService.searchConcertThumbnails("Sample");
+                List<ConcertThumbnail> result = concertSearchService.getConcertSuggestions("Sample");
 
                 // then
                 assertThat(result).isNotEmpty();
@@ -81,7 +80,7 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
             @Test
             @DisplayName("빈 검색어인 경우 예외가 발생한다")
             void 빈_검색어인_경우_예외가_발생한다() {
-                assertThrows(CustomException.class, () -> concertSearchService.searchConcertThumbnails(""));
+                assertThrows(CustomException.class, () -> concertSearchService.getConcertSuggestions(""));
             }
         }
 
@@ -106,17 +105,17 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
                 }
 
                 // when
-                ConcertSearchListResponse page1 = concertSearchService.searchConcertList("Sample", null, 2);
-                ConcertSearchListResponse page2 =
-                        concertSearchService.searchConcertList("Sample", page1.nextCursorCode(), 2);
+                SliceResponse<ConcertThumbnail, String> page1 = concertSearchService.searchConcerts("Sample", null, 2);
+                SliceResponse<ConcertThumbnail, String> page2 =
+                        concertSearchService.searchConcerts("Sample", page1.nextCursor(), 2);
 
                 // then
                 assertSoftly(softly -> {
-                    softly.assertThat(page1.concertThumbnails()).hasSize(2);
-                    softly.assertThat(page1.nextCursorCode()).isNotNull();
-                    softly.assertThat(page2.concertThumbnails()).hasSize(1);
-                    softly.assertThat(page2.concertThumbnails().get(0))
-                            .isNotEqualTo(page1.concertThumbnails().get(0));
+                    softly.assertThat(page1.items()).hasSize(2);
+                    softly.assertThat(page1.nextCursor()).isNotNull();
+                    softly.assertThat(page2.items()).hasSize(1);
+                    softly.assertThat(page2.items().get(0))
+                            .isNotEqualTo(page1.items().get(0));
                 });
             }
 
@@ -124,7 +123,7 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
             @DisplayName("검색 결과가 없는 경우 예외가 발생한다")
             void 검색_결과가_없는_경우_예외가_발생한다() {
                 assertThrows(
-                        CustomException.class, () -> concertSearchService.searchConcertList("존재하지않는검색어12345", null, 2));
+                        CustomException.class, () -> concertSearchService.searchConcerts("존재하지않는검색어12345", null, 2));
             }
         }
     }
@@ -150,15 +149,15 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
             }
 
             // when
-            ConcertMainResponse page1 = concertSearchService.searchMainConcerts("", null, 3, SortDirection.DATE);
-            ConcertMainResponse page2 =
-                    concertSearchService.searchMainConcerts("", page1.nextCursorCode(), 3, SortDirection.DATE);
+            SliceResponse<ConcertThumbnail, String> page1 = concertSearchService.getMainConcerts("", null, 3, SortDirection.DATE);
+            SliceResponse<ConcertThumbnail, String> page2 =
+                    concertSearchService.getMainConcerts("", page1.nextCursor(), 3, SortDirection.DATE);
 
             // then
             assertSoftly(softly -> {
-                softly.assertThat(page1.concertThumbnails()).hasSize(3);
-                softly.assertThat(page2.concertThumbnails()).hasSize(2);
-                softly.assertThat(page1.concertThumbnails()).doesNotContainAnyElementsOf(page2.concertThumbnails());
+                softly.assertThat(page1.items()).hasSize(3);
+                softly.assertThat(page2.items()).hasSize(2);
+                softly.assertThat(page1.items()).doesNotContainAnyElementsOf(page2.items());
             });
         }
     }

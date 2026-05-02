@@ -32,7 +32,7 @@ class SurveySearchServiceTest extends IntegrationTestSupport {
             void 빈_검색어인_경우_예외가_발생한다() {
                 // when & then
                 assertThrows(CustomException.class, () -> {
-                    surveySearchService.searchSurveyThumbnails("");
+                    surveySearchService.getSurveySuggestions("");
                 });
             }
         }
@@ -54,7 +54,7 @@ class SurveySearchServiceTest extends IntegrationTestSupport {
 
                 // when & then
                 assertThrows(CustomException.class, () -> {
-                    surveySearchService.searchSurveyList(query, null, 2);
+                    surveySearchService.searchSurveys(query, null, 2);
                 });
             }
         }

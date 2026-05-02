@@ -1,8 +1,7 @@
 package com.backend.allreva.module.search.application;
 
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.module.search.application.dto.ConcertMainResponse;
-import com.backend.allreva.module.search.application.dto.ConcertSearchListResponse;
+import com.backend.allreva.common.web.response.SliceResponse;
 import com.backend.allreva.module.search.application.dto.ConcertThumbnail;
 import com.backend.allreva.module.search.application.dto.SortDirection;
 import com.backend.allreva.module.search.application.port.ConcertSearchRepository;
@@ -19,7 +18,7 @@ public class ConcertSearchService {
     private final ConcertSearchRepository concertSearchRepository;
     private final PopularKeywordService popularKeywordService;
 
-    public List<ConcertThumbnail> searchConcertThumbnails(final String title) {
+    public List<ConcertThumbnail> getConcertSuggestions(final String title) {
         popularKeywordService.updateKeywordCount(title);
         List<ConcertThumbnail> thumbnails = concertSearchRepository.findThumbnailsByTitle(title, 2);
         if (thumbnails.isEmpty()) {
@@ -28,26 +27,18 @@ public class ConcertSearchService {
         return thumbnails;
     }
 
-    public ConcertSearchListResponse searchConcertList(final String title, final String cursorCode, final int size) {
-        ConcertSearchListResponse response = concertSearchRepository.searchByTitle(title, cursorCode, size);
-        if (response.concertThumbnails().isEmpty()) {
+    public SliceResponse<ConcertThumbnail, String> searchConcerts(final String title, final String cursorCode, final int size) {
+        SliceResponse<ConcertThumbnail, String> response = concertSearchRepository.findAllByTitle(title, cursorCode, size);
+        if (response.items().isEmpty()) {
             throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
         }
         return response;
     }
 
-    public ConcertSearchListResponse searchAllConcertList(final String title, final String cursorCode, final int size) {
-        ConcertSearchListResponse response = concertSearchRepository.searchByTitleAll(title, cursorCode, size);
-        if (response.concertThumbnails().isEmpty()) {
-            throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
-        }
-        return response;
-    }
-
-    public ConcertMainResponse searchMainConcerts(
+    public SliceResponse<ConcertThumbnail, String> getMainConcerts(
             final String address, final String cursorCode, final int size, final SortDirection sortDirection) {
-        ConcertMainResponse response = concertSearchRepository.searchMain(address, cursorCode, size, sortDirection);
-        if (response.concertThumbnails().isEmpty()) {
+        SliceResponse<ConcertThumbnail, String> response = concertSearchRepository.findAllByAddressAndSortDirection(address, cursorCode, size, sortDirection);
+        if (response.items().isEmpty()) {
             throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
         }
         return response;

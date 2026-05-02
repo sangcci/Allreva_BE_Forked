@@ -1,20 +1,17 @@
 package com.backend.allreva.module.search.presentation;
 
 import com.backend.allreva.common.web.response.Response;
+import com.backend.allreva.common.web.response.SliceResponse;
 import com.backend.allreva.module.concert.place.application.dto.ConcertHallMainResponse;
 import com.backend.allreva.module.search.application.ConcertSearchService;
 import com.backend.allreva.module.search.application.PlaceSearchService;
 import com.backend.allreva.module.search.application.PopularKeywordService;
 import com.backend.allreva.module.search.application.RentSearchService;
 import com.backend.allreva.module.search.application.SurveySearchService;
-import com.backend.allreva.module.search.application.dto.ConcertMainResponse;
-import com.backend.allreva.module.search.application.dto.ConcertSearchListResponse;
 import com.backend.allreva.module.search.application.dto.ConcertThumbnail;
 import com.backend.allreva.module.search.application.dto.PopularKeywordResponse;
-import com.backend.allreva.module.search.application.dto.RentSearchListResponse;
 import com.backend.allreva.module.search.application.dto.RentThumbnail;
 import com.backend.allreva.module.search.application.dto.SortDirection;
-import com.backend.allreva.module.search.application.dto.SurveySearchListResponse;
 import com.backend.allreva.module.search.application.dto.SurveyThumbnail;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -43,67 +40,58 @@ public class SearchController implements SearchControllerSwagger {
     }
 
     @Override
-    @GetMapping("/concert/")
-    public Response<List<ConcertThumbnail>> searchConcertThumbnail(@RequestParam final String query) {
-        return Response.onSuccess(concertSearchService.searchConcertThumbnails(query));
+    @GetMapping("/concert/suggestions")
+    public Response<List<ConcertThumbnail>> getConcertSuggestions(@RequestParam final String query) {
+        return Response.onSuccess(concertSearchService.getConcertSuggestions(query));
     }
 
     @Override
-    @GetMapping("/concert/list")
-    public Response<ConcertSearchListResponse> searchConcertList(
+    @GetMapping("/concert")
+    public Response<SliceResponse<ConcertThumbnail, String>> searchConcerts(
             @RequestParam final String query,
             @RequestParam(defaultValue = "7") final int pageSize,
             @RequestParam(required = false) final String cursorCode) {
-        return Response.onSuccess(concertSearchService.searchConcertList(query, cursorCode, pageSize));
+        return Response.onSuccess(concertSearchService.searchConcerts(query, cursorCode, pageSize));
     }
 
     @Override
-    @GetMapping("/concert/list/all")
-    public Response<ConcertSearchListResponse> searchAllConcertList(
-            @RequestParam final String query,
-            @RequestParam(defaultValue = "7") final int pageSize,
-            @RequestParam(required = false) final String cursorCode) {
-        return Response.onSuccess(concertSearchService.searchAllConcertList(query, cursorCode, pageSize));
+    @GetMapping("/rents/suggestions")
+    public Response<List<RentThumbnail>> getRentSuggestions(@RequestParam final String query) {
+        return Response.onSuccess(rentSearchService.getRentSuggestions(query));
     }
 
     @Override
-    @GetMapping("/rents/")
-    public Response<List<RentThumbnail>> searchRentThumbnail(@RequestParam final String query) {
-        return Response.onSuccess(rentSearchService.searchRentThumbnails(query));
-    }
-
-    @Override
-    @GetMapping("/rents/list")
-    public Response<RentSearchListResponse> searchRentList(
+    @GetMapping("/rents")
+    public Response<SliceResponse<RentThumbnail, Long>> searchRents(
             @RequestParam final String query,
             @RequestParam(defaultValue = "7") final int pageSize,
             @RequestParam(required = false) final Long cursorId) {
-        return Response.onSuccess(rentSearchService.searchRentSearchList(query, cursorId, pageSize));
+        return Response.onSuccess(rentSearchService.searchRents(query, cursorId, pageSize));
     }
 
     @Override
-    @GetMapping("/surveys/")
-    public Response<List<SurveyThumbnail>> searchSurveyThumbnail(@RequestParam final String query) {
-        return Response.onSuccess(surveySearchService.searchSurveyThumbnails(query));
+    @GetMapping("/surveys/suggestions")
+    public Response<List<SurveyThumbnail>> getSurveySuggestions(@RequestParam final String query) {
+        return Response.onSuccess(surveySearchService.getSurveySuggestions(query));
     }
 
     @Override
-    @GetMapping("/surveys/list")
-    public Response<SurveySearchListResponse> searchSurveyList(
+    @GetMapping("/surveys")
+    public Response<SliceResponse<SurveyThumbnail, Long>> searchSurveys(
             @RequestParam final String query,
             @RequestParam(defaultValue = "7") final int pageSize,
             @RequestParam(required = false) final Long cursorId) {
-        return Response.onSuccess(surveySearchService.searchSurveyList(query, cursorId, pageSize));
+        return Response.onSuccess(surveySearchService.searchSurveys(query, cursorId, pageSize));
     }
 
     @Override
     @GetMapping("/concert/main")
-    public Response<ConcertMainResponse> getConcertMainList(
+    public Response<SliceResponse<ConcertThumbnail, String>> getMainConcerts(
             @RequestParam(defaultValue = "") final String region,
             @RequestParam(defaultValue = "DATE") final SortDirection sortDirection,
             @RequestParam(defaultValue = "7") final int pageSize,
             @RequestParam(required = false) final String cursorCode) {
-        return Response.onSuccess(concertSearchService.searchMainConcerts(region, cursorCode, pageSize, sortDirection));
+        return Response.onSuccess(concertSearchService.getMainConcerts(region, cursorCode, pageSize, sortDirection));
     }
 
     @Override
