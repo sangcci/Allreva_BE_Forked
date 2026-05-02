@@ -31,7 +31,8 @@ public class SurveySearchRepositoryImpl implements SurveySearchRepository {
     }
 
     @Override
-    public SliceResponse<SurveyThumbnail, Long> findAllByTitle(final String query, final Long cursorId, final int pageSize) {
+    public SliceResponse<SurveyThumbnail, Long> findAllByTitle(
+            final String query, final Long cursorId, final int pageSize) {
         BooleanExpression notExpired = survey.endDate.goe(LocalDate.now());
         BooleanExpression titleMatch = titleMatchCondition(query);
         BooleanExpression cursor = cursorId != null ? survey.id.lt(cursorId) : null;
@@ -39,7 +40,8 @@ public class SurveySearchRepositoryImpl implements SurveySearchRepository {
         List<SurveyThumbnail> results =
                 fetchSurveys(titleMatch != null ? titleMatch.and(notExpired) : notExpired, cursor, pageSize + 1);
 
-        Long nextCursorId = results.size() > pageSize ? results.get(pageSize - 1).id() : null;
+        Long nextCursorId =
+                results.size() > pageSize ? results.get(pageSize - 1).id() : null;
         return new SliceResponse<>(results.stream().limit(pageSize).toList(), nextCursorId);
     }
 

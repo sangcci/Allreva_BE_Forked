@@ -29,7 +29,8 @@ public class RentSearchRepositoryImpl implements RentSearchRepository {
     }
 
     @Override
-    public SliceResponse<RentThumbnail, Long> findAllByTitle(final String query, final Long cursorId, final int pageSize) {
+    public SliceResponse<RentThumbnail, Long> findAllByTitle(
+            final String query, final Long cursorId, final int pageSize) {
         BooleanExpression notExpired = rent.endDate.goe(LocalDate.now());
         BooleanExpression titleMatch = titleMatchCondition(query);
         BooleanExpression cursor = cursorId != null ? rent.id.lt(cursorId) : null;
@@ -37,7 +38,8 @@ public class RentSearchRepositoryImpl implements RentSearchRepository {
         List<RentThumbnail> results =
                 fetchRents(titleMatch != null ? titleMatch.and(notExpired) : notExpired, cursor, pageSize + 1);
 
-        Long nextCursorId = results.size() > pageSize ? results.get(pageSize - 1).id() : null;
+        Long nextCursorId =
+                results.size() > pageSize ? results.get(pageSize - 1).id() : null;
         return new SliceResponse<>(results.stream().limit(pageSize).toList(), nextCursorId);
     }
 

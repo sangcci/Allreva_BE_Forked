@@ -27,8 +27,10 @@ public class ConcertSearchService {
         return thumbnails;
     }
 
-    public SliceResponse<ConcertThumbnail, String> searchConcerts(final String title, final String cursorCode, final int size) {
-        SliceResponse<ConcertThumbnail, String> response = concertSearchRepository.findAllByTitle(title, cursorCode, size);
+    public SliceResponse<ConcertThumbnail, String> searchConcerts(
+            final String title, final String cursorCode, final int size) {
+        SliceResponse<ConcertThumbnail, String> response =
+                concertSearchRepository.findAllByTitle(title, cursorCode, size);
         if (response.items().isEmpty()) {
             throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
         }
@@ -37,7 +39,8 @@ public class ConcertSearchService {
 
     public SliceResponse<ConcertThumbnail, String> getMainConcerts(
             final String address, final String cursorCode, final int size, final SortDirection sortDirection) {
-        SliceResponse<ConcertThumbnail, String> response = concertSearchRepository.findAllByAddressAndSortDirection(address, cursorCode, size, sortDirection);
+        SliceResponse<ConcertThumbnail, String> response =
+                concertSearchRepository.findAllByAddressAndSortDirection(address, cursorCode, size, sortDirection);
         if (response.items().isEmpty()) {
             throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
         }

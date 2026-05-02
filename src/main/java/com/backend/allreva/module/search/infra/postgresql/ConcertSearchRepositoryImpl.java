@@ -47,7 +47,8 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
     }
 
     @Override
-    public SliceResponse<ConcertThumbnail, String> findAllByTitle(final String query, final String cursorCode, final int pageSize) {
+    public SliceResponse<ConcertThumbnail, String> findAllByTitle(
+            final String query, final String cursorCode, final int pageSize) {
         List<ConcertThumbnail> results = fetchConcerts(
                 titleMatchCondition(query), cursorCondition(cursorCode), similarityOrder(query), pageSize + 1);
         return buildResponse(results, pageSize);
@@ -63,7 +64,8 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
         List<ConcertThumbnail> results = fetchConcerts(
                 addressCondition, cursorCondition(cursorCode), mainSortOrder(sortDirection), pageSize + 1);
 
-        String nextCursorCode = results.size() > pageSize ? results.get(pageSize - 1).concertCode() : null;
+        String nextCursorCode =
+                results.size() > pageSize ? results.get(pageSize - 1).concertCode() : null;
         List<ConcertThumbnail> page = results.stream().limit(pageSize).toList();
         return new SliceResponse<>(page, nextCursorCode);
     }
@@ -92,7 +94,8 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
     }
 
     private SliceResponse<ConcertThumbnail, String> buildResponse(List<ConcertThumbnail> results, int pageSize) {
-        String nextCursorCode = results.size() > pageSize ? results.get(pageSize - 1).concertCode() : null;
+        String nextCursorCode =
+                results.size() > pageSize ? results.get(pageSize - 1).concertCode() : null;
         List<ConcertThumbnail> page = results.stream().limit(pageSize).toList();
         return new SliceResponse<>(page, nextCursorCode);
     }

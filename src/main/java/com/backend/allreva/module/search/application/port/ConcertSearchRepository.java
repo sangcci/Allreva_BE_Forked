@@ -11,5 +11,6 @@ public interface ConcertSearchRepository {
 
     SliceResponse<ConcertThumbnail, String> findAllByTitle(String query, String cursorCode, int pageSize);
 
-    SliceResponse<ConcertThumbnail, String> findAllByAddressAndSortDirection(String address, String cursorCode, int pageSize, SortDirection sortDirection);
+    SliceResponse<ConcertThumbnail, String> findAllByAddressAndSortDirection(
+            String address, String cursorCode, int pageSize, SortDirection sortDirection);
 }

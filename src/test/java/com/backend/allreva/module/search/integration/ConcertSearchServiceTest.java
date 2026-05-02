@@ -149,7 +149,8 @@ class ConcertSearchServiceTest extends IntegrationTestSupport {
             }
 
             // when
-            SliceResponse<ConcertThumbnail, String> page1 = concertSearchService.getMainConcerts("", null, 3, SortDirection.DATE);
+            SliceResponse<ConcertThumbnail, String> page1 =
+                    concertSearchService.getMainConcerts("", null, 3, SortDirection.DATE);
             SliceResponse<ConcertThumbnail, String> page2 =
                     concertSearchService.getMainConcerts("", page1.nextCursor(), 3, SortDirection.DATE);
 
