@@ -1,7 +1,7 @@
 package com.backend.allreva.module.search.presentation;
 
+import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.common.web.response.Response;
-import com.backend.allreva.common.web.response.SliceResponse;
 import com.backend.allreva.module.concert.place.application.dto.ConcertHallMainResponse;
 import com.backend.allreva.module.search.application.ConcertSearchService;
 import com.backend.allreva.module.search.application.PlaceSearchService;
@@ -13,6 +13,8 @@ import com.backend.allreva.module.search.application.dto.PopularKeywordResponse;
 import com.backend.allreva.module.search.application.dto.RentThumbnail;
 import com.backend.allreva.module.search.application.dto.SortDirection;
 import com.backend.allreva.module.search.application.dto.SurveyThumbnail;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -41,45 +43,48 @@ public class SearchController implements SearchControllerSwagger {
 
     @Override
     @GetMapping("/concert/suggestions")
-    public Response<List<ConcertThumbnail>> getConcertSuggestions(@RequestParam final String query) {
+    public Response<List<ConcertThumbnail>> getConcertSuggestions(
+            @NotBlank(message = "검색어를 입력해야 합니다.") @RequestParam final String query) {
         return Response.onSuccess(concertSearchService.getConcertSuggestions(query));
     }
 
     @Override
     @GetMapping("/concert")
     public Response<SliceResponse<ConcertThumbnail, String>> searchConcerts(
-            @RequestParam final String query,
-            @RequestParam(defaultValue = "7") final int pageSize,
+            @NotBlank(message = "검색어를 입력해야 합니다.") @RequestParam final String query,
+            @Positive @RequestParam(defaultValue = "7") final int pageSize,
             @RequestParam(required = false) final String cursorCode) {
         return Response.onSuccess(concertSearchService.searchConcerts(query, cursorCode, pageSize));
     }
 
     @Override
     @GetMapping("/rents/suggestions")
-    public Response<List<RentThumbnail>> getRentSuggestions(@RequestParam final String query) {
+    public Response<List<RentThumbnail>> getRentSuggestions(
+            @NotBlank(message = "검색어를 입력해야 합니다.") @RequestParam final String query) {
         return Response.onSuccess(rentSearchService.getRentSuggestions(query));
     }
 
     @Override
     @GetMapping("/rents")
     public Response<SliceResponse<RentThumbnail, Long>> searchRents(
-            @RequestParam final String query,
-            @RequestParam(defaultValue = "7") final int pageSize,
+            @NotBlank(message = "검색어를 입력해야 합니다.") @RequestParam final String query,
+            @Positive @RequestParam(defaultValue = "7") final int pageSize,
             @RequestParam(required = false) final Long cursorId) {
         return Response.onSuccess(rentSearchService.searchRents(query, cursorId, pageSize));
     }
 
     @Override
     @GetMapping("/surveys/suggestions")
-    public Response<List<SurveyThumbnail>> getSurveySuggestions(@RequestParam final String query) {
+    public Response<List<SurveyThumbnail>> getSurveySuggestions(
+            @NotBlank(message = "검색어를 입력해야 합니다.") @RequestParam final String query) {
         return Response.onSuccess(surveySearchService.getSurveySuggestions(query));
     }
 
     @Override
     @GetMapping("/surveys")
     public Response<SliceResponse<SurveyThumbnail, Long>> searchSurveys(
-            @RequestParam final String query,
-            @RequestParam(defaultValue = "7") final int pageSize,
+            @NotBlank(message = "검색어를 입력해야 합니다.") @RequestParam final String query,
+            @Positive @RequestParam(defaultValue = "7") final int pageSize,
             @RequestParam(required = false) final Long cursorId) {
         return Response.onSuccess(surveySearchService.searchSurveys(query, cursorId, pageSize));
     }
@@ -89,7 +94,7 @@ public class SearchController implements SearchControllerSwagger {
     public Response<SliceResponse<ConcertThumbnail, String>> getMainConcerts(
             @RequestParam(defaultValue = "") final String region,
             @RequestParam(defaultValue = "DATE") final SortDirection sortDirection,
-            @RequestParam(defaultValue = "7") final int pageSize,
+            @Positive @RequestParam(defaultValue = "7") final int pageSize,
             @RequestParam(required = false) final String cursorCode) {
         return Response.onSuccess(concertSearchService.getMainConcerts(region, cursorCode, pageSize, sortDirection));
     }
@@ -99,7 +104,7 @@ public class SearchController implements SearchControllerSwagger {
     public Response<ConcertHallMainResponse> getPlaceMainList(
             @RequestParam(defaultValue = "") final String address,
             @RequestParam(defaultValue = "0") final int seatScale,
-            @RequestParam(defaultValue = "7") final int pageSize,
+            @Positive @RequestParam(defaultValue = "7") final int pageSize,
             @RequestParam(required = false) final String cursorId) {
         return Response.onSuccess(placeSearchService.searchMainPlaces(address, seatScale, cursorId, pageSize));
     }

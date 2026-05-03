@@ -1,6 +1,6 @@
 package com.backend.allreva.module.search.infra.postgresql;
 
-import com.backend.allreva.common.web.response.SliceResponse;
+import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.module.concert.concert.domain.QConcert;
 import com.backend.allreva.module.concert.place.domain.QConcertHall;
 import com.backend.allreva.module.search.application.dto.ConcertThumbnail;

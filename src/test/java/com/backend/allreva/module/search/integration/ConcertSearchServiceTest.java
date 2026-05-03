@@ -6,7 +6,7 @@ import static org.instancio.Select.field;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.common.web.response.SliceResponse;
+import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.domain.value.ConcertInfo;

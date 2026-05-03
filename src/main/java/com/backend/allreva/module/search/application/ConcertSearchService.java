@@ -1,7 +1,7 @@
 package com.backend.allreva.module.search.application;
 
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.common.web.response.SliceResponse;
+import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.module.search.application.dto.ConcertThumbnail;
 import com.backend.allreva.module.search.application.dto.SortDirection;
 import com.backend.allreva.module.search.application.port.ConcertSearchRepository;

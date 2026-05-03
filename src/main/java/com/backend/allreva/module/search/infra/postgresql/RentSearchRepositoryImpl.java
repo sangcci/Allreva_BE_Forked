@@ -1,6 +1,6 @@
 package com.backend.allreva.module.search.infra.postgresql;
 
-import com.backend.allreva.common.web.response.SliceResponse;
+import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.module.recruitment.rent.domain.QRent;
 import com.backend.allreva.module.search.application.dto.RentThumbnail;
 import com.backend.allreva.module.search.application.port.RentSearchRepository;

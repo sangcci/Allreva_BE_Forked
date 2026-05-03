@@ -1,4 +1,4 @@
-package com.backend.allreva.common.web.response;
+package com.backend.allreva.common.pagination;
 
 import java.util.List;
 
