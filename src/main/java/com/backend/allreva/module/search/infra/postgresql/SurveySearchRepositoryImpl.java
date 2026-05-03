@@ -1,8 +1,8 @@
 package com.backend.allreva.module.search.infra.postgresql;
 
+import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.module.recruitment.survey.domain.QSurvey;
 import com.backend.allreva.module.recruitment.survey.domain.participant.QSurveyParticipant;
-import com.backend.allreva.module.search.application.dto.SurveySearchListResponse;
 import com.backend.allreva.module.search.application.dto.SurveyThumbnail;
 import com.backend.allreva.module.search.application.port.SurveySearchRepository;
 import com.querydsl.core.types.Projections;
@@ -31,7 +31,8 @@ public class SurveySearchRepositoryImpl implements SurveySearchRepository {
     }
 
     @Override
-    public SurveySearchListResponse searchByTitle(final String query, final Long cursorId, final int pageSize) {
+    public SliceResponse<SurveyThumbnail, Long> findAllByTitle(
+            final String query, final Long cursorId, final int pageSize) {
         BooleanExpression notExpired = survey.endDate.goe(LocalDate.now());
         BooleanExpression titleMatch = titleMatchCondition(query);
         BooleanExpression cursor = cursorId != null ? survey.id.lt(cursorId) : null;
@@ -41,7 +42,7 @@ public class SurveySearchRepositoryImpl implements SurveySearchRepository {
 
         Long nextCursorId =
                 results.size() > pageSize ? results.get(pageSize - 1).id() : null;
-        return SurveySearchListResponse.from(results.stream().limit(pageSize).toList(), nextCursorId);
+        return new SliceResponse<>(results.stream().limit(pageSize).toList(), nextCursorId);
     }
 
     private List<SurveyThumbnail> fetchSurveys(BooleanExpression condition, BooleanExpression cursor, int fetchSize) {

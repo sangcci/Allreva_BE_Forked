@@ -1,9 +1,8 @@
 package com.backend.allreva.module.search.infra.postgresql;
 
+import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.module.concert.concert.domain.QConcert;
 import com.backend.allreva.module.concert.place.domain.QConcertHall;
-import com.backend.allreva.module.search.application.dto.ConcertMainResponse;
-import com.backend.allreva.module.search.application.dto.ConcertSearchListResponse;
 import com.backend.allreva.module.search.application.dto.ConcertThumbnail;
 import com.backend.allreva.module.search.application.dto.SortDirection;
 import com.backend.allreva.module.search.application.port.ConcertSearchRepository;
@@ -48,20 +47,15 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
     }
 
     @Override
-    public ConcertSearchListResponse searchByTitle(final String query, final String cursorCode, final int pageSize) {
+    public SliceResponse<ConcertThumbnail, String> findAllByTitle(
+            final String query, final String cursorCode, final int pageSize) {
         List<ConcertThumbnail> results = fetchConcerts(
                 titleMatchCondition(query), cursorCondition(cursorCode), similarityOrder(query), pageSize + 1);
-
         return buildResponse(results, pageSize);
     }
 
     @Override
-    public ConcertSearchListResponse searchByTitleAll(final String query, final String cursorCode, final int pageSize) {
-        return searchByTitle(query, cursorCode, pageSize);
-    }
-
-    @Override
-    public ConcertMainResponse searchMain(
+    public SliceResponse<ConcertThumbnail, String> findAllByAddressAndSortDirection(
             final String address, final String cursorCode, final int pageSize, final SortDirection sortDirection) {
         BooleanExpression addressCondition = StringUtils.hasText(address)
                 ? Expressions.booleanTemplate("({0} ilike {1})", hall.location.address, "%" + address + "%")
@@ -73,7 +67,7 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
         String nextCursorCode =
                 results.size() > pageSize ? results.get(pageSize - 1).concertCode() : null;
         List<ConcertThumbnail> page = results.stream().limit(pageSize).toList();
-        return ConcertMainResponse.from(page, nextCursorCode);
+        return new SliceResponse<>(page, nextCursorCode);
     }
 
     private List<ConcertThumbnail> fetchConcerts(
@@ -99,11 +93,11 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
                 .fetch();
     }
 
-    private ConcertSearchListResponse buildResponse(List<ConcertThumbnail> results, int pageSize) {
+    private SliceResponse<ConcertThumbnail, String> buildResponse(List<ConcertThumbnail> results, int pageSize) {
         String nextCursorCode =
                 results.size() > pageSize ? results.get(pageSize - 1).concertCode() : null;
         List<ConcertThumbnail> page = results.stream().limit(pageSize).toList();
-        return ConcertSearchListResponse.from(page, nextCursorCode);
+        return new SliceResponse<>(page, nextCursorCode);
     }
 
     private BooleanExpression titleMatchCondition(final String query) {

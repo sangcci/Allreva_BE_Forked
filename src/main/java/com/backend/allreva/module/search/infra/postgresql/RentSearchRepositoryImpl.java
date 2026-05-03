@@ -1,7 +1,7 @@
 package com.backend.allreva.module.search.infra.postgresql;
 
+import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.module.recruitment.rent.domain.QRent;
-import com.backend.allreva.module.search.application.dto.RentSearchListResponse;
 import com.backend.allreva.module.search.application.dto.RentThumbnail;
 import com.backend.allreva.module.search.application.port.RentSearchRepository;
 import com.querydsl.core.types.Projections;
@@ -29,7 +29,8 @@ public class RentSearchRepositoryImpl implements RentSearchRepository {
     }
 
     @Override
-    public RentSearchListResponse searchByTitle(final String query, final Long cursorId, final int pageSize) {
+    public SliceResponse<RentThumbnail, Long> findAllByTitle(
+            final String query, final Long cursorId, final int pageSize) {
         BooleanExpression notExpired = rent.endDate.goe(LocalDate.now());
         BooleanExpression titleMatch = titleMatchCondition(query);
         BooleanExpression cursor = cursorId != null ? rent.id.lt(cursorId) : null;
@@ -39,7 +40,7 @@ public class RentSearchRepositoryImpl implements RentSearchRepository {
 
         Long nextCursorId =
                 results.size() > pageSize ? results.get(pageSize - 1).id() : null;
-        return RentSearchListResponse.from(results.stream().limit(pageSize).toList(), nextCursorId);
+        return new SliceResponse<>(results.stream().limit(pageSize).toList(), nextCursorId);
     }
 
     private List<RentThumbnail> fetchRents(BooleanExpression condition, BooleanExpression cursor, int fetchSize) {

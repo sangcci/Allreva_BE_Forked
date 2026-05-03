@@ -32,7 +32,7 @@ class RentSearchServiceTest extends IntegrationTestSupport {
             void 빈_검색어인_경우_예외가_발생한다() {
                 // when & then
                 assertThrows(CustomException.class, () -> {
-                    rentSearchService.searchRentThumbnails("");
+                    rentSearchService.getRentSuggestions("");
                 });
             }
         }
@@ -54,7 +54,7 @@ class RentSearchServiceTest extends IntegrationTestSupport {
 
                 // when & then
                 assertThrows(CustomException.class, () -> {
-                    rentSearchService.searchRentSearchList(query, null, 2);
+                    rentSearchService.searchRents(query, null, 2);
                 });
             }
         }
