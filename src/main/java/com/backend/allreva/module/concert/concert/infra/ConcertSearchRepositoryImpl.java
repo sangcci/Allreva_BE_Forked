@@ -1,11 +1,11 @@
-package com.backend.allreva.module.search.infra.postgresql;
+package com.backend.allreva.module.concert.concert.infra;
 
 import com.backend.allreva.common.pagination.SliceResponse;
+import com.backend.allreva.module.concert.concert.application.dto.ConcertThumbnail;
+import com.backend.allreva.module.concert.concert.application.dto.SortDirection;
+import com.backend.allreva.module.concert.concert.application.port.ConcertSearchRepository;
 import com.backend.allreva.module.concert.concert.domain.QConcert;
 import com.backend.allreva.module.concert.place.domain.QConcertHall;
-import com.backend.allreva.module.search.application.dto.ConcertThumbnail;
-import com.backend.allreva.module.search.application.dto.SortDirection;
-import com.backend.allreva.module.search.application.port.ConcertSearchRepository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;

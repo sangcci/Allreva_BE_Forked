@@ -1,13 +1,19 @@
 package com.backend.allreva.module.concert.concert.application;
 
 import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailResponse;
+import com.backend.allreva.module.concert.concert.application.dto.ConcertThumbnail;
 import com.backend.allreva.module.concert.concert.application.dto.RelatedConcertResponse;
+import com.backend.allreva.module.concert.concert.application.dto.SortDirection;
+import com.backend.allreva.module.concert.concert.application.port.ConcertSearchRepository;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.exception.ConcertErrorCode;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
+import com.backend.allreva.module.search.application.PopularKeywordService;
+import com.backend.allreva.module.search.exception.SearchErrorCode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -20,6 +26,40 @@ public class ConcertService {
 
     private final ConcertRepository concertRepository;
     private final ConcertHallRepository concertHallRepository;
+    private final ConcertSearchRepository concertSearchRepository;
+    private final PopularKeywordService popularKeywordService;
+
+    @Transactional(readOnly = true)
+    public List<ConcertThumbnail> getConcertSuggestions(final String title) {
+        popularKeywordService.updateKeywordCount(title);
+        List<ConcertThumbnail> thumbnails = concertSearchRepository.findThumbnailsByTitle(title, 2);
+        if (thumbnails.isEmpty()) {
+            throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
+        }
+        return thumbnails;
+    }
+
+    @Transactional(readOnly = true)
+    public SliceResponse<ConcertThumbnail, String> searchConcerts(
+            final String title, final String cursorCode, final int size) {
+        SliceResponse<ConcertThumbnail, String> response =
+                concertSearchRepository.findAllByTitle(title, cursorCode, size);
+        if (response.items().isEmpty()) {
+            throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
+        }
+        return response;
+    }
+
+    @Transactional(readOnly = true)
+    public SliceResponse<ConcertThumbnail, String> getMainConcerts(
+            final String address, final String cursorCode, final int size, final SortDirection sortDirection) {
+        SliceResponse<ConcertThumbnail, String> response =
+                concertSearchRepository.findAllByAddressAndSortDirection(address, cursorCode, size, sortDirection);
+        if (response.items().isEmpty()) {
+            throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
+        }
+        return response;
+    }
 
     @Transactional(readOnly = true)
     @Cacheable(
@@ -35,7 +75,7 @@ public class ConcertService {
     }
 
     @Transactional(readOnly = true)
-    public ConcertDetailResponse findDetailById(final String concertCode) {
+    public ConcertDetailResponse getConcertDetail(final String concertCode) {
         Concert concert = concertRepository
                 .findById(concertCode)
                 .orElseThrow(() -> new CustomException(ConcertErrorCode.CONCERT_NOT_FOUND));

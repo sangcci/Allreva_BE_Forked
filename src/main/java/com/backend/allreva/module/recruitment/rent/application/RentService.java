@@ -2,6 +2,7 @@ package com.backend.allreva.module.recruitment.rent.application;
 
 import com.backend.allreva.common.event.Events;
 import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.common.storage.upload.StorageUploadService;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
@@ -19,8 +20,10 @@ import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinUpdat
 import com.backend.allreva.module.recruitment.rent.application.dto.RentParticipantResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentThumbnail;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
+import com.backend.allreva.module.recruitment.rent.application.port.RentSearchRepository;
 import com.backend.allreva.module.recruitment.rent.domain.Rent;
 import com.backend.allreva.module.recruitment.rent.domain.RentBoardingSlot;
 import com.backend.allreva.module.recruitment.rent.domain.RentBoardingSlotRepository;
@@ -30,6 +33,7 @@ import com.backend.allreva.module.recruitment.rent.domain.participant.RentPartic
 import com.backend.allreva.module.recruitment.rent.domain.value.Bus;
 import com.backend.allreva.module.recruitment.rent.domain.value.Depositor;
 import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
+import com.backend.allreva.module.search.exception.SearchErrorCode;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +52,23 @@ public class RentService {
     private final ConcertRepository concertRepository;
     private final ConcertHallRepository concertHallRepository;
     private final StorageUploadService storageUploadService;
+    private final RentSearchRepository rentSearchRepository;
+
+    public List<RentThumbnail> getRentSuggestions(final String title) {
+        List<RentThumbnail> thumbnails = rentSearchRepository.findThumbnailsByTitle(title, 2);
+        if (thumbnails.isEmpty()) {
+            throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
+        }
+        return thumbnails;
+    }
+
+    public SliceResponse<RentThumbnail, Long> searchRents(final String title, final Long cursorId, final int size) {
+        SliceResponse<RentThumbnail, Long> response = rentSearchRepository.findAllByTitle(title, cursorId, size);
+        if (response.items().isEmpty()) {
+            throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
+        }
+        return response;
+    }
 
     // Anonymous
     @Transactional(readOnly = true)

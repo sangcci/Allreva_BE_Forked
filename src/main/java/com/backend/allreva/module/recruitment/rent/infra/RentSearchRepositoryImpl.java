@@ -1,9 +1,9 @@
-package com.backend.allreva.module.search.infra.postgresql;
+package com.backend.allreva.module.recruitment.rent.infra;
 
 import com.backend.allreva.common.pagination.SliceResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentThumbnail;
+import com.backend.allreva.module.recruitment.rent.application.port.RentSearchRepository;
 import com.backend.allreva.module.recruitment.rent.domain.QRent;
-import com.backend.allreva.module.search.application.dto.RentThumbnail;
-import com.backend.allreva.module.search.application.port.RentSearchRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;

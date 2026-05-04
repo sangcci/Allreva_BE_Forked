@@ -1,10 +1,11 @@
-package com.backend.allreva.module.search.infra.postgresql;
+package com.backend.allreva.module.recruitment.survey.infra;
 
 import com.backend.allreva.common.pagination.SliceResponse;
+import com.backend.allreva.module.recruitment.survey.application.dto.SurveyThumbnail;
+import com.backend.allreva.module.recruitment.survey.application.port.SurveySearchRepository;
 import com.backend.allreva.module.recruitment.survey.domain.QSurvey;
 import com.backend.allreva.module.recruitment.survey.domain.participant.QSurveyParticipant;
-import com.backend.allreva.module.search.application.dto.SurveyThumbnail;
-import com.backend.allreva.module.search.application.port.SurveySearchRepository;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;
@@ -72,7 +73,7 @@ public class SurveySearchRepositoryImpl implements SurveySearchRepository {
         return sim.gt(SIMILARITY_THRESHOLD).or(ilike);
     }
 
-    private com.querydsl.core.types.OrderSpecifier<?> similarityOrder(final String query) {
+    private OrderSpecifier<?> similarityOrder(final String query) {
         if (!StringUtils.hasText(query)) return survey.id.desc();
         return Expressions.numberTemplate(Double.class, "similarity({0}, {1})", survey.title, query)
                 .desc();
