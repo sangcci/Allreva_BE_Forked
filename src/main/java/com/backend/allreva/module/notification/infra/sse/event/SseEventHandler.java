@@ -13,7 +13,7 @@ public class SseEventHandler {
 
     private final SseConnectionManager sseConnectionManager;
 
-    @Async
+    @Async("notificationExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT, fallbackExecution = true)
     public void onMessage(final SseTimedOutEvent event) {
         Long memberId = event.getMemberId();

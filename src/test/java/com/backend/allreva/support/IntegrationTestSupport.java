@@ -24,7 +24,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
 @AutoConfigureWireMock(port = 0)
-@Import({AsyncAspect.class, FixedClockConfig.class})
+@Import({FixedClockConfig.class})
 public abstract class IntegrationTestSupport {
 
     @ServiceConnection
@@ -44,9 +44,6 @@ public abstract class IntegrationTestSupport {
     static void configureProperties(DynamicPropertyRegistry registry) {
         registry.add("spring.datasource.url", () -> postgres.getJdbcUrl() + "?stringtype=unspecified");
     }
-
-    @Autowired
-    protected AsyncAspect asyncAspect;
 
     @Autowired
     protected JdbcTemplate jdbcTemplate;

@@ -11,28 +11,31 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 @Configuration
 public class ThreadPoolConfig {
 
-    private static final int CORE_POOL_SIZE = 10;
-    private static final int MAX_POOL_SIZE = 20;
-    private static final int QUEUE_CAPACITY = 50;
-
     private static final int AWAIT_SECONDS = 20;
-
-    private static final String THREAD_PREFIX = "Async-";
 
     @Bean
     public Executor taskExecutor() {
-        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(20);
+        executor.setQueueCapacity(50);
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setAwaitTerminationSeconds(AWAIT_SECONDS);
+        executor.setThreadNamePrefix("task-");
+        return executor;
+    }
 
-        taskExecutor.setCorePoolSize(CORE_POOL_SIZE);
-        taskExecutor.setMaxPoolSize(MAX_POOL_SIZE);
-        taskExecutor.setQueueCapacity(QUEUE_CAPACITY);
-
-        taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-        taskExecutor.setWaitForTasksToCompleteOnShutdown(true);
-        taskExecutor.setAwaitTerminationSeconds(AWAIT_SECONDS);
-
-        taskExecutor.setThreadNamePrefix(THREAD_PREFIX);
-
-        return taskExecutor;
+    @Bean
+    public Executor notificationExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(10);
+        executor.setMaxPoolSize(20);
+        executor.setQueueCapacity(50);
+        executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setAwaitTerminationSeconds(AWAIT_SECONDS);
+        executor.setThreadNamePrefix("notification-");
+        return executor;
     }
 }
