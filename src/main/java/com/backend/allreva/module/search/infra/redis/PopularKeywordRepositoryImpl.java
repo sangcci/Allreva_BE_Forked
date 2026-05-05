@@ -5,6 +5,7 @@ import com.backend.allreva.module.search.application.port.PopularKeywordReposito
 import jakarta.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.ValueOperations;
@@ -24,8 +25,8 @@ public class PopularKeywordRepositoryImpl implements PopularKeywordRepository {
     private ValueOperations<String, Object> valueOperations;
 
     @Override
-    public PopularKeywordResponses getPopularKeywordRank() {
-        return (PopularKeywordResponses) valueOperations.get(POPULAR_KEYWORD_KEY);
+    public Optional<PopularKeywordResponses> getPopularKeywordRank() {
+        return Optional.ofNullable((PopularKeywordResponses) valueOperations.get(POPULAR_KEYWORD_KEY));
     }
 
     @Override
