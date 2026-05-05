@@ -51,7 +51,9 @@ public class ConcertService {
         return response;
     }
 
-    @Cacheable(cacheNames = "concertMain", key = "#address + '_' + #cursorCode + '_' + #size + '_' + #sortDirection.name()")
+    @Cacheable(
+            cacheNames = "concertMain",
+            key = "#address + '_' + #cursorCode + '_' + #size + '_' + #sortDirection.name()")
     @Transactional(readOnly = true)
     public SliceResponse<ConcertThumbnail, String> getMainConcerts(
             final String address, final String cursorCode, final int size, final SortDirection sortDirection) {
