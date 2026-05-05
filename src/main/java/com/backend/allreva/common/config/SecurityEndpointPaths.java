@@ -44,10 +44,14 @@ public final class SecurityEndpointPaths {
         "/api/v1/rents/{id:\\d+}",
         "/api/v1/rents/main",
         "/api/v1/rents/list",
+        "/api/v1/rents/suggestions",
+        "/api/v1/rents/search",
         // survey
         "/api/v1/surveys/{surveyId:\\d+}",
         "/api/v1/surveys/main",
         "/api/v1/surveys/list",
+        "/api/v1/surveys/suggestions",
+        "/api/v1/surveys/search",
         // concert
         "/api/v1/concerts/**",
         // place

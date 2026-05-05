@@ -1,6 +1,7 @@
-package com.backend.allreva.module.search.application.dto;
+package com.backend.allreva.module.concert.concert.application.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public record ConcertThumbnail(
         String poster,
@@ -9,7 +10,7 @@ public record ConcertThumbnail(
         LocalDate stdate,
         LocalDate eddate,
         String concertCode,
-        java.util.List<String> episodes,
+        List<String> episodes,
         String hallId) {
     public ConcertThumbnail(
             String poster,

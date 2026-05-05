@@ -218,7 +218,7 @@ class ConcertIntegrationTest extends IntegrationTestSupport {
                         .create());
 
                 // when
-                ConcertDetailResponse result = concertService.findDetailById(concert.getConcertCode());
+                ConcertDetailResponse result = concertService.getConcertDetail(concert.getConcertCode());
 
                 // then
                 assertSoftly(softly -> {

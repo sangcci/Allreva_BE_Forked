@@ -1,5 +1,6 @@
 package com.backend.allreva.module.recruitment.survey.presentation;
 
+import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.recruitment.survey.application.dto.CreatedSurveyResponse;
@@ -10,6 +11,7 @@ import com.backend.allreva.module.recruitment.survey.application.dto.SortType;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveyDetailResponse;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveyIdRequest;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveySummaryResponse;
+import com.backend.allreva.module.recruitment.survey.application.dto.SurveyThumbnail;
 import com.backend.allreva.module.recruitment.survey.application.dto.UpdateSurveyRequest;
 import com.backend.allreva.module.recruitment.survey.domain.value.Region;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +24,12 @@ import java.util.List;
 
 @Tag(name = "수요조사 API", description = "수요조사 관련 API")
 public interface SurveyControllerSwagger {
+
+    @Operation(summary = "수요조사 자동완성 제안", description = "검색어 관련도 상위 2개")
+    Response<List<SurveyThumbnail>> getSurveySuggestions(String query);
+
+    @Operation(summary = "수요조사 검색 목록 조회", description = "무한 스크롤. 관련도 순 정렬")
+    Response<SliceResponse<SurveyThumbnail, Long>> searchSurveys(String query, @Min(1) int pageSize, Long cursorId);
 
     @SecurityRequirement(name = "USER")
     @Operation(summary = "수요조사 개설", description = "**[HOST]**")

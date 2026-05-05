@@ -1,5 +1,6 @@
 package com.backend.allreva.module.recruitment.rent.presentation;
 
+import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.module.auth.security.AuthMember;
 import com.backend.allreva.module.member.domain.Member;
@@ -14,6 +15,7 @@ import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinUpdat
 import com.backend.allreva.module.recruitment.rent.application.dto.RentParticipantResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentThumbnail;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
 import java.time.LocalDate;
@@ -37,6 +39,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class RentController implements RentControllerSwagger {
 
     private final RentService rentService;
+
+    @Override
+    @GetMapping("/suggestions")
+    public Response<List<RentThumbnail>> getRentSuggestions(@RequestParam final String query) {
+        return Response.onSuccess(rentService.getRentSuggestions(query));
+    }
+
+    @Override
+    @GetMapping("/search")
+    public Response<SliceResponse<RentThumbnail, Long>> searchRents(
+            @RequestParam final String query,
+            @RequestParam(defaultValue = "7") final int pageSize,
+            @RequestParam(required = false) final Long cursorId) {
+        return Response.onSuccess(rentService.searchRents(query, cursorId, pageSize));
+    }
 
     // Anonymous EndPoints
     @Override

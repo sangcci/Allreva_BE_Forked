@@ -1,8 +1,8 @@
-package com.backend.allreva.module.search.application.port;
+package com.backend.allreva.module.concert.concert.application.port;
 
 import com.backend.allreva.common.pagination.SliceResponse;
-import com.backend.allreva.module.search.application.dto.ConcertThumbnail;
-import com.backend.allreva.module.search.application.dto.SortDirection;
+import com.backend.allreva.module.concert.concert.application.dto.ConcertThumbnail;
+import com.backend.allreva.module.concert.concert.application.dto.SortDirection;
 import java.util.List;
 
 public interface ConcertSearchRepository {

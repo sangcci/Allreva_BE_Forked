@@ -1,9 +1,12 @@
 package com.backend.allreva.module.concert.concert.presentation;
 
+import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.module.concert.concert.application.ConcertService;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailResponse;
+import com.backend.allreva.module.concert.concert.application.dto.ConcertThumbnail;
 import com.backend.allreva.module.concert.concert.application.dto.RelatedConcertResponse;
+import com.backend.allreva.module.concert.concert.application.dto.SortDirection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -22,9 +25,34 @@ public class ConcertController implements ConcertControllerSwagger {
     private final ConcertService concertService;
 
     @Override
+    @GetMapping("/main")
+    public Response<SliceResponse<ConcertThumbnail, String>> getMainConcerts(
+            @RequestParam(defaultValue = "") final String region,
+            @RequestParam(defaultValue = "DATE") final SortDirection sortDirection,
+            @RequestParam(defaultValue = "7") final int pageSize,
+            @RequestParam(required = false) final String cursorCode) {
+        return Response.onSuccess(concertService.getMainConcerts(region, cursorCode, pageSize, sortDirection));
+    }
+
+    @Override
+    @GetMapping("/suggestions")
+    public Response<List<ConcertThumbnail>> getConcertSuggestions(@RequestParam final String query) {
+        return Response.onSuccess(concertService.getConcertSuggestions(query));
+    }
+
+    @Override
+    @GetMapping("/search")
+    public Response<SliceResponse<ConcertThumbnail, String>> searchConcerts(
+            @RequestParam final String query,
+            @RequestParam(defaultValue = "7") final int pageSize,
+            @RequestParam(required = false) final String cursorCode) {
+        return Response.onSuccess(concertService.searchConcerts(query, cursorCode, pageSize));
+    }
+
+    @Override
     @GetMapping("/{concertCode}")
     public Response<ConcertDetailResponse> getConcertDetail(@PathVariable("concertCode") final String concertCode) {
-        return Response.onSuccess(concertService.findDetailById(concertCode));
+        return Response.onSuccess(concertService.getConcertDetail(concertCode));
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.backend.allreva.module.recruitment.survey.application;
 
 import com.backend.allreva.common.event.Events;
 import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.exception.ConcertErrorCode;
@@ -16,13 +17,16 @@ import com.backend.allreva.module.recruitment.survey.application.dto.SurveyDetai
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveyIdRequest;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveyMainResponse;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveySummaryResponse;
+import com.backend.allreva.module.recruitment.survey.application.dto.SurveyThumbnail;
 import com.backend.allreva.module.recruitment.survey.application.dto.UpdateSurveyRequest;
+import com.backend.allreva.module.recruitment.survey.application.port.SurveySearchRepository;
 import com.backend.allreva.module.recruitment.survey.domain.Survey;
 import com.backend.allreva.module.recruitment.survey.domain.SurveyRepository;
 import com.backend.allreva.module.recruitment.survey.domain.participant.SurveyParticipant;
 import com.backend.allreva.module.recruitment.survey.domain.participant.SurveyParticipantRepository;
 import com.backend.allreva.module.recruitment.survey.domain.value.Region;
 import com.backend.allreva.module.recruitment.survey.exception.SurveyErrorCode;
+import com.backend.allreva.module.search.exception.SearchErrorCode;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +43,23 @@ public class SurveyService {
     private final SurveyRepository surveyRepository;
     private final SurveyParticipantRepository surveyParticipantRepository;
     private final ConcertRepository concertRepository;
+    private final SurveySearchRepository surveySearchRepository;
+
+    public List<SurveyThumbnail> getSurveySuggestions(final String title) {
+        List<SurveyThumbnail> thumbnails = surveySearchRepository.findThumbnailsByTitle(title, 2);
+        if (thumbnails.isEmpty()) {
+            throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
+        }
+        return thumbnails;
+    }
+
+    public SliceResponse<SurveyThumbnail, Long> searchSurveys(final String title, final Long cursorId, final int size) {
+        SliceResponse<SurveyThumbnail, Long> response = surveySearchRepository.findAllByTitle(title, cursorId, size);
+        if (response.items().isEmpty()) {
+            throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
+        }
+        return response;
+    }
 
     @Transactional
     public Long openSurvey(final Long memberId, final OpenSurveyRequest request) {

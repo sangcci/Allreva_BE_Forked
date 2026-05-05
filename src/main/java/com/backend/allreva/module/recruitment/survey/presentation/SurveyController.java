@@ -1,6 +1,7 @@
 package com.backend.allreva.module.recruitment.survey.presentation;
 
 import com.backend.allreva.common.exception.CustomException;
+import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.module.auth.security.AuthMember;
 import com.backend.allreva.module.member.domain.Member;
@@ -13,6 +14,7 @@ import com.backend.allreva.module.recruitment.survey.application.dto.SortType;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveyDetailResponse;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveyIdRequest;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveySummaryResponse;
+import com.backend.allreva.module.recruitment.survey.application.dto.SurveyThumbnail;
 import com.backend.allreva.module.recruitment.survey.application.dto.UpdateSurveyRequest;
 import com.backend.allreva.module.recruitment.survey.domain.value.Region;
 import com.backend.allreva.module.recruitment.survey.exception.SurveyErrorCode;
@@ -37,6 +39,21 @@ import org.springframework.web.bind.annotation.RestController;
 public class SurveyController implements SurveyControllerSwagger {
 
     private final SurveyService surveyService;
+
+    @Override
+    @GetMapping("/suggestions")
+    public Response<List<SurveyThumbnail>> getSurveySuggestions(@RequestParam final String query) {
+        return Response.onSuccess(surveyService.getSurveySuggestions(query));
+    }
+
+    @Override
+    @GetMapping("/search")
+    public Response<SliceResponse<SurveyThumbnail, Long>> searchSurveys(
+            @RequestParam final String query,
+            @RequestParam(defaultValue = "7") final int pageSize,
+            @RequestParam(required = false) final Long cursorId) {
+        return Response.onSuccess(surveyService.searchSurveys(query, cursorId, pageSize));
+    }
 
     @Override
     @PostMapping

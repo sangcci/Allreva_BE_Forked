@@ -1,5 +1,6 @@
 package com.backend.allreva.module.recruitment.rent.presentation;
 
+import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.recruitment.rent.application.dto.HostedRentSummaryResponse;
@@ -12,6 +13,7 @@ import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinUpdat
 import com.backend.allreva.module.recruitment.rent.application.dto.RentParticipantResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
+import com.backend.allreva.module.recruitment.rent.application.dto.RentThumbnail;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,6 +26,12 @@ import java.util.List;
 
 @Tag(name = "차 대절 API", description = "차 대절 관련 API")
 public interface RentControllerSwagger {
+
+    @Operation(summary = "차 대절 자동완성 제안", description = "검색어 관련도 상위 2개")
+    Response<List<RentThumbnail>> getRentSuggestions(String query);
+
+    @Operation(summary = "차 대절 검색 목록 조회", description = "무한 스크롤. 관련도 순 정렬")
+    Response<SliceResponse<RentThumbnail, Long>> searchRents(String query, @Min(1) int pageSize, Long cursorId);
 
     @Operation(summary = "차 대절 목록 조회", description = "무한 스크롤. 정렬 기준에 따라 커서 파라미터가 다름")
     Response<List<RentSummaryResponse>> getRentSummaries(
