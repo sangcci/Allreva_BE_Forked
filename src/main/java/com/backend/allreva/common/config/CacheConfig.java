@@ -2,48 +2,36 @@ package com.backend.allreva.common.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.caffeine.CaffeineCache;
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 
 @EnableCaching
 @Configuration
 public class CacheConfig {
+
     @Bean
-    @Primary
-    public CacheManager placeMainCacheManager() {
-        ConcurrentMapCacheManager cacheManager = new ConcurrentMapCacheManager("placeMainCacheManager");
-        cacheManager.setCacheNames(List.of("placeMain"));
-        return cacheManager;
+    public CacheManager cacheManager() {
+        SimpleCacheManager manager = new SimpleCacheManager();
+        manager.setCaches(List.of(
+                build("concertMain", 100, Duration.ofDays(1)),
+                build("concertSearch", 500, Duration.ofHours(1)),
+                build("concertRelated", 200, Duration.ofHours(1)),
+                build("concertHall", 200, Duration.ofDays(30))));
+        return manager;
     }
 
-    @Bean
-    public CacheManager relatedConcertCacheManager() {
-        SimpleCacheManager cacheManager = new SimpleCacheManager();
-
-        // relatedConcert 캐시 설정
-        CaffeineCache relatedConcertCache = new CaffeineCache(
-                "relatedConcert",
+    private CaffeineCache build(String name, int maxSize, Duration ttl) {
+        return new CaffeineCache(
+                name,
                 Caffeine.newBuilder()
-                        .expireAfterWrite(Duration.ofSeconds(calculateSecondsUntilMidnight())) // 자정까지 TTL 설정
-                        .maximumSize(100) // 최대 캐시 크기
+                        .maximumSize(maxSize)
+                        .expireAfterWrite(ttl)
+                        .recordStats()
                         .build());
-
-        cacheManager.setCaches(List.of(relatedConcertCache));
-        return cacheManager;
-    }
-
-    private long calculateSecondsUntilMidnight() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime midnight = now.toLocalDate().plusDays(1).atStartOfDay(); // 다음 날 00:00
-        return ChronoUnit.SECONDS.between(now, midnight);
     }
 }

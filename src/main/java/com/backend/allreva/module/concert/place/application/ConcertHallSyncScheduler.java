@@ -22,6 +22,9 @@ public class ConcertHallSyncScheduler {
     private final ConcertHallRepository concertHallRepository;
 
     /** 공연장 정보 매월 동기화 — 매월 1일 새벽 2시 */
+    @CacheEvict(
+            cacheNames = {"concertHall"},
+            allEntries = true)
     @Scheduled(cron = "0 0 2 1 * *")
     public void fetchMonthlyHallInfoList() {
         try {
@@ -32,7 +35,9 @@ public class ConcertHallSyncScheduler {
         }
     }
 
-    @CacheEvict(cacheNames = "placeMain", allEntries = true)
+    @CacheEvict(
+            cacheNames = {"concertHall"},
+            allEntries = true)
     public void fetchConcertHallInfoList() {
         Set<String> facilityCodes = concertHallRepository.findAllFacilityCodes();
 

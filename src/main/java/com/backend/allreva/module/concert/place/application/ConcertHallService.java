@@ -7,6 +7,7 @@ import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import com.backend.allreva.module.concert.place.exception.ConcertHallErrorCode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +18,7 @@ public class ConcertHallService {
 
     private final ConcertHallRepository concertHallRepository;
 
+    @Cacheable(cacheNames = "concertHall", key = "#hallCode")
     @Transactional(readOnly = true)
     public ConcertHallDetailResponse getConcertHallDetail(final String hallCode) {
         ConcertHall hall = concertHallRepository

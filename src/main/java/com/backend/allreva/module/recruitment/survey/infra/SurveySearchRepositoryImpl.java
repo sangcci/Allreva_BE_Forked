@@ -1,10 +1,11 @@
 package com.backend.allreva.module.recruitment.survey.infra;
 
+import static com.backend.allreva.module.recruitment.survey.domain.QSurvey.survey;
+import static com.backend.allreva.module.recruitment.survey.domain.participant.QSurveyParticipant.surveyParticipant;
+
 import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveyThumbnail;
 import com.backend.allreva.module.recruitment.survey.application.port.SurveySearchRepository;
-import com.backend.allreva.module.recruitment.survey.domain.QSurvey;
-import com.backend.allreva.module.recruitment.survey.domain.participant.QSurveyParticipant;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -23,8 +24,6 @@ public class SurveySearchRepositoryImpl implements SurveySearchRepository {
 
     private static final double SIMILARITY_THRESHOLD = 0.1;
     private final JPAQueryFactory queryFactory;
-    private final QSurvey survey = QSurvey.survey;
-    private final QSurveyParticipant surveyParticipant = QSurveyParticipant.surveyParticipant;
 
     @Override
     public List<SurveyThumbnail> findThumbnailsByTitle(final String title, final int limit) {
