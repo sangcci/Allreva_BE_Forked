@@ -1,11 +1,12 @@
 package com.backend.allreva.module.concert.concert.infra;
 
+import static com.backend.allreva.module.concert.concert.domain.QConcert.concert;
+import static com.backend.allreva.module.concert.place.domain.QConcertHall.concertHall;
+
 import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertThumbnail;
 import com.backend.allreva.module.concert.concert.application.dto.SortDirection;
 import com.backend.allreva.module.concert.concert.application.port.ConcertSearchRepository;
-import com.backend.allreva.module.concert.concert.domain.QConcert;
-import com.backend.allreva.module.concert.place.domain.QConcertHall;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
@@ -23,8 +24,6 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
 
     private static final double SIMILARITY_THRESHOLD = 0.1;
     private final JPAQueryFactory queryFactory;
-    private final QConcert concert = QConcert.concert;
-    private final QConcertHall hall = QConcertHall.concertHall;
 
     @Override
     public List<ConcertThumbnail> findThumbnailsByTitle(final String title, final int limit) {
@@ -33,13 +32,13 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
                         ConcertThumbnail.class,
                         concert.poster.url,
                         concert.concertInfo.title,
-                        hall.name,
+                        concertHall.name,
                         concert.concertInfo.dateInfo.startDate,
                         concert.concertInfo.dateInfo.endDate,
                         concert.concertCode))
                 .from(concert)
-                .leftJoin(hall)
-                .on(concert.hallCode.eq(hall.hallCode))
+                .leftJoin(concertHall)
+                .on(concert.hallCode.eq(concertHall.hallCode))
                 .where(titleMatchCondition(title))
                 .orderBy(similarityOrder(title), concert.concertCode.desc())
                 .limit(limit)
@@ -58,7 +57,7 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
     public SliceResponse<ConcertThumbnail, String> findAllByAddressAndSortDirection(
             final String address, final String cursorCode, final int pageSize, final SortDirection sortDirection) {
         BooleanExpression addressCondition = StringUtils.hasText(address)
-                ? Expressions.booleanTemplate("({0} ilike {1})", hall.location.address, "%" + address + "%")
+                ? Expressions.booleanTemplate("({0} ilike {1})", concertHall.location.address, "%" + address + "%")
                 : null;
 
         List<ConcertThumbnail> results = fetchConcerts(
@@ -80,13 +79,13 @@ public class ConcertSearchRepositoryImpl implements ConcertSearchRepository {
                         ConcertThumbnail.class,
                         concert.poster.url,
                         concert.concertInfo.title,
-                        hall.name,
+                        concertHall.name,
                         concert.concertInfo.dateInfo.startDate,
                         concert.concertInfo.dateInfo.endDate,
                         concert.concertCode))
                 .from(concert)
-                .leftJoin(hall)
-                .on(concert.hallCode.eq(hall.hallCode))
+                .leftJoin(concertHall)
+                .on(concert.hallCode.eq(concertHall.hallCode))
                 .where(searchCondition, cursorCondition)
                 .orderBy(primarySort, concert.concertCode.desc())
                 .limit(fetchSize)
