@@ -31,6 +31,8 @@ spring:
     baseline-version: 1
     out-of-order: ${SPRING.FLYWAY.OUT-OF-ORDER:false}
     mixed: true
+    postgresql:
+      transactional-lock: false
 
   data:
     redis:
