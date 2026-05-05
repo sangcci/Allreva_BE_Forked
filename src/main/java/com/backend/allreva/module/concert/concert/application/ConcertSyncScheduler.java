@@ -30,7 +30,7 @@ public class ConcertSyncScheduler {
 
     /** 공연 정보 매일 동기화 — 매일 새벽 4시 */
     @CacheEvict(
-            cacheNames = {"concertMain", "concertSearch"},
+            cacheNames = {"concertMain", "concertSearch", "concertRelated"},
             allEntries = true)
     @Scheduled(cron = "0 0 4 * * *")
     public void fetchDailyScheduled() {
@@ -44,7 +44,7 @@ public class ConcertSyncScheduler {
     }
 
     @CacheEvict(
-            cacheNames = {"concertMain", "concertSearch"},
+            cacheNames = {"concertMain", "concertSearch", "concertRelated"},
             allEntries = true)
     public void fetchDailyConcertInfoList(final LocalDate today) {
         List<String> hallCodes = concertHallRepository.findAllHallCodes();
