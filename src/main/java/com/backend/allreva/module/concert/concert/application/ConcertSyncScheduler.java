@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -28,6 +29,7 @@ public class ConcertSyncScheduler {
     private final ConcertRepository concertRepository;
 
     /** 공연 정보 매일 동기화 — 매일 새벽 4시 */
+    @CacheEvict(cacheNames = {"concertMain", "concertSearch"}, allEntries = true)
     @Scheduled(cron = "0 0 4 * * *")
     public void fetchDailyScheduled() {
         LocalDate today = LocalDate.now();
@@ -39,6 +41,7 @@ public class ConcertSyncScheduler {
         }
     }
 
+    @CacheEvict(cacheNames = {"concertMain", "concertSearch"}, allEntries = true)
     public void fetchDailyConcertInfoList(final LocalDate today) {
         List<String> hallCodes = concertHallRepository.findAllHallCodes();
         Map<String, ConcertStatus> statusMap = concertRepository.findAll().stream()

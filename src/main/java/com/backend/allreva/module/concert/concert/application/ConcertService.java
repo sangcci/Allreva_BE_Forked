@@ -39,6 +39,7 @@ public class ConcertService {
         return thumbnails;
     }
 
+    @Cacheable(cacheNames = "concertSearch", key = "#title + '_' + #cursorCode + '_' + #size")
     @Transactional(readOnly = true)
     public SliceResponse<ConcertThumbnail, String> searchConcerts(
             final String title, final String cursorCode, final int size) {
@@ -50,6 +51,7 @@ public class ConcertService {
         return response;
     }
 
+    @Cacheable(cacheNames = "concertMain", key = "#address + '_' + #cursorCode + '_' + #size + '_' + #sortDirection.name()")
     @Transactional(readOnly = true)
     public SliceResponse<ConcertThumbnail, String> getMainConcerts(
             final String address, final String cursorCode, final int size, final SortDirection sortDirection) {
@@ -61,12 +63,8 @@ public class ConcertService {
         return response;
     }
 
+    @Cacheable(cacheNames = "concertRelated", key = "#hallCode + '_' + #lastConcertCode + '_' + #pageSize")
     @Transactional(readOnly = true)
-    @Cacheable(
-            cacheNames = "relatedConcert",
-            key = "#hallCode + '_' + #lastConcertCode + '_' + #pageSize",
-            unless = "#result == null",
-            cacheManager = "relatedConcertCacheManager")
     public List<RelatedConcertResponse> getRelatedConcerts(
             final String hallCode, final String lastConcertCode, final int pageSize) {
         return concertRepository.findAllByHallCode(hallCode, lastConcertCode, pageSize).stream()
