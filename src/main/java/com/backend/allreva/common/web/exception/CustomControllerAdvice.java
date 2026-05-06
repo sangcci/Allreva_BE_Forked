@@ -4,13 +4,18 @@ import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.exception.ErrorCode;
 import com.backend.allreva.common.exception.GlobalErrorCode;
 import com.backend.allreva.common.web.response.Response;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @Slf4j
 @RestControllerAdvice
@@ -24,9 +29,10 @@ public class CustomControllerAdvice {
                 .body(Response.onFailure(errorCode.getCode(), errorCode.getMessage()));
     }
 
+    // @RequestBody bean validation failure
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     public ResponseEntity<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.info("user validation error: {}", e.getMessage(), e);
+        log.info("request body validation failed: {}", e.getMessage());
         StringBuilder errorMessage = new StringBuilder();
 
         for (ObjectError error : e.getBindingResult().getAllErrors()) {
@@ -37,6 +43,71 @@ public class CustomControllerAdvice {
                     .append(error.getDefaultMessage())
                     .append("\n");
         }
+
+        return ResponseEntity.status(GlobalErrorCode.BAD_REQUEST_ERROR.getStatus())
+                .body(Response.onFailure(GlobalErrorCode.BAD_REQUEST_ERROR.getCode(), errorMessage.toString()));
+    }
+
+    // @RequestParam type conversion failure (e.g. invalid enum value)
+    @ExceptionHandler(value = MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        log.info("request param type mismatch: param={}, value={}", e.getName(), e.getValue());
+        String message = String.format("'%s' is not a valid value for '%s'", e.getValue(), e.getName());
+
+        return ResponseEntity.status(GlobalErrorCode.BAD_REQUEST_ERROR.getStatus())
+                .body(Response.onFailure(GlobalErrorCode.BAD_REQUEST_ERROR.getCode(), message));
+    }
+
+    // JSON body parse failure (malformed JSON, invalid enum in body, wrong type)
+    @ExceptionHandler(value = HttpMessageNotReadableException.class)
+    public ResponseEntity<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
+        log.info("request body not readable: {}", e.getMessage());
+
+        return ResponseEntity.status(GlobalErrorCode.BAD_REQUEST_ERROR.getStatus())
+                .body(Response.onFailure(
+                        GlobalErrorCode.BAD_REQUEST_ERROR.getCode(), GlobalErrorCode.BAD_REQUEST_ERROR.getMessage()));
+    }
+
+    // required @RequestParam missing
+    @ExceptionHandler(value = MissingServletRequestParameterException.class)
+    public ResponseEntity<?> handleMissingServletRequestParameterException(MissingServletRequestParameterException e) {
+        log.info("required request param missing: param={}", e.getParameterName());
+        String message = String.format("required parameter '%s' is missing", e.getParameterName());
+
+        return ResponseEntity.status(GlobalErrorCode.BAD_REQUEST_ERROR.getStatus())
+                .body(Response.onFailure(GlobalErrorCode.BAD_REQUEST_ERROR.getCode(), message));
+    }
+
+    // @ModelAttribute binding failure
+    @ExceptionHandler(value = BindException.class)
+    public ResponseEntity<?> handleBindException(BindException e) {
+        log.info("model attribute binding failed: {}", e.getMessage());
+        StringBuilder errorMessage = new StringBuilder();
+
+        for (ObjectError error : e.getBindingResult().getAllErrors()) {
+            String field = (error instanceof FieldError fe) ? fe.getField() : error.getObjectName();
+            errorMessage
+                    .append(field)
+                    .append(": ")
+                    .append(error.getDefaultMessage())
+                    .append("\n");
+        }
+
+        return ResponseEntity.status(GlobalErrorCode.BAD_REQUEST_ERROR.getStatus())
+                .body(Response.onFailure(GlobalErrorCode.BAD_REQUEST_ERROR.getCode(), errorMessage.toString()));
+    }
+
+    // @Validated method parameter constraint violation
+    @ExceptionHandler(value = ConstraintViolationException.class)
+    public ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException e) {
+        log.info("constraint violation: {}", e.getMessage());
+        StringBuilder errorMessage = new StringBuilder();
+
+        e.getConstraintViolations().forEach(v -> errorMessage
+                .append(v.getPropertyPath())
+                .append(": ")
+                .append(v.getMessage())
+                .append("\n"));
 
         return ResponseEntity.status(GlobalErrorCode.BAD_REQUEST_ERROR.getStatus())
                 .body(Response.onFailure(GlobalErrorCode.BAD_REQUEST_ERROR.getCode(), errorMessage.toString()));
