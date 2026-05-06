@@ -61,13 +61,23 @@ public class HttpLogFilter extends OncePerRequestFilter {
             String duration = String.valueOf(stopWatch.getTotalTimeMillis());
             String clientIp = getClientIp(request);
 
+            String queryString = requestWrapper.getQueryString();
+
             MDC.put("method", method);
             MDC.put("uri", uri);
+            MDC.put("query_string", queryString != null ? queryString : "");
             MDC.put("status", status);
             MDC.put("duration_ms", duration);
             MDC.put("client_ip", clientIp);
 
-            log.info("HTTP {} {} → {} ({}ms) ip={}", method, uri, status, duration, clientIp);
+            log.info(
+                    "HTTP {} {}{}  → {} ({}ms) ip={}",
+                    method,
+                    uri,
+                    queryString != null ? "?" + queryString : "",
+                    status,
+                    duration,
+                    clientIp);
 
             responseWrapper.copyBodyToResponse();
             MDC.clear();
