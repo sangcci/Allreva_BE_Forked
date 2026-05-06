@@ -6,6 +6,7 @@ import com.backend.allreva.common.exception.GlobalErrorCode;
 import com.backend.allreva.common.web.response.Response;
 import jakarta.validation.ConstraintViolationException;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatusCode;
@@ -46,14 +47,11 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<?> handleConstraintViolationException(ConstraintViolationException e) {
         log.info("constraint violation: {}", e.getMessage());
-        StringBuilder errorMessage = new StringBuilder();
-        e.getConstraintViolations().forEach(v -> errorMessage
-                .append(v.getPropertyPath())
-                .append(": ")
-                .append(v.getMessage())
-                .append("\n"));
+        String errorMessage = e.getConstraintViolations().stream()
+                .map(v -> v.getPropertyPath() + ": " + v.getMessage())
+                .collect(Collectors.joining("\n"));
         return ResponseEntity.status(GlobalErrorCode.BAD_REQUEST_ERROR.getStatus())
-                .body(Response.onFailure(GlobalErrorCode.BAD_REQUEST_ERROR.getCode(), errorMessage.toString()));
+                .body(Response.onFailure(GlobalErrorCode.BAD_REQUEST_ERROR.getCode(), errorMessage));
     }
 
     @ExceptionHandler(Exception.class)
@@ -69,9 +67,10 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         log.info("method argument validation failed: {}", e.getMessage());
-        StringBuilder errorMessage = buildFieldErrors(e.getBindingResult().getAllErrors());
         return ResponseEntity.status(status)
-                .body(Response.onFailure(GlobalErrorCode.BAD_REQUEST_ERROR.getCode(), errorMessage.toString()));
+                .body(Response.onFailure(
+                        GlobalErrorCode.BAD_REQUEST_ERROR.getCode(),
+                        buildFieldErrors(e.getBindingResult().getAllErrors())));
     }
 
     // controller-layer @Validated method parameter constraint violation (Spring 6+)
@@ -79,26 +78,27 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
     protected ResponseEntity<Object> handleHandlerMethodValidationException(
             HandlerMethodValidationException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         log.info("handler method validation failed: {}", e.getMessage());
-        StringBuilder errorMessage = new StringBuilder();
-        e.getAllValidationResults().forEach(result -> {
-            String paramName = result.getMethodParameter().getParameterName();
-            result.getResolvableErrors().forEach(error -> errorMessage
-                    .append(paramName)
-                    .append(": ")
-                    .append(error.getDefaultMessage())
-                    .append("\n"));
-        });
+        String errorMessage = e.getAllValidationResults().stream()
+                .flatMap(result -> {
+                    String paramName = result.getMethodParameter().getParameterName();
+                    return result.getResolvableErrors().stream()
+                            .map(error -> paramName + ": " + error.getDefaultMessage());
+                })
+                .collect(Collectors.joining("\n"));
         return ResponseEntity.status(status)
-                .body(Response.onFailure(GlobalErrorCode.BAD_REQUEST_ERROR.getCode(), errorMessage.toString()));
+                .body(Response.onFailure(GlobalErrorCode.BAD_REQUEST_ERROR.getCode(), errorMessage));
     }
 
-    // JSON body parse failure (malformed JSON, invalid enum in body, wrong type)
+    // JSON body parse failure (malformed JSON, missing body, invalid enum in body, wrong type)
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(
             HttpMessageNotReadableException e, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         log.info("request body not readable: {}", e.getMessage());
+        String message = e.getMessage() != null && e.getMessage().contains("Required request body is missing")
+                ? "요청 본문이 비어있습니다."
+                : "요청 본문이 비어있거나 JSON 형식이 올바르지 않습니다.";
         return ResponseEntity.status(status)
-                .body(Response.onFailure(GlobalErrorCode.BAD_REQUEST_ERROR.getCode(), "JSON 형식에 맞지 않는 요청입니다."));
+                .body(Response.onFailure(GlobalErrorCode.BAD_REQUEST_ERROR.getCode(), message));
     }
 
     // required @RequestParam missing
@@ -111,16 +111,12 @@ public class CustomControllerAdvice extends ResponseEntityExceptionHandler {
                 .body(Response.onFailure(GlobalErrorCode.BAD_REQUEST_ERROR.getCode(), message));
     }
 
-    private StringBuilder buildFieldErrors(List<ObjectError> errors) {
-        StringBuilder errorMessage = new StringBuilder();
-        for (ObjectError error : errors) {
-            String field = (error instanceof FieldError fe) ? fe.getField() : error.getObjectName();
-            errorMessage
-                    .append(field)
-                    .append(": ")
-                    .append(error.getDefaultMessage())
-                    .append("\n");
-        }
-        return errorMessage;
+    private String buildFieldErrors(List<ObjectError> errors) {
+        return errors.stream()
+                .map(error -> {
+                    String field = (error instanceof FieldError fe) ? fe.getField() : error.getObjectName();
+                    return field + ": " + error.getDefaultMessage();
+                })
+                .collect(Collectors.joining("\n"));
     }
 }
