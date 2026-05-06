@@ -43,7 +43,10 @@ class PopularKeywordCommandTest extends IntegrationTestSupport {
 
     @AfterEach
     void afterEach() {
-        redisTemplate.getConnectionFactory().getConnection().flushAll();
+        redisTemplate.execute(connection -> {
+            connection.serverCommands().flushAll();
+            return null;
+        });
     }
 
     @Nested
