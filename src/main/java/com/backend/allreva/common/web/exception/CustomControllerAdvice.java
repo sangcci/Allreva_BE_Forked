@@ -52,7 +52,7 @@ public class CustomControllerAdvice {
     @ExceptionHandler(value = MethodArgumentTypeMismatchException.class)
     public ResponseEntity<?> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
         log.info("request param type mismatch: param={}, value={}", e.getName(), e.getValue());
-        String message = String.format("'%s' is not a valid value for '%s'", e.getValue(), e.getName());
+        String message = String.format("'%s' 파라미터에 유효하지 않은 값입니다: %s", e.getName(), e.getValue());
 
         return ResponseEntity.status(GlobalErrorCode.BAD_REQUEST_ERROR.getStatus())
                 .body(Response.onFailure(GlobalErrorCode.BAD_REQUEST_ERROR.getCode(), message));
@@ -64,8 +64,7 @@ public class CustomControllerAdvice {
         log.info("request body not readable: {}", e.getMessage());
 
         return ResponseEntity.status(GlobalErrorCode.BAD_REQUEST_ERROR.getStatus())
-                .body(Response.onFailure(
-                        GlobalErrorCode.BAD_REQUEST_ERROR.getCode(), GlobalErrorCode.BAD_REQUEST_ERROR.getMessage()));
+                .body(Response.onFailure(GlobalErrorCode.BAD_REQUEST_ERROR.getCode(), "JSON 형식에 맞지 않는 요청입니다."));
     }
 
     // required @RequestParam missing
