@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 
@@ -33,7 +34,7 @@ class KeywordSearchedEventIntegrationTest extends IntegrationTestSupport {
 
     @AfterEach
     void afterEach() {
-        redisTemplate.execute(connection -> {
+        redisTemplate.execute((RedisCallback<Void>) connection -> {
             connection.serverCommands().flushAll();
             return null;
         });
