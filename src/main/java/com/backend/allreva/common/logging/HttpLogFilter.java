@@ -30,6 +30,7 @@ public class HttpLogFilter extends OncePerRequestFilter {
     private static final AntPathMatcher pathMatcher = new AntPathMatcher();
     private static final ArrayList<String> loggingExcludeUrls =
             new ArrayList<>(List.of("/actuator/**", "/swagger/**", "/swagger-ui/**", "/api-docs/**", "/favicon.ico"));
+    private static final List<String> queryStringExcludeUrls = List.of("/api/v1/auth/**");
 
     @Override
     protected boolean shouldNotFilter(final HttpServletRequest request) throws ServletException {
@@ -61,13 +62,27 @@ public class HttpLogFilter extends OncePerRequestFilter {
             String duration = String.valueOf(stopWatch.getTotalTimeMillis());
             String clientIp = getClientIp(request);
 
+            boolean excludeQueryString =
+                    queryStringExcludeUrls.stream().anyMatch(pattern -> pathMatcher.match(pattern, uri));
+            String queryString = excludeQueryString ? null : requestWrapper.getQueryString();
+
             MDC.put("method", method);
             MDC.put("uri", uri);
+            if (queryString != null) {
+                MDC.put("query_string", queryString);
+            }
             MDC.put("status", status);
             MDC.put("duration_ms", duration);
             MDC.put("client_ip", clientIp);
 
-            log.info("HTTP {} {} → {} ({}ms) ip={}", method, uri, status, duration, clientIp);
+            log.info(
+                    "HTTP {} {}{} → {} ({}ms) ip={}",
+                    method,
+                    uri,
+                    queryString != null ? "?" + queryString : "",
+                    status,
+                    duration,
+                    clientIp);
 
             responseWrapper.copyBodyToResponse();
             MDC.clear();
