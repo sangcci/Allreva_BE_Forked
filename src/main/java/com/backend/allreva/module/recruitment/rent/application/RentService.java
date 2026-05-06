@@ -1,6 +1,7 @@
 package com.backend.allreva.module.recruitment.rent.application;
 
 import com.backend.allreva.common.event.Events;
+import com.backend.allreva.common.event.KeywordSearchedEvent;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.common.storage.upload.StorageUploadService;
@@ -55,6 +56,7 @@ public class RentService {
     private final RentSearchRepository rentSearchRepository;
 
     public List<RentThumbnail> getRentSuggestions(final String title) {
+        Events.raise(new KeywordSearchedEvent(title));
         List<RentThumbnail> thumbnails = rentSearchRepository.findThumbnailsByTitle(title, 2);
         if (thumbnails.isEmpty()) {
             throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);

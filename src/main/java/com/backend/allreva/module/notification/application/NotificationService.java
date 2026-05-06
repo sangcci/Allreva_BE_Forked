@@ -57,7 +57,7 @@ public class NotificationService {
     /**
      * 모든 알림 이벤트를 통합 처리 - 알림 타입에 따라 적절한 포매팅 적용 - 모든 NotificationSender로 전송 (FCM, SSE)
      */
-    @Async
+    @Async("notificationExecutor")
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void sendMessage(final NotificationEvent event) {
         try {

@@ -7,7 +7,6 @@ import com.backend.allreva.module.search.application.port.PopularKeywordReposito
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -26,9 +25,8 @@ public class PopularKeywordService {
     }
 
     public void updatePopularKeywordRank() {
-        PopularKeywordResponses responses = popularKeywordRepository.getPopularKeywordRank();
-
-        List<String> top10 = Optional.ofNullable(responses)
+        List<String> top10 = popularKeywordRepository
+                .getPopularKeywordRank()
                 .map(PopularKeywordResponses::popularKeywordResponses)
                 .orElse(Collections.emptyList())
                 .stream()
@@ -72,6 +70,9 @@ public class PopularKeywordService {
     }
 
     public List<PopularKeywordResponse> getPopularKeywordRank() {
-        return popularKeywordRepository.getPopularKeywordRank().popularKeywordResponses();
+        return popularKeywordRepository
+                .getPopularKeywordRank()
+                .map(PopularKeywordResponses::popularKeywordResponses)
+                .orElse(Collections.emptyList());
     }
 }
