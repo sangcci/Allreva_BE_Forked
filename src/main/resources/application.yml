@@ -107,6 +107,16 @@ fcm:
   project-id: ${FCM_PROJECT_ID}
   service-account-key: ${FCM_SERVICE_ACCOUNT_KEY_PATH}
 
+thread-pool:
+  task:
+    core-size: ${THREAD_POOL_TASK_CORE_SIZE:10}
+    max-size: ${THREAD_POOL_TASK_MAX_SIZE:20}
+    queue-capacity: ${THREAD_POOL_TASK_QUEUE_CAPACITY:50}
+  notification:
+    core-size: ${THREAD_POOL_NOTIFICATION_CORE_SIZE:5}
+    max-size: ${THREAD_POOL_NOTIFICATION_MAX_SIZE:10}
+    queue-capacity: ${THREAD_POOL_NOTIFICATION_QUEUE_CAPACITY:30}
+
 loki:
   url: ${LOKI_URL:}
 
