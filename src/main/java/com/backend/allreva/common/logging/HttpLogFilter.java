@@ -62,8 +62,8 @@ public class HttpLogFilter extends OncePerRequestFilter {
             String duration = String.valueOf(stopWatch.getTotalTimeMillis());
             String clientIp = getClientIp(request);
 
-            boolean excludeQueryString = queryStringExcludeUrls.stream()
-                    .anyMatch(pattern -> pathMatcher.match(pattern, uri));
+            boolean excludeQueryString =
+                    queryStringExcludeUrls.stream().anyMatch(pattern -> pathMatcher.match(pattern, uri));
             String queryString = excludeQueryString ? null : requestWrapper.getQueryString();
 
             MDC.put("method", method);
