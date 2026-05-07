@@ -39,10 +39,9 @@ out/
 /nbdist/
 /.nb-gradle/
 
-### application-dev.yml ###
-/src/main/resources/application-dev.yml
-/src/main/resources/application-stag.yml
-/src/main/resources/application-prod.yml
+### Profile-specific configs & secrets ###
+**/application-*.yml*
+**/.env
 
 ### VS Code ###
 .vscode/
