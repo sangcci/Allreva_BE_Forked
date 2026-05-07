@@ -12,7 +12,8 @@ jobs:
         env:
           TITLE: ${{ github.event.issue.title }}
         run: |
-          if [[ ! "$TITLE" =~ ^\[(FEAT|BUG|DOCS|REFACTOR|TEST|PERF|CHORE|HOTFIX|CI)\]\ [^ ].* ]]; then
+          PATTERN='^\[(FEAT|BUG|DOCS|REFACTOR|TEST|PERF|CHORE|HOTFIX|CI)\] [^ ].*'
+          if [[ ! "$TITLE" =~ $PATTERN ]]; then
             echo "❌ 이슈 제목 형식이 올바르지 않습니다."
             echo "   형식: [TYPE] 설명"
             echo "   허용 타입: FEAT, BUG, DOCS, REFACTOR, TEST, PERF, CHORE, HOTFIX, CI"

@@ -12,7 +12,8 @@ jobs:
         env:
           TITLE: ${{ github.event.pull_request.title }}
         run: |
-          if [[ ! "$TITLE" =~ ^\[#[0-9]+\]\ [^ ].* ]]; then
+          PATTERN='^\[#[0-9]+\] [^ ].*'
+          if [[ ! "$TITLE" =~ $PATTERN ]]; then
             echo "❌ PR 제목 형식이 올바르지 않습니다."
             echo "   형식: [#이슈번호] 설명"
             echo "   예시: [#66] PR 제목 lint GitHub Actions 검사 추가"
