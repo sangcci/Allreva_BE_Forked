@@ -1,0 +1,22 @@
+name: PR Title Lint
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR title format
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          if [[ ! "$TITLE" =~ ^\[#[0-9]+\]\ [^ ].* ]]; then
+            echo "❌ PR 제목 형식이 올바르지 않습니다."
+            echo "   형식: [#이슈번호] 설명"
+            echo "   예시: [#66] PR 제목 lint GitHub Actions 검사 추가"
+            echo "   현재: $TITLE"
+            exit 1
+          fi
+          echo "✅ PR 제목 형식이 올바릅니다: $TITLE"
