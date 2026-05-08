@@ -21,8 +21,8 @@ spring:
       ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}
     properties:
       hibernate:
-        format_sql: true
-        show_sql: false
+        format_sql: ${HIBERNATE_FORMAT_SQL:true}
+        show_sql: ${HIBERNATE_SHOW_SQL:false}
 
   flyway:
     enabled: true
@@ -69,10 +69,10 @@ management:
 
 url:
   back:
-    protocol: http
+    protocol: ${BACKEND_PROTOCOL:http}
     domain: ${BACKEND_DOMAIN:localhost:8080}
   front:
-    protocol: http
+    protocol: ${FRONTEND_PROTOCOL:http}
     domain: ${FRONTEND_DOMAIN:localhost:5173}
     domain-name: ${FRONTEND_DOMAIN_NAME:localhost}
 
@@ -122,7 +122,7 @@ loki:
 
 logging:
   level:
-    "[com.backend.allreva]": INFO
-    "[org.springframework.web]": WARN
-    "[org.hibernate.SQL]": OFF
-    "[org.hibernate.type.descriptor.sql.BasicBinder]": OFF
+    "[com.backend.allreva]": ${LOG_LEVEL_APP:INFO}
+    "[org.springframework.web]": ${LOG_LEVEL_SPRING_WEB:WARN}
+    "[org.hibernate.SQL]": ${LOG_LEVEL_HIBERNATE_SQL:OFF}
+    "[org.hibernate.type.descriptor.sql.BasicBinder]": ${LOG_LEVEL_HIBERNATE_BINDER:OFF}

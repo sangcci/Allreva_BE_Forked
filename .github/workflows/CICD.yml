@@ -88,6 +88,14 @@ jobs:
     runs-on: [self-hosted, was]
 
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Sync deploy scripts
+        run: |
+          mkdir -p ~/deploy
+          cp deploy/deploy.sh ~/deploy/deploy.sh
+          chmod +x ~/deploy/deploy.sh
+
       - name: Blue-Green deploy
         run: ~/deploy/deploy.sh ${APP_NAME} ${{ secrets.DOCKERHUB_USERNAME }}
 
@@ -104,5 +112,16 @@ jobs:
     runs-on: [self-hosted, web]
 
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Sync nginx config
+        run: |
+          mkdir -p ~/nginx/conf.d
+          cp infra/nginx.conf ~/nginx/nginx.conf
+          cp infra/conf.d/default.conf ~/nginx/conf.d/default.conf
+          cp infra/docker-compose.yml ~/nginx/docker-compose.yml
+          cp infra/switch.sh ~/nginx/switch.sh
+          chmod +x ~/nginx/switch.sh
+
       - name: Switch Nginx upstream
         run: ~/nginx/switch.sh ${{ needs.deploy-app.outputs.active-slot }}
