@@ -122,6 +122,7 @@ jobs:
           cp infra/docker-compose.yml ~/nginx/docker-compose.yml
           cp infra/switch.sh ~/nginx/switch.sh
           chmod +x ~/nginx/switch.sh
+          echo "TUNNEL_TOKEN=${{ secrets.TUNNEL_TOKEN }}" > ~/nginx/.env
 
       - name: Switch Nginx upstream
         run: ~/nginx/switch.sh ${{ needs.deploy-app.outputs.active-slot }}
