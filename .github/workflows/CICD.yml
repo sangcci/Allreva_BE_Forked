@@ -119,6 +119,7 @@ jobs:
           mkdir -p ~/nginx/conf.d
           cp infra/nginx.conf ~/nginx/nginx.conf
           cp infra/conf.d/default.conf ~/nginx/conf.d/default.conf
+          cp infra/docker-compose.yml ~/nginx/docker-compose.yml
           cp infra/switch.sh ~/nginx/switch.sh
           chmod +x ~/nginx/switch.sh
 

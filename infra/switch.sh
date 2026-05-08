@@ -2,6 +2,12 @@
 set -e
 
 SLOT="${1:?Usage: switch.sh <blue|green>}"
+
+if [ "$SLOT" != "blue" ] && [ "$SLOT" != "green" ]; then
+  echo "Error: SLOT must be 'blue' or 'green', got '${SLOT}'" >&2
+  exit 1
+fi
+
 APP_VM_IP="192.168.122.20"
 CONF=~/nginx/conf.d/default.conf
 

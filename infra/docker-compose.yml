@@ -5,9 +5,9 @@ services:
     ports:
       - "80:80"
     volumes:
-      - ~/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ~/nginx/conf.d:/etc/nginx/conf.d
-      - ~/nginx/auth/.htpasswd:/etc/nginx/.htpasswd:ro
+      - ${HOME}/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${HOME}/nginx/conf.d:/etc/nginx/conf.d
+      - ${HOME}/nginx/auth/.htpasswd:/etc/nginx/.htpasswd:ro
       - /var/log/nginx:/var/log/nginx
     networks:
       - web
