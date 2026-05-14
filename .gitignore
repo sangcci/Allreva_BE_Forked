@@ -40,7 +40,14 @@ out/
 /.nb-gradle/
 
 ### Profile-specific configs & secrets ###
-**/application-*.yml*
+**/application-dev.yml
+**/application-prod.yml
+**/application-stag.yml
+**/application-local.yml
+**/application-*-dev.yml
+**/application-*-prod.yml
+**/application-*-stag.yml
+**/application-*-local.yml
 **/.env
 
 ### VS Code ###

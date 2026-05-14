@@ -1,1 +1,9 @@
 rootProject.name = 'allreva'
+
+include 'apps:implement-server'
+include 'apps:batch-server'
+include 'modules:allreva-implement'
+include 'modules:allreva-application'
+include 'modules:allreva-domain'
+include 'modules:allreva-infra'
+include 'modules:allreva-events'
