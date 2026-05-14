@@ -32,9 +32,9 @@
 - 저장소 구현체, 조회 구현체
 - 인프라 설정
 
-### modules/allreva-implement
+### modules/allreva-api
 - Controller, Swagger, HTTP 응답 포맷
-- implement 전용 요청/응답 DTO
+- API 전용 요청/응답 DTO
 - 웹 보안, 웹 엔드포인트, multipart 같은 진입점 설정
 
 ### modules/allreva-events
@@ -54,7 +54,7 @@
 단, 이들도 최종적으로는 의미가 더 분명한 모듈 하위로 이동할 수 있습니다.
 예를 들면 `BaseEntity`는 `domain`, `Response`는 `implement`가 더 자연스럽습니다.
 
-### implement로 가야 하는 것
+### api로 가야 하는 것
 - `common/web/response/Response`
 - `common/web/exception/CustomControllerAdvice`
 - `common/config/CorsConfig`
@@ -90,7 +90,7 @@
 
 ## DTO 정책
 
-## 1. implement DTO
+## 1. api DTO
 외부 HTTP 계약에 직접 노출되는 요청/응답 모델입니다.
 
 예:
@@ -101,7 +101,7 @@
 위치는 다음처럼 둡니다.
 
 ```text
-modules/allreva-implement
+modules/allreva-api
 └─ rent
    ├─ command/dto
    └─ query/dto
@@ -118,7 +118,7 @@ modules/allreva-implement
 
 현재 `application/dto`에 섞여 있는 요청/응답 클래스는 이후 점진적으로 아래 둘 중 하나로 정리합니다.
 
-- implement DTO
+- api DTO
 - application command/query DTO
 
 ## 3. domain 객체
@@ -131,7 +131,7 @@ modules/allreva-implement
 - `Depositor`
 
 ## DTO 판단 규칙
-- 컨트롤러 입력/출력 모양이면 `implement`
+- 컨트롤러 입력/출력 모양이면 `api`
 - 유스케이스 전달 모델이면 `application`
 - 핵심 개념과 상태 변화 규칙이면 `domain`
 - 외부 API 응답 원본이면 `infra`
@@ -208,7 +208,7 @@ JPA 기술 구현 세부사항이므로 `infra` 소속입니다.
 ### common/storage/presigned
 - controller는 `implement`
 - service와 S3 연동은 `infra`
-- request DTO는 implement DTO로 이동 검토
+- request DTO는 api DTO로 이동 검토
 
 ### common/event
 - 공통 이벤트 메커니즘과 비즈니스 이벤트 클래스 분리
