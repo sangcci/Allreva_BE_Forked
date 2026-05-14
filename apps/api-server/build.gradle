@@ -5,7 +5,7 @@ plugins {
 }
 
 dependencies {
-    implementation project(':modules:allreva-implement')
+    implementation project(':modules:allreva-api')
     implementation project(':modules:allreva-application')
     implementation project(':modules:allreva-domain')
     implementation project(':modules:allreva-infra')

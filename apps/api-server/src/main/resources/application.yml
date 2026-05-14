@@ -1,14 +1,14 @@
 spring:
   application:
-    name: allreva-implement
+    name: allreva-api
   profiles:
     active: dev
   config:
     import:
-      - classpath:application-implement.yml
+      - classpath:application-api.yml
       - classpath:application-infra.yml
       - optional:classpath:application-events.yml
-      - optional:classpath:application-implement-${spring.profiles.active}.yml
+      - optional:classpath:application-api-${spring.profiles.active}.yml
       - optional:classpath:application-infra-${spring.profiles.active}.yml
       - optional:classpath:application-events-${spring.profiles.active}.yml
       - optional:secret
