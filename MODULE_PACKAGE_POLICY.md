@@ -36,10 +36,18 @@
 - Controller, Swagger, HTTP 응답 포맷
 - API 전용 요청/응답 DTO
 - 웹 보안, 웹 엔드포인트, multipart 같은 진입점 설정
+- HTTP logging adapter (`Filter`, `HandlerInterceptor`)
 
 ### modules/allreva-events
 - 외부 공개 이벤트 계약
 - 브로커/배치/다른 실행 모듈에 노출되는 integration event
+
+### modules/allreva-observability
+- logging / metrics / tracing 공통 지원
+- AOP 기반 메서드 로깅
+- MDC / trace helper
+- 공통 annotation, helper, config
+- web 비의존 observability 라이브러리
 
 ## common 재분류 기준
 
@@ -63,6 +71,7 @@
 - `common/config/MultipartJacksonConverter`
 - `common/storage/presigned/PresignedUrlController`
 - `common/storage/presigned/PresignedUrlControllerSwagger`
+- `common/logging/HttpLogFilter`
 
 ### infra로 가야 하는 것
 - `common/config/JpaAuditingConfig`
@@ -192,6 +201,15 @@ JPA 기술 구현 세부사항이므로 `infra` 소속입니다.
 - query service는 `application/query`
 - controller query endpoint는 `implement/query`
 
+## Observability 정책
+
+- logging / metrics / tracing 공통 지원은 `allreva-observability` 후보 모듈로 관리합니다.
+- 이 모듈은 `spring-web` 의존 없이 유지합니다.
+- 메서드 실행 로깅, 타이머, MDC, trace helper는 observability로 보냅니다.
+- HTTP 요청/응답 로깅은 servlet/webmvc adapter가 필요하므로 `api` 책임으로 둡니다.
+- 따라서 `HttpLogFilter`를 유지하더라도 최종 위치는 `api`가 더 자연스럽습니다.
+- 이후 메서드 로깅은 AOP 기반으로 전환할 수 있습니다.
+
 ## 네이밍 정책
 
 - 초기 CQRS 단계에서는 `*CommandService`, `*QueryService`를 우선 사용합니다.
@@ -224,5 +242,6 @@ JPA 기술 구현 세부사항이므로 `infra` 소속입니다.
 
 - `#79`: rent 파일럿 CQRS 분리
 - `#81`: 이벤트 구조 분리
+- observability 모듈 분리 이슈
 - `#83`: 도메인 역할 및 네이밍 정제
 - `#84`: batch-server / scheduler-server 전략
