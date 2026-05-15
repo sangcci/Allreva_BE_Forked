@@ -14,7 +14,7 @@ import com.backend.allreva.module.concert.concert.infra.jpa.ConcertJpaRepository
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.member.domain.MemberRepository;
 import com.backend.allreva.module.member.fixture.MemberFixture;
-import com.backend.allreva.module.recruitment.rent.application.RentService;
+import com.backend.allreva.module.recruitment.rent.application.command.RentCommandService;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentIdRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinIdRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinRequest;
@@ -44,7 +44,7 @@ class RentCommandIntegrationTest extends IntegrationTestSupport {
     private static final List<LocalDate> BOARDING_DATES = List.of(LocalDate.of(2030, 12, 1), LocalDate.of(2030, 12, 2));
 
     @Autowired
-    private RentService rentService;
+    private RentCommandService rentService;
 
     @Autowired
     private RentRepository rentRepository;

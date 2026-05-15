@@ -4,7 +4,8 @@ import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.module.auth.security.AuthMember;
 import com.backend.allreva.module.member.domain.Member;
-import com.backend.allreva.module.recruitment.rent.application.RentService;
+import com.backend.allreva.module.recruitment.rent.application.command.RentCommandService;
+import com.backend.allreva.module.recruitment.rent.application.query.RentQueryService;
 import com.backend.allreva.module.recruitment.rent.application.dto.HostedRentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.JoinedRentResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse;
@@ -38,12 +39,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/rents")
 public class RentController implements RentControllerSwagger {
 
-    private final RentService rentService;
+    private final RentCommandService rentCommandService;
+    private final RentQueryService rentQueryService;
 
     @Override
     @GetMapping("/suggestions")
     public Response<List<RentThumbnail>> getRentSuggestions(@RequestParam final String query) {
-        return Response.onSuccess(rentService.getRentSuggestions(query));
+        return Response.onSuccess(rentQueryService.getRentSuggestions(query));
     }
 
     @Override
@@ -52,7 +54,7 @@ public class RentController implements RentControllerSwagger {
             @RequestParam final String query,
             @RequestParam(defaultValue = "7") final int pageSize,
             @RequestParam(required = false) final Long cursorId) {
-        return Response.onSuccess(rentService.searchRents(query, cursorId, pageSize));
+        return Response.onSuccess(rentQueryService.searchRents(query, cursorId, pageSize));
     }
 
     // Anonymous EndPoints
@@ -64,13 +66,13 @@ public class RentController implements RentControllerSwagger {
             @RequestParam(name = "lastId", required = false) final Long lastId,
             @RequestParam(name = "lastEndDate", required = false) final LocalDate lastEndDate,
             @RequestParam(name = "pageSize", defaultValue = "10") final int pageSize) {
-        return Response.onSuccess(rentService.getRentSummaries(region, sortType, lastEndDate, lastId, pageSize));
+        return Response.onSuccess(rentQueryService.getRentSummaries(region, sortType, lastEndDate, lastId, pageSize));
     }
 
     @Override
     @GetMapping("/{id}")
     public Response<RentDetailResponse> getRentDetail(@PathVariable final Long id) {
-        return Response.onSuccess(rentService.getRentDetail(id));
+        return Response.onSuccess(rentQueryService.getRentDetail(id));
     }
 
     // Host Endpoints
@@ -78,7 +80,7 @@ public class RentController implements RentControllerSwagger {
     @PostMapping
     public Response<Long> registerRent(
             @RequestBody final RentRegisterRequest rentRegisterRequest, @AuthMember final Member member) {
-        Long rentId = rentService.registerRent(rentRegisterRequest, member.getId());
+        Long rentId = rentCommandService.registerRent(rentRegisterRequest, member.getId());
         return Response.onSuccess(rentId);
     }
 
@@ -86,21 +88,21 @@ public class RentController implements RentControllerSwagger {
     @PatchMapping
     public Response<Void> updateRent(
             @RequestBody final RentUpdateRequest rentUpdateRequest, @AuthMember final Member member) {
-        rentService.updateRent(rentUpdateRequest, member.getId());
+        rentCommandService.updateRent(rentUpdateRequest, member.getId());
         return Response.onSuccess();
     }
 
     @Override
     @PatchMapping("/close")
     public Response<Void> closeRent(@RequestBody final RentIdRequest rentIdRequest, @AuthMember final Member member) {
-        rentService.closeRent(rentIdRequest, member.getId());
+        rentCommandService.closeRent(rentIdRequest, member.getId());
         return Response.onSuccess();
     }
 
     @Override
     @DeleteMapping
     public Response<Void> deleteRent(@RequestBody final RentIdRequest rentIdRequest, @AuthMember final Member member) {
-        rentService.deleteRent(rentIdRequest, member.getId());
+        rentCommandService.deleteRent(rentIdRequest, member.getId());
         return Response.onSuccess();
     }
 
@@ -110,7 +112,7 @@ public class RentController implements RentControllerSwagger {
             @AuthMember Member member,
             @RequestParam(name = "lastId", required = false) final Long lastId,
             @RequestParam(name = "pageSize", defaultValue = "10") final int pageSize) {
-        return Response.onSuccess(rentService.getRentHostSummaries(member.getId(), lastId, pageSize));
+        return Response.onSuccess(rentQueryService.getRentHostSummaries(member.getId(), lastId, pageSize));
     }
 
     @Override
@@ -119,7 +121,7 @@ public class RentController implements RentControllerSwagger {
             @PathVariable("id") final Long rentId,
             @RequestParam final LocalDate boardingDate,
             @AuthMember Member member) {
-        return Response.onSuccess(rentService.getRentHostDetail(member.getId(), boardingDate, rentId));
+        return Response.onSuccess(rentQueryService.getRentHostDetail(member.getId(), boardingDate, rentId));
     }
 
     // Participant Endpoints
@@ -127,7 +129,7 @@ public class RentController implements RentControllerSwagger {
     @PostMapping("/join")
     public Response<Long> joinRent(
             @RequestBody final RentJoinRequest rentJoinRequest, @AuthMember final Member member) {
-        Long participantId = rentService.joinRent(rentJoinRequest, member.getId());
+        Long participantId = rentCommandService.joinRent(rentJoinRequest, member.getId());
         return Response.onSuccess(participantId);
     }
 
@@ -135,7 +137,7 @@ public class RentController implements RentControllerSwagger {
     @PatchMapping("/join")
     public Response<Void> updateRentJoin(
             @RequestBody final RentJoinUpdateRequest rentJoinUpdateRequest, @AuthMember final Member member) {
-        rentService.updateRentJoin(rentJoinUpdateRequest, member.getId());
+        rentCommandService.updateRentJoin(rentJoinUpdateRequest, member.getId());
         return Response.onSuccess();
     }
 
@@ -143,7 +145,7 @@ public class RentController implements RentControllerSwagger {
     @DeleteMapping("/join")
     public Response<Void> cancelRentJoin(
             @RequestBody final RentJoinIdRequest rentJoinIdRequest, @AuthMember final Member member) {
-        rentService.cancelRentJoin(rentJoinIdRequest, member.getId());
+        rentCommandService.cancelRentJoin(rentJoinIdRequest, member.getId());
         return Response.onSuccess();
     }
 
@@ -153,7 +155,7 @@ public class RentController implements RentControllerSwagger {
             @AuthMember final Member member,
             @RequestParam(name = "lastId", required = false) final Long lastId,
             @RequestParam(name = "pageSize", defaultValue = "10") final int pageSize) {
-        return Response.onSuccess(rentService.getJoinedRentSummaries(member.getId(), lastId, pageSize));
+        return Response.onSuccess(rentQueryService.getJoinedRentSummaries(member.getId(), lastId, pageSize));
     }
 
     @Override
@@ -162,6 +164,6 @@ public class RentController implements RentControllerSwagger {
             @PathVariable("id") final Long rentId,
             @RequestParam final LocalDate boardingDate,
             @AuthMember Member member) {
-        return Response.onSuccess(rentService.getJoinedRentDetail(member.getId(), boardingDate, rentId));
+        return Response.onSuccess(rentQueryService.getJoinedRentDetail(member.getId(), boardingDate, rentId));
     }
 }
