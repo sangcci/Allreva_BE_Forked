@@ -1,6 +1,6 @@
 package com.backend.allreva.module.recruitment.survey.domain.participant;
 
-import com.backend.allreva.common.event.Events;
+import com.backend.allreva.events.Events;
 import com.backend.allreva.common.model.BaseEntity;
 import com.backend.allreva.module.recruitment.survey.domain.value.BoardingType;
 import jakarta.persistence.Column;

@@ -1,6 +1,6 @@
 package com.backend.allreva.module.notification.domain.event;
 
-import com.backend.allreva.common.event.Event;
+import com.backend.allreva.events.Event;
 import com.backend.allreva.module.notification.domain.value.NotificationType;
 import java.util.HashMap;
 import java.util.List;

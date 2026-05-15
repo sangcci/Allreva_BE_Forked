@@ -1,5 +1,6 @@
-package com.backend.allreva.common.event;
+package com.backend.allreva.module.search.domain.event;
 
+import com.backend.allreva.events.Event;
 import lombok.Getter;
 
 @Getter

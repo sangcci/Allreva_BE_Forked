@@ -1,4 +1,4 @@
-package com.backend.allreva.common.event;
+package com.backend.allreva.events;
 
 import lombok.Getter;
 

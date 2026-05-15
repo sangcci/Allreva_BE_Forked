@@ -1,7 +1,7 @@
 package com.backend.allreva.module.recruitment.rent.application.query;
 
-import com.backend.allreva.common.event.Events;
-import com.backend.allreva.common.event.KeywordSearchedEvent;
+import com.backend.allreva.events.Events;
+import com.backend.allreva.module.search.domain.event.KeywordSearchedEvent;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.module.concert.concert.domain.Concert;
