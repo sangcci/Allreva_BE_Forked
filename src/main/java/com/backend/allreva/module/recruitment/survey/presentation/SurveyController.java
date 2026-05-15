@@ -5,7 +5,8 @@ import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.common.web.response.Response;
 import com.backend.allreva.module.auth.security.AuthMember;
 import com.backend.allreva.module.member.domain.Member;
-import com.backend.allreva.module.recruitment.survey.application.SurveyService;
+import com.backend.allreva.module.recruitment.survey.application.command.SurveyCommandService;
+import com.backend.allreva.module.recruitment.survey.application.query.SurveyQueryService;
 import com.backend.allreva.module.recruitment.survey.application.dto.CreatedSurveyResponse;
 import com.backend.allreva.module.recruitment.survey.application.dto.JoinSurveyRequest;
 import com.backend.allreva.module.recruitment.survey.application.dto.JoinSurveyResponse;
@@ -38,12 +39,13 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/surveys")
 public class SurveyController implements SurveyControllerSwagger {
 
-    private final SurveyService surveyService;
+    private final SurveyCommandService surveyCommandService;
+    private final SurveyQueryService surveyQueryService;
 
     @Override
     @GetMapping("/suggestions")
     public Response<List<SurveyThumbnail>> getSurveySuggestions(@RequestParam final String query) {
-        return Response.onSuccess(surveyService.getSurveySuggestions(query));
+        return Response.onSuccess(surveyQueryService.getSurveySuggestions(query));
     }
 
     @Override
@@ -52,34 +54,34 @@ public class SurveyController implements SurveyControllerSwagger {
             @RequestParam final String query,
             @RequestParam(defaultValue = "7") final int pageSize,
             @RequestParam(required = false) final Long cursorId) {
-        return Response.onSuccess(surveyService.searchSurveys(query, cursorId, pageSize));
+        return Response.onSuccess(surveyQueryService.searchSurveys(query, cursorId, pageSize));
     }
 
     @Override
     @PostMapping
     public Response<Long> openSurvey(@AuthMember Member member, @RequestBody OpenSurveyRequest openSurveyRequest) {
-        return Response.onSuccess(surveyService.openSurvey(member.getId(), openSurveyRequest));
+        return Response.onSuccess(surveyCommandService.openSurvey(member.getId(), openSurveyRequest));
     }
 
     @Override
     @PatchMapping
     public Response<Void> updateSurvey(
             @AuthMember Member member, @RequestBody UpdateSurveyRequest updateSurveyRequest) {
-        surveyService.updateSurvey(member.getId(), updateSurveyRequest);
+        surveyCommandService.updateSurvey(member.getId(), updateSurveyRequest);
         return Response.onSuccess();
     }
 
     @Override
     @DeleteMapping
     public Response<Void> removeSurvey(@AuthMember Member member, @RequestBody SurveyIdRequest surveyIdRequest) {
-        surveyService.removeSurvey(member.getId(), surveyIdRequest);
+        surveyCommandService.removeSurvey(member.getId(), surveyIdRequest);
         return Response.onSuccess();
     }
 
     @Override
     @GetMapping("/{surveyId}")
     public Response<SurveyDetailResponse> findSurveyDetail(@PathVariable(name = "surveyId") Long surveyId) {
-        return Response.onSuccess(surveyService.findSurveyDetail(surveyId));
+        return Response.onSuccess(surveyQueryService.findSurveyDetail(surveyId));
     }
 
     @Override
@@ -93,26 +95,26 @@ public class SurveyController implements SurveyControllerSwagger {
         if (lastEndDate != null && lastId == null) {
             throw new CustomException(SurveyErrorCode.SURVEY_ILLEGAL_PARAMETER);
         }
-        return Response.onSuccess(surveyService.findSurveyList(region, sortType, lastId, lastEndDate, pageSize));
+        return Response.onSuccess(surveyQueryService.findSurveyList(region, sortType, lastId, lastEndDate, pageSize));
     }
 
     @Override
     @GetMapping("/main")
     public Response<List<SurveySummaryResponse>> findSurveyMainList() {
-        return Response.onSuccess(surveyService.findSurveyMainList());
+        return Response.onSuccess(surveyQueryService.findSurveyMainList());
     }
 
     @Override
     @PostMapping("/apply")
     public Response<Long> joinSurvey(@AuthMember Member member, @RequestBody JoinSurveyRequest joinSurveyRequest) {
-        return Response.onSuccess(surveyService.joinSurvey(member.getId(), joinSurveyRequest));
+        return Response.onSuccess(surveyCommandService.joinSurvey(member.getId(), joinSurveyRequest));
     }
 
     @Override
     @DeleteMapping("/apply/{participantId}")
     public Response<Void> cancelJoin(
             @AuthMember Member member, @PathVariable(name = "participantId") Long participantId) {
-        surveyService.cancelJoin(member.getId(), participantId);
+        surveyCommandService.cancelJoin(member.getId(), participantId);
         return Response.onSuccess();
     }
 
@@ -124,7 +126,7 @@ public class SurveyController implements SurveyControllerSwagger {
             @RequestParam(name = "lastBoardingDate", required = false) final LocalDate lastBoardingDate,
             @RequestParam(value = "pageSize", defaultValue = "10") final int pageSize) {
         return Response.onSuccess(
-                surveyService.findCreatedSurveyList(member.getId(), lastId, lastBoardingDate, pageSize));
+                surveyQueryService.findCreatedSurveyList(member.getId(), lastId, lastBoardingDate, pageSize));
     }
 
     @Override
@@ -133,6 +135,6 @@ public class SurveyController implements SurveyControllerSwagger {
             @AuthMember Member member,
             @RequestParam(value = "lastSurveyParticipantId", required = false) final Long lastId,
             @RequestParam(value = "pageSize", defaultValue = "10") final int pageSize) {
-        return Response.onSuccess(surveyService.findJoinSurveyList(member.getId(), lastId, pageSize));
+        return Response.onSuccess(surveyQueryService.findJoinSurveyList(member.getId(), lastId, pageSize));
     }
 }

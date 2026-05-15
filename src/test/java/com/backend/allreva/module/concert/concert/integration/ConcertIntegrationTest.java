@@ -4,7 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.instancio.Select.field;
 
-import com.backend.allreva.module.concert.concert.application.ConcertService;
+import com.backend.allreva.module.concert.concert.application.query.ConcertQueryService;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailResponse;
 import com.backend.allreva.module.concert.concert.application.dto.RelatedConcertResponse;
 import com.backend.allreva.module.concert.concert.domain.Concert;
@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 class ConcertIntegrationTest extends IntegrationTestSupport {
 
     @Autowired
-    private ConcertService concertService;
+    private ConcertQueryService concertService;
 
     @Autowired
     private ConcertRepository concertRepository;

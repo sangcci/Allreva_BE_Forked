@@ -2,7 +2,7 @@ package com.backend.allreva.module.concert.concert.presentation;
 
 import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.common.web.response.Response;
-import com.backend.allreva.module.concert.concert.application.ConcertService;
+import com.backend.allreva.module.concert.concert.application.query.ConcertQueryService;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailResponse;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertThumbnail;
 import com.backend.allreva.module.concert.concert.application.dto.RelatedConcertResponse;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Validated
 public class ConcertController implements ConcertControllerSwagger {
 
-    private final ConcertService concertService;
+    private final ConcertQueryService concertQueryService;
 
     @Override
     @GetMapping("/main")
@@ -31,13 +31,13 @@ public class ConcertController implements ConcertControllerSwagger {
             @RequestParam(defaultValue = "DATE") final SortDirection sortDirection,
             @RequestParam(defaultValue = "7") final int pageSize,
             @RequestParam(required = false) final String cursorCode) {
-        return Response.onSuccess(concertService.getMainConcerts(region, cursorCode, pageSize, sortDirection));
+        return Response.onSuccess(concertQueryService.getMainConcerts(region, cursorCode, pageSize, sortDirection));
     }
 
     @Override
     @GetMapping("/suggestions")
     public Response<List<ConcertThumbnail>> getConcertSuggestions(@RequestParam final String query) {
-        return Response.onSuccess(concertService.getConcertSuggestions(query));
+        return Response.onSuccess(concertQueryService.getConcertSuggestions(query));
     }
 
     @Override
@@ -46,13 +46,13 @@ public class ConcertController implements ConcertControllerSwagger {
             @RequestParam final String query,
             @RequestParam(defaultValue = "7") final int pageSize,
             @RequestParam(required = false) final String cursorCode) {
-        return Response.onSuccess(concertService.searchConcerts(query, cursorCode, pageSize));
+        return Response.onSuccess(concertQueryService.searchConcerts(query, cursorCode, pageSize));
     }
 
     @Override
     @GetMapping("/{concertCode}")
     public Response<ConcertDetailResponse> getConcertDetail(@PathVariable("concertCode") final String concertCode) {
-        return Response.onSuccess(concertService.getConcertDetail(concertCode));
+        return Response.onSuccess(concertQueryService.getConcertDetail(concertCode));
     }
 
     @Override
@@ -61,6 +61,6 @@ public class ConcertController implements ConcertControllerSwagger {
             @RequestParam final String hallCode,
             @RequestParam(required = false) final String lastConcertCode,
             @RequestParam(defaultValue = "3") final int pageSize) {
-        return Response.onSuccess(concertService.getRelatedConcerts(hallCode, lastConcertCode, pageSize));
+        return Response.onSuccess(concertQueryService.getRelatedConcerts(hallCode, lastConcertCode, pageSize));
     }
 }
