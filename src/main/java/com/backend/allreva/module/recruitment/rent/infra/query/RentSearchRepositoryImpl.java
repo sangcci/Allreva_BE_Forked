@@ -1,10 +1,10 @@
-package com.backend.allreva.module.recruitment.rent.infra;
+package com.backend.allreva.module.recruitment.rent.infra.query;
 
 import static com.backend.allreva.module.recruitment.rent.domain.QRent.rent;
 
 import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.module.recruitment.rent.application.query.dto.RentThumbnail;
-import com.backend.allreva.module.recruitment.rent.application.port.RentSearchRepository;
+import com.backend.allreva.module.recruitment.rent.application.query.port.RentSearchRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.Expressions;

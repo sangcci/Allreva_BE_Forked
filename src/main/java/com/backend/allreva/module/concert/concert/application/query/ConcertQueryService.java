@@ -7,7 +7,7 @@ import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailR
 import com.backend.allreva.module.concert.concert.application.dto.ConcertThumbnail;
 import com.backend.allreva.module.concert.concert.application.dto.RelatedConcertResponse;
 import com.backend.allreva.module.concert.concert.application.dto.SortDirection;
-import com.backend.allreva.module.concert.concert.application.port.ConcertSearchRepository;
+import com.backend.allreva.module.concert.concert.application.query.port.ConcertSearchRepository;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.exception.ConcertErrorCode;
