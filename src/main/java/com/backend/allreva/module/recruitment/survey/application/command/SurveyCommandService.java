@@ -1,67 +1,34 @@
-package com.backend.allreva.module.recruitment.survey.application;
+package com.backend.allreva.module.recruitment.survey.application.command;
 
-import com.backend.allreva.events.Events;
-import com.backend.allreva.module.search.domain.event.KeywordSearchedEvent;
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.common.pagination.SliceResponse;
+import com.backend.allreva.events.Events;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.exception.ConcertErrorCode;
 import com.backend.allreva.module.notification.domain.event.NotificationEvent;
 import com.backend.allreva.module.notification.domain.value.NotificationType;
-import com.backend.allreva.module.recruitment.survey.application.dto.CreatedSurveyResponse;
 import com.backend.allreva.module.recruitment.survey.application.dto.JoinSurveyRequest;
-import com.backend.allreva.module.recruitment.survey.application.dto.JoinSurveyResponse;
 import com.backend.allreva.module.recruitment.survey.application.dto.OpenSurveyRequest;
-import com.backend.allreva.module.recruitment.survey.application.dto.SortType;
-import com.backend.allreva.module.recruitment.survey.application.dto.SurveyDetailResponse;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveyIdRequest;
-import com.backend.allreva.module.recruitment.survey.application.dto.SurveyMainResponse;
-import com.backend.allreva.module.recruitment.survey.application.dto.SurveySummaryResponse;
-import com.backend.allreva.module.recruitment.survey.application.dto.SurveyThumbnail;
 import com.backend.allreva.module.recruitment.survey.application.dto.UpdateSurveyRequest;
-import com.backend.allreva.module.recruitment.survey.application.port.SurveySearchRepository;
 import com.backend.allreva.module.recruitment.survey.domain.Survey;
 import com.backend.allreva.module.recruitment.survey.domain.SurveyRepository;
 import com.backend.allreva.module.recruitment.survey.domain.participant.SurveyParticipant;
 import com.backend.allreva.module.recruitment.survey.domain.participant.SurveyParticipantRepository;
-import com.backend.allreva.module.recruitment.survey.domain.value.Region;
 import com.backend.allreva.module.recruitment.survey.exception.SurveyErrorCode;
-import com.backend.allreva.module.search.exception.SearchErrorCode;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
-public class SurveyService {
+public class SurveyCommandService {
 
     private final SurveyRepository surveyRepository;
     private final SurveyParticipantRepository surveyParticipantRepository;
     private final ConcertRepository concertRepository;
-    private final SurveySearchRepository surveySearchRepository;
-
-    public List<SurveyThumbnail> getSurveySuggestions(final String title) {
-        Events.raise(new KeywordSearchedEvent(title));
-        List<SurveyThumbnail> thumbnails = surveySearchRepository.findThumbnailsByTitle(title, 2);
-        if (thumbnails.isEmpty()) {
-            throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
-        }
-        return thumbnails;
-    }
-
-    public SliceResponse<SurveyThumbnail, Long> searchSurveys(final String title, final Long cursorId, final int size) {
-        SliceResponse<SurveyThumbnail, Long> response = surveySearchRepository.findAllByTitle(title, cursorId, size);
-        if (response.items().isEmpty()) {
-            throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
-        }
-        return response;
-    }
 
     @Transactional
     public Long openSurvey(final Long memberId, final OpenSurveyRequest request) {
@@ -90,7 +57,6 @@ public class SurveyService {
         return survey.getId();
     }
 
-    /** 수요조사 수정 */
     @Transactional
     public void updateSurvey(final Long memberId, final UpdateSurveyRequest request) {
         Survey survey = findSurvey(request.surveyId());
@@ -107,7 +73,6 @@ public class SurveyService {
                 request.boardingDates());
     }
 
-    /** 수요조사 삭제 */
     @Transactional
     public void removeSurvey(final Long memberId, final SurveyIdRequest surveyIdRequest) {
         Survey survey = findSurvey(surveyIdRequest.surveyId());
@@ -115,7 +80,6 @@ public class SurveyService {
         surveyRepository.delete(survey);
     }
 
-    /** 수요조사 참여 (응답 제출) */
     @Transactional
     public Long joinSurvey(final Long memberId, final JoinSurveyRequest request) {
         if (surveyParticipantRepository.existsByMemberIdAndSurveyId(memberId, request.surveyId())) {
@@ -137,7 +101,6 @@ public class SurveyService {
         return surveyParticipantRepository.save(participant).getId();
     }
 
-    /** 수요조사 참여 취소 */
     @Transactional
     public void cancelJoin(final Long memberId, final Long participantId) {
         SurveyParticipant participant = surveyParticipantRepository
@@ -147,46 +110,6 @@ public class SurveyService {
             throw new CustomException(SurveyErrorCode.SURVEY_JOIN_ACCESS_DENIED);
         }
         surveyParticipantRepository.delete(participant);
-    }
-
-    /** 내가 개설한 수요조사 목록 조회 */
-    @Transactional(readOnly = true)
-    public List<CreatedSurveyResponse> findCreatedSurveyList(
-            final Long memberId, final Long lastId, final LocalDate lastBoardingDate, final int pageSize) {
-        return surveyParticipantRepository.findCreatedSurveyList(memberId, lastId, lastBoardingDate, pageSize);
-    }
-
-    /** 내가 참여한 수요조사 목록 조회 */
-    @Transactional(readOnly = true)
-    public List<JoinSurveyResponse> findJoinSurveyList(final Long memberId, final Long lastId, final int pageSize) {
-        return surveyParticipantRepository.findJoinSurveyList(memberId, lastId, pageSize);
-    }
-
-    /** 수요조사 상세 조회 */
-    @Transactional(readOnly = true)
-    public SurveyDetailResponse findSurveyDetail(final Long surveyId) {
-        return surveyRepository.findSurveyDetail(surveyId);
-    }
-
-    /** 수요조사 목록 조회 */
-    @Transactional(readOnly = true)
-    public List<SurveySummaryResponse> findSurveyList(
-            final Region region,
-            final SortType sortType,
-            final Long lastId,
-            final LocalDate lastEndDate,
-            final int pageSize) {
-        return surveyRepository.findSurveyList(region, sortType, lastId, lastEndDate, pageSize);
-    }
-
-    @Transactional(readOnly = true)
-    public Optional<SurveyMainResponse> findSurveyWithParticipationCount(final Long surveyId) {
-        return surveyRepository.findSurveyWithParticipationCount(surveyId);
-    }
-
-    @Transactional(readOnly = true)
-    public List<SurveySummaryResponse> findSurveyMainList() {
-        return surveyRepository.findSurveyMainList();
     }
 
     private void validateBoardingDates(final String concertCode, final List<LocalDate> boardingDates) {

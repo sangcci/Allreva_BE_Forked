@@ -1,9 +1,8 @@
-package com.backend.allreva.module.concert.concert.application;
+package com.backend.allreva.module.concert.concert.application.query;
 
-import com.backend.allreva.events.Events;
-import com.backend.allreva.module.search.domain.event.KeywordSearchedEvent;
 import com.backend.allreva.common.exception.CustomException;
 import com.backend.allreva.common.pagination.SliceResponse;
+import com.backend.allreva.events.Events;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertDetailResponse;
 import com.backend.allreva.module.concert.concert.application.dto.ConcertThumbnail;
 import com.backend.allreva.module.concert.concert.application.dto.RelatedConcertResponse;
@@ -14,6 +13,7 @@ import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.exception.ConcertErrorCode;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
+import com.backend.allreva.module.search.domain.event.KeywordSearchedEvent;
 import com.backend.allreva.module.search.exception.SearchErrorCode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,13 +23,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class ConcertService {
+@Transactional(readOnly = true)
+public class ConcertQueryService {
 
     private final ConcertRepository concertRepository;
     private final ConcertHallRepository concertHallRepository;
     private final ConcertSearchRepository concertSearchRepository;
 
-    @Transactional(readOnly = true)
     public List<ConcertThumbnail> getConcertSuggestions(final String title) {
         Events.raise(new KeywordSearchedEvent(title));
         List<ConcertThumbnail> thumbnails = concertSearchRepository.findThumbnailsByTitle(title, 2);
@@ -40,7 +40,6 @@ public class ConcertService {
     }
 
     @Cacheable(cacheNames = "concertSearch")
-    @Transactional(readOnly = true)
     public SliceResponse<ConcertThumbnail, String> searchConcerts(
             final String title, final String cursorCode, final int size) {
         SliceResponse<ConcertThumbnail, String> response =
@@ -52,7 +51,6 @@ public class ConcertService {
     }
 
     @Cacheable(cacheNames = "concertMain")
-    @Transactional(readOnly = true)
     public SliceResponse<ConcertThumbnail, String> getMainConcerts(
             final String address, final String cursorCode, final int size, final SortDirection sortDirection) {
         SliceResponse<ConcertThumbnail, String> response =
@@ -64,7 +62,6 @@ public class ConcertService {
     }
 
     @Cacheable(cacheNames = "concertRelated")
-    @Transactional(readOnly = true)
     public List<RelatedConcertResponse> getRelatedConcerts(
             final String hallCode, final String lastConcertCode, final int pageSize) {
         return concertRepository.findAllByHallCode(hallCode, lastConcertCode, pageSize).stream()
@@ -72,7 +69,6 @@ public class ConcertService {
                 .toList();
     }
 
-    @Transactional(readOnly = true)
     public ConcertDetailResponse getConcertDetail(final String concertCode) {
         Concert concert = concertRepository
                 .findById(concertCode)
