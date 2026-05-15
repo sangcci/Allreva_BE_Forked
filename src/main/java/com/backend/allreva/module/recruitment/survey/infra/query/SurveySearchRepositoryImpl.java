@@ -1,11 +1,11 @@
-package com.backend.allreva.module.recruitment.survey.infra;
+package com.backend.allreva.module.recruitment.survey.infra.query;
 
 import static com.backend.allreva.module.recruitment.survey.domain.QSurvey.survey;
 import static com.backend.allreva.module.recruitment.survey.domain.participant.QSurveyParticipant.surveyParticipant;
 
 import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveyThumbnail;
-import com.backend.allreva.module.recruitment.survey.application.port.SurveySearchRepository;
+import com.backend.allreva.module.recruitment.survey.application.query.port.SurveySearchRepository;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;

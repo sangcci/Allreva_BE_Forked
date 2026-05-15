@@ -10,7 +10,7 @@ import com.backend.allreva.module.recruitment.survey.application.dto.SurveyDetai
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveyMainResponse;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveySummaryResponse;
 import com.backend.allreva.module.recruitment.survey.application.dto.SurveyThumbnail;
-import com.backend.allreva.module.recruitment.survey.application.port.SurveySearchRepository;
+import com.backend.allreva.module.recruitment.survey.application.query.port.SurveySearchRepository;
 import com.backend.allreva.module.recruitment.survey.domain.SurveyRepository;
 import com.backend.allreva.module.recruitment.survey.domain.participant.SurveyParticipantRepository;
 import com.backend.allreva.module.recruitment.survey.domain.value.Region;

@@ -15,7 +15,7 @@ import com.backend.allreva.module.recruitment.rent.application.query.dto.RentPar
 import com.backend.allreva.module.recruitment.rent.application.query.dto.RentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.query.dto.RentThumbnail;
 import com.backend.allreva.module.recruitment.rent.application.query.dto.SortType;
-import com.backend.allreva.module.recruitment.rent.application.port.RentSearchRepository;
+import com.backend.allreva.module.recruitment.rent.application.query.port.RentSearchRepository;
 import com.backend.allreva.module.recruitment.rent.domain.Rent;
 import com.backend.allreva.module.recruitment.rent.domain.RentRepository;
 import com.backend.allreva.module.recruitment.rent.domain.participant.RentParticipant;

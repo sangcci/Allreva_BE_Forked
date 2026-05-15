@@ -183,8 +183,9 @@ Aggregate 저장과 상태 변경에 필요한 인터페이스만 둡니다.
 - `ConcertSearchRepository`
 
 정책:
-- query 전용 계약은 `application/.../query` 또는 `application/.../port`
-- 구현은 `infra/.../query`
+- query 전용 계약은 `application/query/port`
+- 구현은 `infra/query`
+- `*SearchRepository`처럼 조회 목적이 분명한 이름을 우선 사용
 - Aggregate 저장소와 같은 이름/역할로 섞지 않음
 
 ## 3. Spring Data JPA repository
@@ -201,6 +202,12 @@ JPA 기술 구현 세부사항이므로 `infra` 소속입니다.
 - query service는 `application/query`
 - controller query endpoint는 `implement/query`
 
+## Validation 정책
+
+- 요청 DTO 검증은 controller에만 두지 않고 application service에서도 동작하게 유지합니다.
+- command service는 `@Validated`, DTO 파라미터는 `@Valid`를 우선 적용합니다.
+- API 계층은 검증 실패를 HTTP 응답으로 변환하고, 검증 규칙 자체는 application usecase 가까이에 둡니다.
+
 ## Observability 정책
 
 - logging / metrics / tracing 공통 지원은 `allreva-observability` 후보 모듈로 관리합니다.
@@ -213,8 +220,9 @@ JPA 기술 구현 세부사항이므로 `infra` 소속입니다.
 ## 네이밍 정책
 
 - 초기 CQRS 단계에서는 `*CommandService`, `*QueryService`를 우선 사용합니다.
-- `Host`, `Participant` 같은 행위 축은 당장 클래스명으로 올리지 않습니다.
+- `Host`, `Participant` 같은 행위 축은 당장 클래스명으로 올리지 않고 메서드 책임으로 먼저 검증합니다.
 - `Rule`, `Reader`, `Writer`, `DomainService`는 실제 복잡도가 확인된 뒤 후속 이슈에서 분리합니다.
+- query 전용 협력 객체는 service와 같은 축에 두고(`application/query`, `infra/query`) 이름으로 역할을 드러냅니다.
 
 ## 1차 적용 대상
 
