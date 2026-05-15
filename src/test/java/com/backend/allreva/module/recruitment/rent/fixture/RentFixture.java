@@ -3,12 +3,12 @@ package com.backend.allreva.module.recruitment.rent.fixture;
 import static org.instancio.Select.field;
 
 import com.backend.allreva.common.model.Image;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentIdRequest;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinIdRequest;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinRequest;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinUpdateRequest;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
+import com.backend.allreva.module.recruitment.rent.application.command.dto.RentIdRequest;
+import com.backend.allreva.module.recruitment.rent.application.command.dto.RentJoinIdRequest;
+import com.backend.allreva.module.recruitment.rent.application.command.dto.RentJoinRequest;
+import com.backend.allreva.module.recruitment.rent.application.command.dto.RentJoinUpdateRequest;
+import com.backend.allreva.module.recruitment.rent.application.command.dto.RentRegisterRequest;
+import com.backend.allreva.module.recruitment.rent.application.command.dto.RentUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
 import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
 import com.backend.allreva.module.recruitment.rent.domain.value.Route;

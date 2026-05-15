@@ -1,4 +1,4 @@
-package com.backend.allreva.module.recruitment.rent.application.dto;
+package com.backend.allreva.module.recruitment.rent.application.query.dto;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

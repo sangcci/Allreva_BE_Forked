@@ -3,8 +3,8 @@ package com.backend.allreva.module.recruitment.rent.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.backend.allreva.common.model.Image;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
+import com.backend.allreva.module.recruitment.rent.application.command.dto.RentRegisterRequest;
+import com.backend.allreva.module.recruitment.rent.application.command.dto.RentUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.domain.value.BoardingType;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusSize;
 import com.backend.allreva.module.recruitment.rent.domain.value.BusType;
