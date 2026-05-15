@@ -1,6 +1,6 @@
 package com.backend.allreva.module.recruitment.rent.domain;
 
-import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
+import com.backend.allreva.module.recruitment.rent.application.query.dto.SortType;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;

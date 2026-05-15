@@ -2,7 +2,7 @@ package com.backend.allreva.module.recruitment.rent.infra;
 
 import static com.backend.allreva.module.recruitment.rent.domain.QRent.rent;
 
-import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
+import com.backend.allreva.module.recruitment.rent.application.query.dto.SortType;
 import com.backend.allreva.module.recruitment.rent.domain.Rent;
 import com.backend.allreva.module.recruitment.rent.domain.RentRepository;
 import com.backend.allreva.module.recruitment.rent.infra.jpa.RentJpaRepository;

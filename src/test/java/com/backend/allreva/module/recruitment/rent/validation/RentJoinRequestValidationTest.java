@@ -2,8 +2,10 @@ package com.backend.allreva.module.recruitment.rent.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinRequest;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinUpdateRequest;
+import com.backend.allreva.module.recruitment.rent.application.command.dto.RentIdRequest;
+import com.backend.allreva.module.recruitment.rent.application.command.dto.RentJoinIdRequest;
+import com.backend.allreva.module.recruitment.rent.application.command.dto.RentJoinRequest;
+import com.backend.allreva.module.recruitment.rent.application.command.dto.RentJoinUpdateRequest;
 import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -114,6 +116,43 @@ class RentJoinRequestValidationTest {
                 var violations = validate(request(2, "010-12-5678"));
                 assertThat(violations).anyMatch(v -> v.getMessage().equals("전화번호 형식이 올바르지 않습니다."));
             }
+        }
+    }
+
+    @Nested
+    @DisplayName("RentIdRequest 검증")
+    class Describe_RentIdRequest {
+
+        @Test
+        @DisplayName("rentId가 있으면 통과한다")
+        void valid_request_passes() {
+            assertThat(validator.validate(new RentIdRequest(1L))).isEmpty();
+        }
+
+        @Test
+        @DisplayName("rentId가 null이면 실패한다")
+        void null_rentId_fails() {
+            var violations = validator.validate(new RentIdRequest(null));
+            assertThat(violations).anyMatch(v -> v.getPropertyPath().toString().equals("rentId"));
+        }
+    }
+
+    @Nested
+    @DisplayName("RentJoinIdRequest 검증")
+    class Describe_RentJoinIdRequest {
+
+        @Test
+        @DisplayName("rentParticipantId가 있으면 통과한다")
+        void valid_request_passes() {
+            assertThat(validator.validate(new RentJoinIdRequest(1L))).isEmpty();
+        }
+
+        @Test
+        @DisplayName("rentParticipantId가 null이면 실패한다")
+        void null_rentParticipantId_fails() {
+            var violations = validator.validate(new RentJoinIdRequest(null));
+            assertThat(violations)
+                    .anyMatch(v -> v.getPropertyPath().toString().equals("rentParticipantId"));
         }
     }
 

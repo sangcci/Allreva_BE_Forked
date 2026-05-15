@@ -1,4 +1,4 @@
-package com.backend.allreva.module.recruitment.rent.application.dto;
+package com.backend.allreva.module.recruitment.rent.application.query.dto;
 
 import com.backend.allreva.module.recruitment.rent.domain.Rent;
 import com.backend.allreva.module.recruitment.rent.domain.RentBoardingSlot;

@@ -3,7 +3,7 @@ package com.backend.allreva.module.recruitment.rent.infra;
 import static com.backend.allreva.module.recruitment.rent.domain.QRent.rent;
 
 import com.backend.allreva.common.pagination.SliceResponse;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentThumbnail;
+import com.backend.allreva.module.recruitment.rent.application.query.dto.RentThumbnail;
 import com.backend.allreva.module.recruitment.rent.application.port.RentSearchRepository;
 import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.BooleanExpression;

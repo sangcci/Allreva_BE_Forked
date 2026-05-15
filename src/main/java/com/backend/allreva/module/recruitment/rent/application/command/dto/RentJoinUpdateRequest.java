@@ -1,4 +1,4 @@
-package com.backend.allreva.module.recruitment.rent.application.dto;
+package com.backend.allreva.module.recruitment.rent.application.command.dto;
 
 import com.backend.allreva.module.recruitment.rent.domain.value.RefundType;
 import jakarta.validation.constraints.Max;
