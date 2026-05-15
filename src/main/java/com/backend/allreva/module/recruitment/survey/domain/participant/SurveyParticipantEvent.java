@@ -1,6 +1,6 @@
 package com.backend.allreva.module.recruitment.survey.domain.participant;
 
-import com.backend.allreva.common.event.Event;
+import com.backend.allreva.events.Event;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

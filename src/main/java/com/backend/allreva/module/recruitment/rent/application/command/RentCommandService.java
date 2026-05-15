@@ -48,7 +48,7 @@ public class RentCommandService {
                         .build()));
         Rent savedRent = rentRepository.save(rent);
 
-        com.backend.allreva.common.event.Events.raise(NotificationEvent.builder()
+        com.backend.allreva.events.Events.raise(NotificationEvent.builder()
                 .type(NotificationType.RENT_REGISTERED)
                 .recipientIds(List.of(memberId))
                 .senderId(memberId)

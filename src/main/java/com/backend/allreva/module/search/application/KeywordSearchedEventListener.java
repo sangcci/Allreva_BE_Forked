@@ -1,6 +1,6 @@
 package com.backend.allreva.module.search.application;
 
-import com.backend.allreva.common.event.KeywordSearchedEvent;
+import com.backend.allreva.module.search.domain.event.KeywordSearchedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;

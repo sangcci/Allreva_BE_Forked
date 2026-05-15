@@ -3,8 +3,8 @@ package com.backend.allreva.module.search.integration;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.awaitility.Awaitility.await;
 
-import com.backend.allreva.common.event.Events;
-import com.backend.allreva.common.event.KeywordSearchedEvent;
+import com.backend.allreva.events.Events;
+import com.backend.allreva.module.search.domain.event.KeywordSearchedEvent;
 import com.backend.allreva.support.IntegrationTestSupport;
 import java.time.Duration;
 import org.junit.jupiter.api.AfterEach;
