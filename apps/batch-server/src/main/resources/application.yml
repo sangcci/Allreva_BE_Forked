@@ -1,6 +1,11 @@
 spring:
   application:
     name: allreva-batch
+  main:
+    web-application-type: none
+  task:
+    scheduling:
+      thread-name-prefix: batch-scheduler-
   profiles:
     active: dev
   config:

@@ -12,12 +12,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.instancio.Select.field;
 
-import com.backend.allreva.module.concert.concert.application.ConcertSyncScheduler;
+import com.backend.allreva.module.concert.concert.application.ConcertSyncService;
 import com.backend.allreva.module.concert.concert.domain.Concert;
 import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
 import com.backend.allreva.module.concert.concert.domain.value.ConcertInfo;
 import com.backend.allreva.module.concert.concert.fixture.ConcertFixture;
-import com.backend.allreva.module.concert.place.application.ConcertHallSyncScheduler;
+import com.backend.allreva.module.concert.place.application.ConcertHallSyncService;
 import com.backend.allreva.module.concert.place.domain.ConcertHall;
 import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import com.backend.allreva.module.concert.place.fixture.ConcertHallFixture;
@@ -102,10 +102,10 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
             """;
 
     @Autowired
-    private ConcertSyncScheduler concertSyncScheduler;
+    private ConcertSyncService concertSyncService;
 
     @Autowired
-    private ConcertHallSyncScheduler concertHallSyncScheduler;
+    private ConcertHallSyncService concertHallSyncService;
 
     @Autowired
     private ConcertRepository concertRepository;
@@ -131,7 +131,6 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("공연 정보를 DB에 저장한다")
             void savesNewConcertToDb() {
-                // given
                 String concertCode = "PF001";
                 concertHallRepository.save(Instancio.of(ConcertHallFixture.concertHallModel())
                         .set(field(ConcertHall.class, "hallCode"), HALL_ID)
@@ -148,10 +147,8 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
                                 .withHeader("Content-Type", "application/xml;charset=UTF-8")
                                 .withBody(CONCERT_DETAIL_XML.formatted(concertCode, "진행 중인 공연"))));
 
-                // when
-                concertSyncScheduler.fetchDailyConcertInfoList(LocalDate.of(2026, 4, 24));
+                concertSyncService.fetchDailyConcertInfoList(LocalDate.of(2026, 4, 24));
 
-                // then
                 Concert saved = concertRepository.findById(concertCode).orElseThrow();
                 assertSoftly(softly -> {
                     softly.assertThat(saved.getConcertInfo().getTitle()).isEqualTo("진행 중인 공연");
@@ -167,7 +164,6 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("상세를 호출하지 않고 스킵한다")
             void skipsCompletedConcert() {
-                // given
                 String concertCode = "PF003";
                 concertHallRepository.save(Instancio.of(ConcertHallFixture.concertHallModel())
                         .set(field(ConcertHall.class, "hallCode"), HALL_ID)
@@ -183,13 +179,11 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
                                 .withHeader("Content-Type", "application/xml;charset=UTF-8")
                                 .withBody(CONCERT_CODE_LIST_XML.formatted(concertCode, "공연완료"))));
 
-                // when
-                concertSyncScheduler.fetchDailyConcertInfoList(LocalDate.of(2026, 4, 24));
+                concertSyncService.fetchDailyConcertInfoList(LocalDate.of(2026, 4, 24));
 
-                // then
                 verify(0, getRequestedFor(urlPathMatching("/openApi/restful/pblprfr/" + concertCode + ".*")));
                 Concert result = concertRepository.findById(concertCode).orElseThrow();
-                assertThat(result.getConcertInfo().getTitle()).isEqualTo("종료된 공연"); // unchanged
+                assertThat(result.getConcertInfo().getTitle()).isEqualTo("종료된 공연");
             }
         }
 
@@ -200,7 +194,6 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("상세를 호출하고 업데이트한다")
             void callsDetailAndUpdatesOnStatusTransition() {
-                // given
                 String concertCode = "PF004";
                 concertHallRepository.save(Instancio.of(ConcertHallFixture.concertHallModel())
                         .set(field(ConcertHall.class, "hallCode"), HALL_ID)
@@ -220,10 +213,8 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
                                 .withHeader("Content-Type", "application/xml;charset=UTF-8")
                                 .withBody(CONCERT_DETAIL_XML.formatted(concertCode, "공연중"))));
 
-                // when
-                concertSyncScheduler.fetchDailyConcertInfoList(LocalDate.of(2026, 4, 24));
+                concertSyncService.fetchDailyConcertInfoList(LocalDate.of(2026, 4, 24));
 
-                // then
                 verify(1, getRequestedFor(urlPathMatching("/openApi/restful/pblprfr/" + concertCode + ".*")));
                 Concert result = concertRepository.findById(concertCode).orElseThrow();
                 assertThat(result.getConcertInfo().getTitle()).isEqualTo("공연중");
@@ -237,12 +228,7 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("KOPIS API를 호출하지 않는다")
             void doesNotCallApiWhenNoHalls() {
-                // given: no halls in DB
-
-                // when
-                concertSyncScheduler.fetchDailyConcertInfoList(LocalDate.of(2026, 4, 24));
-
-                // then
+                concertSyncService.fetchDailyConcertInfoList(LocalDate.of(2026, 4, 24));
                 verify(0, getRequestedFor(urlPathEqualTo("/openApi/restful/pblprfr")));
             }
         }
@@ -259,7 +245,6 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("공연장 정보를 DB에 업데이트한다")
             void updatesConcertHallInfoInDb() {
-                // given
                 concertHallRepository.save(Instancio.of(ConcertHallFixture.concertHallModel())
                         .set(field(ConcertHall.class, "hallCode"), HALL_ID)
                         .create());
@@ -296,10 +281,8 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
                                 .withHeader("Content-Type", "application/xml;charset=UTF-8")
                                 .withBody(updatedHallXml)));
 
-                // when
-                concertHallSyncScheduler.fetchConcertHallInfoList();
+                concertHallSyncService.fetchConcertHallInfoList();
 
-                // then
                 ConcertHall result = concertHallRepository.findById(HALL_ID).orElseThrow();
                 assertSoftly(softly -> {
                     softly.assertThat(result.getName()).isEqualTo("업데이트된 공연장");
@@ -315,7 +298,6 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("hallId가 일치하는 공연장만 저장한다")
             void savesOnlyMatchingHalls() {
-                // given
                 concertHallRepository.save(Instancio.of(ConcertHallFixture.concertHallModel())
                         .set(field(ConcertHall.class, "hallCode"), HALL_ID)
                         .create());
@@ -357,10 +339,8 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
                                 .withHeader("Content-Type", "application/xml;charset=UTF-8")
                                 .withBody(multiHallXml)));
 
-                // when
-                concertHallSyncScheduler.fetchConcertHallInfoList();
+                concertHallSyncService.fetchConcertHallInfoList();
 
-                // then
                 assertThat(concertHallRepository.findById("FC001114-2")).isEmpty();
                 assertThat(concertHallRepository.findById(HALL_ID)).isPresent();
             }
@@ -373,12 +353,7 @@ class ConcertSyncIntegrationTest extends IntegrationTestSupport {
             @Test
             @DisplayName("KOPIS API를 호출하지 않는다")
             void doesNotCallApiWhenNoHalls() {
-                // given: no halls in DB
-
-                // when
-                concertHallSyncScheduler.fetchConcertHallInfoList();
-
-                // then
+                concertHallSyncService.fetchConcertHallInfoList();
                 verify(0, getRequestedFor(urlPathMatching("/openApi/restful/prfplc/.*")));
             }
         }

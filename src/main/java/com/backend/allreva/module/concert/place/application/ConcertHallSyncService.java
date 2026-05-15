@@ -8,32 +8,17 @@ import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Slf4j
-@Component
-public class ConcertHallSyncScheduler {
+@Service
+public class ConcertHallSyncService {
 
     private static final int KOPIS_RATE_LIMIT_MILLIS = 100;
 
     private final ConcertHallDataSyncPort concertHallDataSyncPort;
     private final ConcertHallRepository concertHallRepository;
-
-    /** 공연장 정보 매월 동기화 — 매월 1일 새벽 2시 */
-    @CacheEvict(
-            cacheNames = {"concertHall"},
-            allEntries = true)
-    @Scheduled(cron = "0 0 2 1 * *")
-    public void fetchMonthlyHallInfoList() {
-        try {
-            fetchConcertHallInfoList();
-            log.info("Monthly concert hall info update complete");
-        } catch (Exception e) {
-            log.error("Can't update monthly hall info. Message: {}", e.getMessage());
-        }
-    }
 
     @CacheEvict(
             cacheNames = {"concertHall"},
@@ -47,7 +32,6 @@ public class ConcertHallSyncScheduler {
                 Set<String> existingHallCodes = concertHallRepository.findHallCodesByFacilityCode(facilityCode);
 
                 for (ConcertHall hall : halls) {
-                    // Save only if hallCode exists in whitelist (already in DB)
                     if (existingHallCodes.contains(hall.getHallCode())) {
                         concertHallRepository.save(hall);
                     } else {

@@ -1,6 +1,6 @@
 package com.backend.allreva.module.concert.place.presentation;
 
-import com.backend.allreva.module.concert.place.application.ConcertHallSyncScheduler;
+import com.backend.allreva.module.concert.place.application.ConcertHallSyncService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/test/sync/halls")
 public class ConcertHallSyncTestController implements ConcertHallSyncTestControllerSwagger {
 
-    private final ConcertHallSyncScheduler concertHallSyncScheduler;
+    private final ConcertHallSyncService concertHallSyncService;
 
     @PostMapping
     public String syncHalls() {
-        concertHallSyncScheduler.fetchConcertHallInfoList();
+        concertHallSyncService.fetchConcertHallInfoList();
         return "concert hall sync triggered";
     }
 }

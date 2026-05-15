@@ -239,12 +239,20 @@ JPA 기술 구현 세부사항이므로 `infra` 소속입니다.
 ### common/event
 - 공통 이벤트 메커니즘과 비즈니스 이벤트 클래스 분리
 
+## 실행 모듈 정책
+
+- 초기 실행 모듈은 `api-server`, `batch-server` 2개로 둡니다.
+- `@Scheduled` 진입점은 우선 `com.backend.allreva.batch.scheduler` 패키지 기준으로 정리합니다.
+- Spring Batch `Job` / 이벤트 소비자도 `batch-server` 내부에서 시작하고, 실제 유스케이스는 application 계층의 재사용 가능한 service/usecase를 호출합니다.
+- `scheduler-server`는 처음부터 만들지 않고, 배포 주기·장애 격리·운영 설정이 분리될 때 별도 app 모듈로 승격합니다.
+- 따라서 지금 단계에서 중요한 것은 `scheduler` 책임을 API 진입점과 분리하고, 나중에 `scheduler-server`로 옮기기 쉬운 패키지/설정 경계를 유지하는 것입니다.
+
 ## 이번 단계에서 하지 않는 것
 
 - 모든 common 코드 즉시 이동
 - 도메인 서비스 / Rule 세분화
 - `HostCommandService`, `ParticipantCommandService` 같은 역할명 세분화
-- batch-server / scheduler-server 실행 전략 확정
+- `scheduler-server` 즉시 생성
 
 ## 후속 이슈 연결
 
