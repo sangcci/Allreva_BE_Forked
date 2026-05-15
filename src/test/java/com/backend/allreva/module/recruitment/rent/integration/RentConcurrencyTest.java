@@ -13,7 +13,7 @@ import com.backend.allreva.module.concert.concert.infra.jpa.ConcertJpaRepository
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.member.domain.MemberRepository;
 import com.backend.allreva.module.member.fixture.MemberFixture;
-import com.backend.allreva.module.recruitment.rent.application.RentService;
+import com.backend.allreva.module.recruitment.rent.application.command.RentCommandService;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
 import com.backend.allreva.module.recruitment.rent.fixture.RentFixture;
@@ -43,7 +43,7 @@ class RentConcurrencyTest extends IntegrationTestSupport {
     private static final LocalDate BOARDING_DATE = LocalDate.of(2030, 12, 1);
 
     @Autowired
-    private RentService rentService;
+    private RentCommandService rentCommandService;
 
     @Autowired
     private MemberRepository memberRepository;
@@ -76,7 +76,7 @@ class RentConcurrencyTest extends IntegrationTestSupport {
 
         Concert concert = concertJpaRepository.save(
                 Instancio.of(ConcertFixture.inProgressConcertModel()).create());
-        rentId = rentService.registerRent(
+        rentId = rentCommandService.registerRent(
                 Instancio.of(RentFixture.rentRegisterRequestModel())
                         .set(field(RentRegisterRequest.class, "concertCode"), concert.getConcertCode())
                         .set(field(RentRegisterRequest.class, "rentBoardingDateRequests"), List.of(BOARDING_DATE))
@@ -114,7 +114,7 @@ class RentConcurrencyTest extends IntegrationTestSupport {
                 ready.countDown();
                 try {
                     start.await();
-                    rentService.joinRent(
+                    rentCommandService.joinRent(
                             Instancio.of(RentFixture.rentJoinRequestModel())
                                     .set(field(RentJoinRequest.class, "rentId"), rentId)
                                     .set(field(RentJoinRequest.class, "boardingDate"), BOARDING_DATE)

@@ -13,7 +13,8 @@ import com.backend.allreva.module.concert.concert.infra.jpa.ConcertJpaRepository
 import com.backend.allreva.module.member.domain.Member;
 import com.backend.allreva.module.member.domain.MemberRepository;
 import com.backend.allreva.module.member.fixture.MemberFixture;
-import com.backend.allreva.module.recruitment.rent.application.RentService;
+import com.backend.allreva.module.recruitment.rent.application.command.RentCommandService;
+import com.backend.allreva.module.recruitment.rent.application.query.RentQueryService;
 import com.backend.allreva.module.recruitment.rent.application.dto.HostedRentSummaryResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.JoinedRentResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse;
@@ -50,7 +51,10 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             List.of(LocalDate.of(2030, 12, 1), LocalDate.of(2030, 12, 2), LocalDate.of(2030, 12, 3));
 
     @Autowired
-    private RentService rentService;
+    private RentQueryService rentService;
+
+    @Autowired
+    private RentCommandService rentCommandService;
 
     @Autowired
     private RentJpaRepository rentJpaRepository;
@@ -111,7 +115,7 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
 
         @BeforeEach
         void setUp() {
-            savedRentId = rentService.registerRent(buildRegisterRequest(), savedMember.getId());
+            savedRentId = rentCommandService.registerRent(buildRegisterRequest(), savedMember.getId());
         }
 
         @Nested
@@ -155,7 +159,7 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @BeforeEach
             void setUp() {
                 for (int i = 0; i < 15; i++) {
-                    rentService.registerRent(buildRegisterRequest(), savedMember.getId());
+                    rentCommandService.registerRent(buildRegisterRequest(), savedMember.getId());
                 }
             }
 
@@ -175,7 +179,7 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
                 // given
                 List<RentSummaryResponse> all = rentService.getRentSummaries(null, SortType.LATEST, null, null, 15);
                 Long firstRentId = all.get(0).rentId();
-                rentService.closeRent(
+                rentCommandService.closeRent(
                         Instancio.of(RentFixture.rentIdRequestModel())
                                 .set(field(RentIdRequest.class, "rentId"), firstRentId)
                                 .create(),
@@ -221,11 +225,11 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             @BeforeEach
             void setUp() {
                 for (int i = 0; i < 15; i++) {
-                    rentService.registerRent(buildRegisterRequest(), savedMember.getId());
+                    rentCommandService.registerRent(buildRegisterRequest(), savedMember.getId());
                 }
                 otherMember = memberRepository.save(MemberFixture.createOtherTestMember());
                 for (int i = 0; i < 5; i++) {
-                    rentService.registerRent(buildRegisterRequest(), otherMember.getId());
+                    rentCommandService.registerRent(buildRegisterRequest(), otherMember.getId());
                 }
             }
 
@@ -295,7 +299,7 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
 
         @BeforeEach
         void setUp() {
-            savedRentId = rentService.registerRent(buildRegisterRequest(), savedMember.getId());
+            savedRentId = rentCommandService.registerRent(buildRegisterRequest(), savedMember.getId());
         }
 
         @Nested
@@ -306,8 +310,8 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             void setUp() {
                 Member member2 = memberRepository.save(MemberFixture.createTestMemberWithIndex(2));
                 Member member3 = memberRepository.save(MemberFixture.createTestMemberWithIndex(3));
-                rentService.joinRent(buildJoinRequest(savedRentId, TARGET_DATE, 1), member2.getId());
-                rentService.joinRent(buildJoinRequest(savedRentId, TARGET_DATE, 1), member3.getId());
+                rentCommandService.joinRent(buildJoinRequest(savedRentId, TARGET_DATE, 1), member2.getId());
+                rentCommandService.joinRent(buildJoinRequest(savedRentId, TARGET_DATE, 1), member3.getId());
             }
 
             @Test
@@ -386,12 +390,12 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
             savedRegisterRequest = buildRegisterRequest();
 
             for (int i = 0; i < 5; i++) {
-                Long rentId = rentService.registerRent(savedRegisterRequest, savedMember.getId());
+                Long rentId = rentCommandService.registerRent(savedRegisterRequest, savedMember.getId());
                 rentIds.add(rentId);
 
                 for (LocalDate date : SLOT_DATES) {
-                    rentService.joinRent(buildJoinRequest(rentId, date, 1), savedMember.getId());
-                    rentService.joinRent(buildJoinRequest(rentId, date, 1), otherMember.getId());
+                    rentCommandService.joinRent(buildJoinRequest(rentId, date, 1), savedMember.getId());
+                    rentCommandService.joinRent(buildJoinRequest(rentId, date, 1), otherMember.getId());
                 }
             }
         }
@@ -479,9 +483,9 @@ class RentQueryIntegrationTest extends IntegrationTestSupport {
 
         @BeforeEach
         void setUp() {
-            savedRentId = rentService.registerRent(buildRegisterRequest(), savedMember.getId());
+            savedRentId = rentCommandService.registerRent(buildRegisterRequest(), savedMember.getId());
             savedJoinRequest = buildJoinRequest(savedRentId, TARGET_DATE, 2);
-            rentService.joinRent(savedJoinRequest, savedMember.getId());
+            rentCommandService.joinRent(savedJoinRequest, savedMember.getId());
         }
 
         @Nested

@@ -1,30 +1,15 @@
-package com.backend.allreva.module.recruitment.rent.application;
+package com.backend.allreva.module.recruitment.rent.application.command;
 
-import com.backend.allreva.common.event.Events;
-import com.backend.allreva.common.event.KeywordSearchedEvent;
 import com.backend.allreva.common.exception.CustomException;
-import com.backend.allreva.common.pagination.SliceResponse;
 import com.backend.allreva.common.storage.upload.StorageUploadService;
-import com.backend.allreva.module.concert.concert.domain.Concert;
-import com.backend.allreva.module.concert.concert.domain.ConcertRepository;
-import com.backend.allreva.module.concert.place.domain.ConcertHall;
-import com.backend.allreva.module.concert.place.domain.ConcertHallRepository;
 import com.backend.allreva.module.notification.domain.event.NotificationEvent;
 import com.backend.allreva.module.notification.domain.value.NotificationType;
-import com.backend.allreva.module.recruitment.rent.application.dto.HostedRentSummaryResponse;
-import com.backend.allreva.module.recruitment.rent.application.dto.JoinedRentResponse;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentDetailResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentIdRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinIdRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinRequest;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentJoinUpdateRequest;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentParticipantResponse;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentRegisterRequest;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentSummaryResponse;
-import com.backend.allreva.module.recruitment.rent.application.dto.RentThumbnail;
 import com.backend.allreva.module.recruitment.rent.application.dto.RentUpdateRequest;
-import com.backend.allreva.module.recruitment.rent.application.dto.SortType;
-import com.backend.allreva.module.recruitment.rent.application.port.RentSearchRepository;
 import com.backend.allreva.module.recruitment.rent.domain.Rent;
 import com.backend.allreva.module.recruitment.rent.domain.RentBoardingSlot;
 import com.backend.allreva.module.recruitment.rent.domain.RentBoardingSlotRepository;
@@ -34,70 +19,27 @@ import com.backend.allreva.module.recruitment.rent.domain.participant.RentPartic
 import com.backend.allreva.module.recruitment.rent.domain.value.Bus;
 import com.backend.allreva.module.recruitment.rent.domain.value.Depositor;
 import com.backend.allreva.module.recruitment.rent.exception.RentErrorCode;
-import com.backend.allreva.module.search.exception.SearchErrorCode;
-import java.time.LocalDate;
+import jakarta.validation.Valid;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Slf4j
 @Service
+@Validated
 @RequiredArgsConstructor
-public class RentService {
+public class RentCommandService {
 
     private final RentRepository rentRepository;
     private final RentBoardingSlotRepository rentBoardingSlotRepository;
     private final RentParticipantRepository rentParticipantRepository;
-    private final ConcertRepository concertRepository;
-    private final ConcertHallRepository concertHallRepository;
     private final StorageUploadService storageUploadService;
-    private final RentSearchRepository rentSearchRepository;
 
-    public List<RentThumbnail> getRentSuggestions(final String title) {
-        Events.raise(new KeywordSearchedEvent(title));
-        List<RentThumbnail> thumbnails = rentSearchRepository.findThumbnailsByTitle(title, 2);
-        if (thumbnails.isEmpty()) {
-            throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
-        }
-        return thumbnails;
-    }
-
-    public SliceResponse<RentThumbnail, Long> searchRents(final String title, final Long cursorId, final int size) {
-        SliceResponse<RentThumbnail, Long> response = rentSearchRepository.findAllByTitle(title, cursorId, size);
-        if (response.items().isEmpty()) {
-            throw new CustomException(SearchErrorCode.SEARCH_RESULT_NOT_FOUND);
-        }
-        return response;
-    }
-
-    // Anonymous
-    @Transactional(readOnly = true)
-    public List<RentSummaryResponse> getRentSummaries(
-            final String region,
-            final SortType sortType,
-            final LocalDate lastEndDate,
-            final Long lastId,
-            final int pageSize) {
-        return rentRepository.findAll(region, sortType, lastEndDate, lastId, pageSize).stream()
-                .map(RentSummaryResponse::from)
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public RentDetailResponse getRentDetail(final Long id) {
-        Rent rent = rentRepository.findById(id).orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
-        Concert concert = concertRepository.findById(rent.getConcertCode()).orElse(null);
-        ConcertHall concertHall = concert != null
-                ? concertHallRepository.findById(concert.getHallCode()).orElse(null)
-                : null;
-        return RentDetailResponse.from(rent, concert, concertHall);
-    }
-
-    // Host
     @Transactional
-    public Long registerRent(final RentRegisterRequest request, final Long memberId) {
+    public Long registerRent(@Valid final RentRegisterRequest request, final Long memberId) {
         Rent rent = request.toEntity(memberId);
         request.rentBoardingDateRequests()
                 .forEach(date -> rent.addBoardingSlot(RentBoardingSlot.builder()
@@ -106,7 +48,7 @@ public class RentService {
                         .build()));
         Rent savedRent = rentRepository.save(rent);
 
-        Events.raise(NotificationEvent.builder()
+        com.backend.allreva.common.event.Events.raise(NotificationEvent.builder()
                 .type(NotificationType.RENT_REGISTERED)
                 .recipientIds(List.of(memberId))
                 .senderId(memberId)
@@ -119,7 +61,7 @@ public class RentService {
     }
 
     @Transactional
-    public void updateRent(final RentUpdateRequest request, final Long memberId) {
+    public void updateRent(@Valid final RentUpdateRequest request, final Long memberId) {
         Rent rent = rentRepository
                 .findById(request.rentId())
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
@@ -151,7 +93,7 @@ public class RentService {
     }
 
     @Transactional
-    public void closeRent(final RentIdRequest request, final Long memberId) {
+    public void closeRent(@Valid final RentIdRequest request, final Long memberId) {
         Rent rent = rentRepository
                 .findById(request.rentId())
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
@@ -161,7 +103,7 @@ public class RentService {
     }
 
     @Transactional
-    public void deleteRent(final RentIdRequest request, final Long memberId) {
+    public void deleteRent(@Valid final RentIdRequest request, final Long memberId) {
         Rent rent = rentRepository
                 .findById(request.rentId())
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
@@ -172,33 +114,8 @@ public class RentService {
         rentRepository.delete(rent);
     }
 
-    @Transactional(readOnly = true)
-    public List<HostedRentSummaryResponse> getRentHostSummaries(
-            final Long memberId, final Long lastId, final int pageSize) {
-        return rentRepository.findAllByMemberId(memberId, lastId, pageSize).stream()
-                .map(HostedRentSummaryResponse::from)
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public List<RentParticipantResponse> getRentHostDetail(
-            final Long memberId, final LocalDate boardingDate, final Long rentId) {
-        Rent rent = rentRepository
-                .findByIdAndMemberId(rentId, memberId)
-                .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
-        rent.getBoardingSlots().stream()
-                .filter(s -> s.getDate().equals(boardingDate))
-                .findFirst()
-                .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
-
-        return rentParticipantRepository.findAllByRentIdAndBoardingDate(rentId, boardingDate).stream()
-                .map(RentParticipantResponse::from)
-                .toList();
-    }
-
-    // Participant
     @Transactional
-    public Long joinRent(final RentJoinRequest request, final Long memberId) {
+    public Long joinRent(@Valid final RentJoinRequest request, final Long memberId) {
         if (rentParticipantRepository.exists(memberId, request.rentId(), request.boardingDate())) {
             throw new CustomException(RentErrorCode.RENT_JOIN_ALREADY_EXISTS);
         }
@@ -218,7 +135,7 @@ public class RentService {
     }
 
     @Transactional
-    public void updateRentJoin(final RentJoinUpdateRequest request, final Long memberId) {
+    public void updateRentJoin(@Valid final RentJoinUpdateRequest request, final Long memberId) {
         RentParticipant participant = rentParticipantRepository
                 .findById(request.rentParticipantId())
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_JOIN_NOT_FOUND));
@@ -238,7 +155,7 @@ public class RentService {
     }
 
     @Transactional
-    public void cancelRentJoin(final RentJoinIdRequest request, final Long memberId) {
+    public void cancelRentJoin(@Valid final RentJoinIdRequest request, final Long memberId) {
         RentParticipant participant = rentParticipantRepository
                 .findById(request.rentParticipantId())
                 .orElseThrow(() -> new CustomException(RentErrorCode.RENT_JOIN_NOT_FOUND));
@@ -256,30 +173,5 @@ public class RentService {
         }
 
         rentParticipantRepository.delete(participant);
-    }
-
-    @Transactional(readOnly = true)
-    public List<JoinedRentResponse> getJoinedRentSummaries(final Long memberId, final Long lastId, final int pageSize) {
-        List<RentParticipant> participants = rentParticipantRepository.findAllByMemberId(memberId, lastId, pageSize);
-
-        return participants.stream()
-                .map(participant -> {
-                    Rent rent = participant.getRent();
-                    RentBoardingSlot slot = rent.getBoardingSlots().stream()
-                            .filter(s -> s.getDate().equals(participant.getBoardingDate()))
-                            .findFirst()
-                            .orElse(null);
-                    return JoinedRentResponse.from(participant, rent, slot);
-                })
-                .toList();
-    }
-
-    @Transactional(readOnly = true)
-    public RentParticipantResponse getJoinedRentDetail(
-            final Long memberId, final LocalDate boardingDate, final Long rentId) {
-        return rentParticipantRepository
-                .findByMemberIdAndBoardingDateAndRentId(memberId, boardingDate, rentId)
-                .map(RentParticipantResponse::from)
-                .orElseThrow(() -> new CustomException(RentErrorCode.RENT_NOT_FOUND));
     }
 }
