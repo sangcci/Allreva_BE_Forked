@@ -202,6 +202,12 @@ JPA 기술 구현 세부사항이므로 `infra` 소속입니다.
 - query service는 `application/query`
 - controller query endpoint는 `implement/query`
 
+## Validation 정책
+
+- 요청 DTO 검증은 controller에만 두지 않고 application service에서도 동작하게 유지합니다.
+- command service는 `@Validated`, DTO 파라미터는 `@Valid`를 우선 적용합니다.
+- API 계층은 검증 실패를 HTTP 응답으로 변환하고, 검증 규칙 자체는 application usecase 가까이에 둡니다.
+
 ## Observability 정책
 
 - logging / metrics / tracing 공통 지원은 `allreva-observability` 후보 모듈로 관리합니다.

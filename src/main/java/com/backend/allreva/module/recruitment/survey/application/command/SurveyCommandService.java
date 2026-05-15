@@ -16,13 +16,16 @@ import com.backend.allreva.module.recruitment.survey.domain.SurveyRepository;
 import com.backend.allreva.module.recruitment.survey.domain.participant.SurveyParticipant;
 import com.backend.allreva.module.recruitment.survey.domain.participant.SurveyParticipantRepository;
 import com.backend.allreva.module.recruitment.survey.exception.SurveyErrorCode;
+import jakarta.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 @Service
+@Validated
 @RequiredArgsConstructor
 public class SurveyCommandService {
 
@@ -31,7 +34,7 @@ public class SurveyCommandService {
     private final ConcertRepository concertRepository;
 
     @Transactional
-    public Long openSurvey(final Long memberId, final OpenSurveyRequest request) {
+    public Long openSurvey(final Long memberId, @Valid final OpenSurveyRequest request) {
         validateBoardingDates(request.concertCode(), request.boardingDates());
 
         Survey survey = surveyRepository.save(Survey.builder()
@@ -58,7 +61,7 @@ public class SurveyCommandService {
     }
 
     @Transactional
-    public void updateSurvey(final Long memberId, final UpdateSurveyRequest request) {
+    public void updateSurvey(final Long memberId, @Valid final UpdateSurveyRequest request) {
         Survey survey = findSurvey(request.surveyId());
 
         validateBoardingDates(survey.getConcertCode(), request.boardingDates());
@@ -74,14 +77,14 @@ public class SurveyCommandService {
     }
 
     @Transactional
-    public void removeSurvey(final Long memberId, final SurveyIdRequest surveyIdRequest) {
+    public void removeSurvey(final Long memberId, @Valid final SurveyIdRequest surveyIdRequest) {
         Survey survey = findSurvey(surveyIdRequest.surveyId());
         survey.isWriter(memberId);
         surveyRepository.delete(survey);
     }
 
     @Transactional
-    public Long joinSurvey(final Long memberId, final JoinSurveyRequest request) {
+    public Long joinSurvey(final Long memberId, @Valid final JoinSurveyRequest request) {
         if (surveyParticipantRepository.existsByMemberIdAndSurveyId(memberId, request.surveyId())) {
             throw new CustomException(SurveyErrorCode.SURVEY_JOIN_ALREADY_EXISTS);
         }
