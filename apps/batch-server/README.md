@@ -34,3 +34,6 @@
 - `BatchServerApplication`은 `com.backend.allreva` 전체를 스캔합니다.
 - `batch-server`는 non-web 실행 모드로 고정합니다.
 - scheduling 활성화는 `batch-server`에서 시작합니다.
+- 기존 `@Scheduled` 진입점은 우선 `com.backend.allreva.batch.scheduler` 패키지로 이동합니다.
+- 실제 소스가 modules/apps로 완전히 이동하기 전까지는 이 scheduler 패키지가 root `src/main/java`에 남을 수 있습니다.
+- 기존 application 쪽 클래스는 scheduler 자체가 아니라 재사용 가능한 sync/closing 서비스로 유지합니다.

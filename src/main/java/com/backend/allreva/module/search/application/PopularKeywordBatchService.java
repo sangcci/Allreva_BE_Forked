@@ -4,18 +4,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 @Slf4j
-@Component
+@Service
 @RequiredArgsConstructor
-public class PopularKeywordScheduler {
+public class PopularKeywordBatchService {
 
     private final PopularKeywordService popularKeywordService;
-    private static final String ONE_HOUR_CRON = "0 0 * * * *";
 
-    @Scheduled(cron = ONE_HOUR_CRON)
     public void updatePopularKeywordRank() {
         try {
             LocalDateTime now = LocalDateTime.now();

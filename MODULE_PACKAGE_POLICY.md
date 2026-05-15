@@ -242,8 +242,8 @@ JPA 기술 구현 세부사항이므로 `infra` 소속입니다.
 ## 실행 모듈 정책
 
 - 초기 실행 모듈은 `api-server`, `batch-server` 2개로 둡니다.
-- `@Scheduled` 진입점은 우선 `batch-server` 기준으로 정리합니다.
-- Spring Batch `Job` / 이벤트 소비자도 `batch-server` 내부에서 시작하고, 실제 유스케이스는 application 계층을 재사용합니다.
+- `@Scheduled` 진입점은 우선 `com.backend.allreva.batch.scheduler` 패키지 기준으로 정리합니다.
+- Spring Batch `Job` / 이벤트 소비자도 `batch-server` 내부에서 시작하고, 실제 유스케이스는 application 계층의 재사용 가능한 service/usecase를 호출합니다.
 - `scheduler-server`는 처음부터 만들지 않고, 배포 주기·장애 격리·운영 설정이 분리될 때 별도 app 모듈로 승격합니다.
 - 따라서 지금 단계에서 중요한 것은 `scheduler` 책임을 API 진입점과 분리하고, 나중에 `scheduler-server`로 옮기기 쉬운 패키지/설정 경계를 유지하는 것입니다.
 
