@@ -31,7 +31,8 @@ dependencies {
 }
 
 tasks.bootJar {
-	enabled = false
+    enabled = true
+    archiveFileName = 'app.jar'
 }
 
 tasks.jar {

@@ -15,9 +15,10 @@ dependencies {
 }
 
 tasks.bootJar {
-	enabled = false
+    enabled = true
+    archiveFileName = 'batch.jar'
 }
 
 tasks.jar {
-    enabled = true
+    enabled = false
 }

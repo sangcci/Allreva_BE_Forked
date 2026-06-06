@@ -191,6 +191,8 @@ Steps:
 - `./gradlew spotlessApply spotlessCheck :allreva-core:compileJava :allreva-api:compileJava :allreva-test:compileTestJava :allreva-support:kopis-client:test` passed after API validation request split.
 - `./gradlew :allreva-test:test --tests '*MemberIntegrationTest' --tests '*RentCommandIntegrationTest'` passed after API validation request split.
 - `./gradlew spotlessApply spotlessCheck :allreva-core:compileJava :allreva-api:test --tests '*RentRequestValidationTest' --tests '*RentJoinRequestValidationTest' --tests '*SurveyRequestValidationTest' :allreva-api:compileJava :allreva-test:compileTestJava` passed after request DTO validation migration.
+- `./gradlew :allreva-api:bootJar :allreva-batch:bootJar` passed after executable jar configuration split.
+- PR #96 CI failed in `:allreva-test:test` with `Failed to find merged annotation for @BootstrapWith(SpringBootTestContextBootstrapper.class)` across integration tests; `allreva-api` plain jar is being re-enabled so project dependency resolution has a normal Java artifact while `bootJar` still produces `app.jar`.
 
 ## Recent commits
 
