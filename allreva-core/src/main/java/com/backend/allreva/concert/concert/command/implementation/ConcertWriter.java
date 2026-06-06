@@ -2,6 +2,7 @@ package com.backend.allreva.concert.concert.command.implementation;
 
 import com.backend.allreva.concert.concert.domain.Concert;
 import com.backend.allreva.concert.concert.domain.ConcertRepository;
+import com.backend.allreva.concert.concert.domain.ConcertStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,13 @@ public class ConcertWriter {
 
     public Concert save(final Concert concert) {
         return concertRepository.save(concert);
+    }
+
+    public boolean isAlreadyCompleted(final String concertCode) {
+        return concertRepository
+                .findById(concertCode)
+                .map(concert -> concert.getConcertInfo().getPerformStatus() == ConcertStatus.COMPLETED)
+                .orElse(false);
     }
 
     public Concert upsert(final Concert fetched) {

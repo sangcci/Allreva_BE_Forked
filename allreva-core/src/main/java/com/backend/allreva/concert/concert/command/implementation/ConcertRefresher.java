@@ -1,6 +1,7 @@
 package com.backend.allreva.concert.concert.command.implementation;
 
 import com.backend.allreva.concert.concert.domain.Concert;
+import com.backend.allreva.concert.concert.domain.ConcertStatus;
 import com.backend.allreva.concert.concert.domain.ConcertSyncPeriod;
 import com.backend.allreva.concert.concert.query.model.ConcertSummary;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,11 @@ public class ConcertRefresher {
 
     public void refresh(final String hallCode, final ConcertSyncPeriod period) {
         for (ConcertSummary summary : concertDataSyncPort.fetchDailyConcertSummaries(hallCode, period)) {
+            if (summary.status() == ConcertStatus.COMPLETED
+                    && concertWriter.isAlreadyCompleted(summary.concertCode())) {
+                continue;
+            }
+
             Concert fetched = concertDataSyncPort.fetchConcertDetail(hallCode, summary.concertCode());
             concertWriter.upsert(fetched);
         }
