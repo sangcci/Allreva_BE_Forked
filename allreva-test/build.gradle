@@ -1,5 +1,4 @@
 dependencies {
-    testImplementation platform('org.springframework.boot:spring-boot-dependencies:3.3.5')
     testImplementation project(':allreva-api')
     testImplementation project(':allreva-core')
     testImplementation project(':allreva-support:db')
