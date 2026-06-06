@@ -3,13 +3,12 @@ package com.backend.allreva.recruitment.rent.validation;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.backend.allreva.common.model.Image;
+import com.backend.allreva.recruitment.rent.RentRegisterRequest;
 import com.backend.allreva.recruitment.rent.RentUpdateRequest;
 import com.backend.allreva.recruitment.rent.RouteRequest;
-import com.backend.allreva.recruitment.rent.command.input.RentRegisterCommand;
 import com.backend.allreva.recruitment.rent.domain.BoardingType;
 import com.backend.allreva.recruitment.rent.domain.BusSize;
 import com.backend.allreva.recruitment.rent.domain.BusType;
-import com.backend.allreva.recruitment.rent.domain.Route;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -26,10 +25,6 @@ class RentRequestValidationTest {
 
     private static Validator validator;
 
-    static final Route VALID_UP_ROUTE =
-            Route.builder().boardingArea("서울역").dropOffArea("공연장").time("10:00").build();
-    static final Route VALID_DOWN_ROUTE =
-            Route.builder().boardingArea("공연장").dropOffArea("서울역").time("22:00").build();
     static final RouteRequest VALID_UP_ROUTE_REQUEST = new RouteRequest("서울역", "공연장", "10:00");
     static final RouteRequest VALID_DOWN_ROUTE_REQUEST = new RouteRequest("공연장", "서울역", "22:00");
     static final List<LocalDate> VALID_DATES = List.of(LocalDate.of(2030, 12, 1));
@@ -41,11 +36,11 @@ class RentRequestValidationTest {
     }
 
     @Nested
-    @DisplayName("RentRegisterCommand 검증")
+    @DisplayName("RentRegisterRequest 검증")
     class Describe_RentRegisterRequest {
 
-        private RentRegisterCommand request(BoardingType boardingType, Route upRoute, Route downRoute) {
-            return new RentRegisterCommand(
+        private RentRegisterRequest request(BoardingType boardingType, RouteRequest upRoute, RouteRequest downRoute) {
+            return new RentRegisterRequest(
                     "PFMOCK001",
                     "제목",
                     "서울",
@@ -63,7 +58,7 @@ class RentRequestValidationTest {
                     new Image("img.jpg"));
         }
 
-        private Set<ConstraintViolation<RentRegisterCommand>> validate(RentRegisterCommand req) {
+        private Set<ConstraintViolation<RentRegisterRequest>> validate(RentRegisterRequest req) {
             return validator.validate(req);
         }
 
@@ -74,28 +69,28 @@ class RentRequestValidationTest {
             @Test
             @DisplayName("ROUND - upRoute, downRoute 모두 있으면 통과한다")
             void round_both_routes_passes() {
-                assertThat(validate(request(BoardingType.ROUND, VALID_UP_ROUTE, VALID_DOWN_ROUTE)))
+                assertThat(validate(request(BoardingType.ROUND, VALID_UP_ROUTE_REQUEST, VALID_DOWN_ROUTE_REQUEST)))
                         .isEmpty();
             }
 
             @Test
             @DisplayName("ROUND - upRoute 없으면 실패한다")
             void round_missing_upRoute_fails() {
-                var violations = validate(request(BoardingType.ROUND, null, VALID_DOWN_ROUTE));
+                var violations = validate(request(BoardingType.ROUND, null, VALID_DOWN_ROUTE_REQUEST));
                 assertThat(violations).anyMatch(v -> v.getMessage().equals("상행 경로는 필수입니다."));
             }
 
             @Test
             @DisplayName("ROUND - downRoute 없으면 실패한다")
             void round_missing_downRoute_fails() {
-                var violations = validate(request(BoardingType.ROUND, VALID_UP_ROUTE, null));
+                var violations = validate(request(BoardingType.ROUND, VALID_UP_ROUTE_REQUEST, null));
                 assertThat(violations).anyMatch(v -> v.getMessage().equals("하행 경로는 필수입니다."));
             }
 
             @Test
             @DisplayName("UP - upRoute만 있으면 통과한다")
             void up_only_upRoute_passes() {
-                assertThat(validate(request(BoardingType.UP, VALID_UP_ROUTE, null)))
+                assertThat(validate(request(BoardingType.UP, VALID_UP_ROUTE_REQUEST, null)))
                         .isEmpty();
             }
 
@@ -109,7 +104,7 @@ class RentRequestValidationTest {
             @Test
             @DisplayName("DOWN - downRoute만 있으면 통과한다")
             void down_only_downRoute_passes() {
-                assertThat(validate(request(BoardingType.DOWN, null, VALID_DOWN_ROUTE)))
+                assertThat(validate(request(BoardingType.DOWN, null, VALID_DOWN_ROUTE_REQUEST)))
                         .isEmpty();
             }
 
@@ -128,11 +123,7 @@ class RentRequestValidationTest {
             @Test
             @DisplayName("boardingArea가 빈 문자열이면 실패한다")
             void blank_boardingArea_fails() {
-                var invalidRoute = Route.builder()
-                        .boardingArea("")
-                        .dropOffArea("공연장")
-                        .time("10:00")
-                        .build();
+                var invalidRoute = new RouteRequest("", "공연장", "10:00");
                 var violations = validate(request(BoardingType.UP, invalidRoute, null));
                 assertThat(violations).isNotEmpty();
             }
@@ -140,11 +131,7 @@ class RentRequestValidationTest {
             @Test
             @DisplayName("dropOffArea가 빈 문자열이면 실패한다")
             void blank_dropOffArea_fails() {
-                var invalidRoute = Route.builder()
-                        .boardingArea("서울역")
-                        .dropOffArea("")
-                        .time("10:00")
-                        .build();
+                var invalidRoute = new RouteRequest("서울역", "", "10:00");
                 var violations = validate(request(BoardingType.UP, invalidRoute, null));
                 assertThat(violations).isNotEmpty();
             }
@@ -152,11 +139,7 @@ class RentRequestValidationTest {
             @Test
             @DisplayName("time이 빈 문자열이면 실패한다")
             void blank_time_fails() {
-                var invalidRoute = Route.builder()
-                        .boardingArea("서울역")
-                        .dropOffArea("공연장")
-                        .time("")
-                        .build();
+                var invalidRoute = new RouteRequest("서울역", "공연장", "");
                 var violations = validate(request(BoardingType.UP, invalidRoute, null));
                 assertThat(violations).isNotEmpty();
             }
@@ -183,13 +166,13 @@ class RentRequestValidationTest {
             @Test
             @DisplayName("title이 빈 문자열이면 실패한다")
             void blank_title_fails() {
-                var req = new RentRegisterCommand(
+                var req = new RentRegisterRequest(
                         "PFMOCK001",
                         "",
                         "서울",
                         BoardingType.ROUND,
-                        VALID_UP_ROUTE,
-                        VALID_DOWN_ROUTE,
+                        VALID_UP_ROUTE_REQUEST,
+                        VALID_DOWN_ROUTE_REQUEST,
                         VALID_DATES,
                         BusSize.LARGE,
                         BusType.STANDARD,
@@ -206,13 +189,13 @@ class RentRequestValidationTest {
             @Test
             @DisplayName("endDate가 과거이면 실패한다")
             void past_endDate_fails() {
-                var req = new RentRegisterCommand(
+                var req = new RentRegisterRequest(
                         "PFMOCK001",
                         "제목",
                         "서울",
                         BoardingType.ROUND,
-                        VALID_UP_ROUTE,
-                        VALID_DOWN_ROUTE,
+                        VALID_UP_ROUTE_REQUEST,
+                        VALID_DOWN_ROUTE_REQUEST,
                         VALID_DATES,
                         BusSize.LARGE,
                         BusType.STANDARD,
@@ -229,13 +212,13 @@ class RentRequestValidationTest {
             @Test
             @DisplayName("maxPassenger가 0이면 실패한다")
             void zero_maxPassenger_fails() {
-                var req = new RentRegisterCommand(
+                var req = new RentRegisterRequest(
                         "PFMOCK001",
                         "제목",
                         "서울",
                         BoardingType.ROUND,
-                        VALID_UP_ROUTE,
-                        VALID_DOWN_ROUTE,
+                        VALID_UP_ROUTE_REQUEST,
+                        VALID_DOWN_ROUTE_REQUEST,
                         VALID_DATES,
                         BusSize.LARGE,
                         BusType.STANDARD,
@@ -252,13 +235,13 @@ class RentRequestValidationTest {
             @Test
             @DisplayName("price가 음수이면 실패한다")
             void negative_price_fails() {
-                var req = new RentRegisterCommand(
+                var req = new RentRegisterRequest(
                         "PFMOCK001",
                         "제목",
                         "서울",
                         BoardingType.ROUND,
-                        VALID_UP_ROUTE,
-                        VALID_DOWN_ROUTE,
+                        VALID_UP_ROUTE_REQUEST,
+                        VALID_DOWN_ROUTE_REQUEST,
                         VALID_DATES,
                         BusSize.LARGE,
                         BusType.STANDARD,
@@ -275,13 +258,13 @@ class RentRequestValidationTest {
             @Test
             @DisplayName("boardingDates가 비어 있으면 실패한다")
             void empty_boardingDates_fails() {
-                var req = new RentRegisterCommand(
+                var req = new RentRegisterRequest(
                         "PFMOCK001",
                         "제목",
                         "서울",
                         BoardingType.ROUND,
-                        VALID_UP_ROUTE,
-                        VALID_DOWN_ROUTE,
+                        VALID_UP_ROUTE_REQUEST,
+                        VALID_DOWN_ROUTE_REQUEST,
                         List.of(),
                         BusSize.LARGE,
                         BusType.STANDARD,

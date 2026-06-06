@@ -43,7 +43,6 @@ subprojects {
         testImplementation 'org.springframework.data:spring-data-jpa'
         testImplementation 'org.springframework.data:spring-data-redis'
         testImplementation 'jakarta.persistence:jakarta.persistence-api'
-        testImplementation 'jakarta.validation:jakarta.validation-api'
         testImplementation 'org.testcontainers:junit-jupiter'
         testImplementation 'org.testcontainers:postgresql'
         testImplementation 'org.testcontainers:localstack'

@@ -12,7 +12,7 @@ public record JoinSurveyRequest(
         @NotNull BoardingType boardingType,
 
         @NotNull @Min(value = 1, message = "탑승 인원 수는 1명 이상이어야 합니다.")
-        int passengerNum,
+        Integer passengerNum,
 
         boolean notified) {
 

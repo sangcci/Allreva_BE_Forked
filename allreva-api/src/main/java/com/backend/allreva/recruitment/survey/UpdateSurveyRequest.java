@@ -18,7 +18,7 @@ public record UpdateSurveyRequest(
         @FutureOrPresent(message = "마감 기한은 과거일 수 없습니다.") LocalDate endDate,
 
         @NotNull @Min(value = 1, message = "탑승 인원 수는 1명 이상이어야 합니다.")
-        int maxPassenger,
+        Integer maxPassenger,
 
         String information) {
 

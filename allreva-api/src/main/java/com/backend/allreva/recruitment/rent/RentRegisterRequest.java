@@ -30,9 +30,15 @@ public record RentRegisterRequest(
 
         @NotNull BusSize busSize,
         @NotNull BusType busType,
-        @Min(value = 1, message = "탑승 인원 수는 1명 이상이어야 합니다.") int maxPassenger,
-        @PositiveOrZero int price,
-        @Min(value = 1, message = "모집 인원 수는 1명 이상이어야 합니다.") int recruitmentCount,
+
+        @NotNull @Min(value = 1, message = "탑승 인원 수는 1명 이상이어야 합니다.")
+        Integer maxPassenger,
+
+        @NotNull @PositiveOrZero Integer price,
+
+        @NotNull @Min(value = 1, message = "모집 인원 수는 1명 이상이어야 합니다.")
+        Integer recruitmentCount,
+
         @FutureOrPresent(message = "마감 기한은 과거일 수 없습니다.") LocalDate endDate,
         String information,
         Image image) {

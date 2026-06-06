@@ -143,6 +143,9 @@ Progress:
 - Member command request DTOs now carry validation annotations and controller request bodies use `@Valid`.
 - Rent command API no longer uses core command input records as request body models for id/join-update flows.
 - `RentIdRequest`, `RentJoinIdRequest`, and `RentJoinUpdateRequest` added in API layer and convert to core commands.
+- Survey request validation tests moved from core service validation expectation to API request DTO validation.
+- Numeric request fields that need null/basic value checks use wrapper types in API request DTOs.
+- Root test dependency on `jakarta.validation-api` removed so validation dependency stays with API module.
 - KOPIS Feign client scan narrowed to KOPIS clients to avoid duplicate Feign client specifications during full integration context startup.
 
 Steps:
@@ -187,6 +190,7 @@ Steps:
 - `./gradlew spotlessApply spotlessCheck :allreva-support:global-cache:test` passed.
 - `./gradlew spotlessApply spotlessCheck :allreva-core:compileJava :allreva-api:compileJava :allreva-test:compileTestJava :allreva-support:kopis-client:test` passed after API validation request split.
 - `./gradlew :allreva-test:test --tests '*MemberIntegrationTest' --tests '*RentCommandIntegrationTest'` passed after API validation request split.
+- `./gradlew spotlessApply spotlessCheck :allreva-core:compileJava :allreva-api:test --tests '*RentRequestValidationTest' --tests '*RentJoinRequestValidationTest' --tests '*SurveyRequestValidationTest' :allreva-api:compileJava :allreva-test:compileTestJava` passed after request DTO validation migration.
 
 ## Recent commits
 

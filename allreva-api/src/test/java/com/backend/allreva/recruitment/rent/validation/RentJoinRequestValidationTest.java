@@ -2,10 +2,10 @@ package com.backend.allreva.recruitment.rent.validation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.backend.allreva.recruitment.rent.command.input.RentIdCommand;
-import com.backend.allreva.recruitment.rent.command.input.RentJoinCommand;
-import com.backend.allreva.recruitment.rent.command.input.RentJoinIdCommand;
-import com.backend.allreva.recruitment.rent.command.input.RentJoinUpdateCommand;
+import com.backend.allreva.recruitment.rent.RentIdRequest;
+import com.backend.allreva.recruitment.rent.RentJoinIdRequest;
+import com.backend.allreva.recruitment.rent.RentJoinRequest;
+import com.backend.allreva.recruitment.rent.RentJoinUpdateRequest;
 import com.backend.allreva.recruitment.rent.domain.RefundType;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -30,11 +30,11 @@ class RentJoinRequestValidationTest {
     }
 
     @Nested
-    @DisplayName("RentJoinCommand 검증")
+    @DisplayName("RentJoinRequest 검증")
     class Describe_RentJoinRequest {
 
-        private RentJoinCommand request(int passengerNum, String phone) {
-            return RentJoinCommand.builder()
+        private RentJoinRequest request(int passengerNum, String phone) {
+            return RentJoinRequest.builder()
                     .rentId(1L)
                     .boardingDate(VALID_DATE)
                     .passengerNum(passengerNum)
@@ -46,7 +46,7 @@ class RentJoinRequestValidationTest {
                     .build();
         }
 
-        private Set<ConstraintViolation<RentJoinCommand>> validate(RentJoinCommand req) {
+        private Set<ConstraintViolation<RentJoinRequest>> validate(RentJoinRequest req) {
             return validator.validate(req);
         }
 
@@ -120,51 +120,51 @@ class RentJoinRequestValidationTest {
     }
 
     @Nested
-    @DisplayName("RentIdCommand 검증")
+    @DisplayName("RentIdRequest 검증")
     class Describe_RentIdRequest {
 
         @Test
         @DisplayName("rentId가 있으면 통과한다")
         void valid_request_passes() {
-            assertThat(validator.validate(new RentIdCommand(1L))).isEmpty();
+            assertThat(validator.validate(new RentIdRequest(1L))).isEmpty();
         }
 
         @Test
         @DisplayName("rentId가 null이면 실패한다")
         void null_rentId_fails() {
-            var violations = validator.validate(new RentIdCommand(null));
+            var violations = validator.validate(new RentIdRequest(null));
             assertThat(violations).anyMatch(v -> v.getPropertyPath().toString().equals("rentId"));
         }
     }
 
     @Nested
-    @DisplayName("RentJoinIdCommand 검증")
+    @DisplayName("RentJoinIdRequest 검증")
     class Describe_RentJoinIdRequest {
 
         @Test
         @DisplayName("rentParticipantId가 있으면 통과한다")
         void valid_request_passes() {
-            assertThat(validator.validate(new RentJoinIdCommand(1L))).isEmpty();
+            assertThat(validator.validate(new RentJoinIdRequest(1L))).isEmpty();
         }
 
         @Test
         @DisplayName("rentParticipantId가 null이면 실패한다")
         void null_rentParticipantId_fails() {
-            var violations = validator.validate(new RentJoinIdCommand(null));
+            var violations = validator.validate(new RentJoinIdRequest(null));
             assertThat(violations).anyMatch(v -> v.getPropertyPath().toString().equals("rentParticipantId"));
         }
     }
 
     @Nested
-    @DisplayName("RentJoinUpdateCommand 검증")
+    @DisplayName("RentJoinUpdateRequest 검증")
     class Describe_RentJoinUpdateRequest {
 
-        private RentJoinUpdateCommand request(int passengerNum, String phone) {
-            return new RentJoinUpdateCommand(
+        private RentJoinUpdateRequest request(int passengerNum, String phone) {
+            return new RentJoinUpdateRequest(
                     1L, VALID_DATE, passengerNum, "홍길동", "12:00", phone, RefundType.REFUND, "국민은행 99999");
         }
 
-        private Set<ConstraintViolation<RentJoinUpdateCommand>> validate(RentJoinUpdateCommand req) {
+        private Set<ConstraintViolation<RentJoinUpdateRequest>> validate(RentJoinUpdateRequest req) {
             return validator.validate(req);
         }
 
