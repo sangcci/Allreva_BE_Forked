@@ -1,0 +1,9 @@
+dependencies {
+    implementation project(':allreva-core')
+
+    implementation 'org.springframework:spring-context'
+    implementation 'org.springframework:spring-web'
+
+	// s3
+    implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
+}

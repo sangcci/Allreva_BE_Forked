@@ -1,0 +1,39 @@
+plugins {
+    id 'org.springframework.boot'
+}
+
+dependencies {
+    implementation project(':allreva-core')
+    runtimeOnly project(':allreva-support:db')
+    runtimeOnly project(':allreva-support:storage')
+    runtimeOnly project(':allreva-support:oauth-client')
+    runtimeOnly project(':allreva-support:kopis-client')
+    runtimeOnly project(':allreva-support:push-notification')
+    runtimeOnly project(':allreva-support:local-cache')
+    runtimeOnly project(':allreva-support:global-cache')
+    runtimeOnly project(':allreva-support:observability')
+
+    // web
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+
+    // security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'org.springframework:spring-tx'
+
+    // jwt
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+}
+
+tasks.bootJar {
+	enabled = false
+}
+
+tasks.jar {
+    enabled = true
+}

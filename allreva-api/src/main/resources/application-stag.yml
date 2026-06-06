@@ -1,0 +1,50 @@
+spring:
+  config:
+    import:
+      - classpath:db-config/application-stag.yml
+      - classpath:oauth-client-config/application-stag.yml
+      - classpath:push-notification-config/application-stag.yml
+      - classpath:kopis-client-config/application-stag.yml
+      - classpath:global-cache-config/application-stag.yml
+      - classpath:storage-config/application-stag.yml
+      - optional:classpath:events-config/application-stag.yml
+      - optional:classpath:observability-config/application-stag.yml
+      - optional:secret
+
+  servlet:
+    multipart:
+      max-file-size: ${MULTIPART_MAX_FILE_SIZE:100MB}
+      max-request-size: ${MULTIPART_MAX_REQUEST_SIZE:100MB}
+
+url:
+  back:
+    protocol: ${BACKEND_PROTOCOL:https}
+    domain: ${BACKEND_DOMAIN}
+  front:
+    protocol: ${FRONTEND_PROTOCOL:https}
+    domain: ${FRONTEND_DOMAIN}
+    domain-name: ${FRONTEND_DOMAIN_NAME}
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  access:
+    expiration: ${JWT_ACCESS_EXPIRATION:3600000}
+    header: Authorization
+  refresh:
+    expiration: ${JWT_REFRESH_EXPIRATION:1209600033}
+    cookie-name: ${JWT_REFRESH_COOKIE_NAME:refreshToken}
+
+view:
+  count:
+    schedule:
+      rate: ${VIEW_COUNT_SCHEDULE_RATE:3000}
+
+thread-pool:
+  task:
+    core-size: ${THREAD_POOL_TASK_CORE_SIZE:10}
+    max-size: ${THREAD_POOL_TASK_MAX_SIZE:20}
+    queue-capacity: ${THREAD_POOL_TASK_QUEUE_CAPACITY:50}
+  notification:
+    core-size: ${THREAD_POOL_NOTIFICATION_CORE_SIZE:5}
+    max-size: ${THREAD_POOL_NOTIFICATION_MAX_SIZE:10}
+    queue-capacity: ${THREAD_POOL_NOTIFICATION_QUEUE_CAPACITY:30}

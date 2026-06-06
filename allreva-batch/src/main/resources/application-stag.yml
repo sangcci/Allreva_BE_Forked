@@ -1,0 +1,13 @@
+spring:
+  config:
+    import:
+      - classpath:db-config/application-stag.yml
+      - classpath:kopis-client-config/application-stag.yml
+      - classpath:global-cache-config/application-stag.yml
+      - optional:classpath:events-config/application-stag.yml
+      - optional:classpath:observability-config/application-stag.yml
+      - optional:secret
+
+  task:
+    scheduling:
+      thread-name-prefix: batch-scheduler-

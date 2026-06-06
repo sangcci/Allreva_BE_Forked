@@ -1,0 +1,13 @@
+dependencies {
+    testImplementation platform('org.springframework.boot:spring-boot-dependencies:3.3.5')
+    testImplementation project(':allreva-api')
+    testImplementation project(':allreva-core')
+    testImplementation project(':allreva-support:db')
+    testImplementation project(':allreva-support:storage')
+    testImplementation project(':allreva-support:oauth-client')
+    testImplementation project(':allreva-support:kopis-client')
+    testImplementation project(':allreva-support:push-notification')
+    testImplementation project(':allreva-support:local-cache')
+    testImplementation project(':allreva-support:global-cache')
+    testImplementation project(':allreva-support:observability')
+}

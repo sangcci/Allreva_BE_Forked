@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: allreva-api
+  profiles:
+    active: dev

@@ -1,0 +1,23 @@
+plugins {
+    id 'org.springframework.boot'
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+    implementation project(':allreva-core')
+
+    runtimeOnly project(':allreva-support:db')
+    runtimeOnly project(':allreva-support:kopis-client')
+    runtimeOnly project(':allreva-support:push-notification')
+    runtimeOnly project(':allreva-support:local-cache')
+    runtimeOnly project(':allreva-support:global-cache')
+    runtimeOnly project(':allreva-support:observability')
+}
+
+tasks.bootJar {
+	enabled = false
+}
+
+tasks.jar {
+    enabled = true
+}
