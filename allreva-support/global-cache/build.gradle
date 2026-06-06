@@ -1,0 +1,6 @@
+dependencies {
+    implementation project(':allreva-core')
+
+	// redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+}

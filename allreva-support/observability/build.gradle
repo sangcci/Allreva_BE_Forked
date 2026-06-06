@@ -1,0 +1,9 @@
+dependencies {
+	// metric
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-registry-prometheus'
+
+	// logging
+	api 'org.slf4j:slf4j-api'
+    implementation 'com.github.loki4j:loki-logback-appender:1.5.2'
+}

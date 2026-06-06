@@ -41,6 +41,9 @@ jobs:
       - name: Run tests
         run: ./gradlew test
 
+      - name: Build application jars
+        run: ./gradlew :allreva-api:bootJar :allreva-batch:bootJar
+
   cd:
     needs: ci
     if: github.event_name == 'push'
@@ -65,10 +68,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
-      - name: Build with Gradle
+      - name: Build API jar with Gradle
         run: |
           chmod +x gradlew
-          ./gradlew bootJar
+          ./gradlew :allreva-api:bootJar
 
       - name: Login to DockerHub
         uses: docker/login-action@v3

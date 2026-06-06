@@ -1,0 +1,23 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - prometheus
+          - metrics
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
+loki:
+  url: ${LOKI_URL:}
+
+logging:
+  level:
+    "[com.backend.allreva]": ${LOG_LEVEL_APP:DEBUG}
+    "[org.springframework.web]": ${LOG_LEVEL_SPRING_WEB:DEBUG}
+    "[org.hibernate.SQL]": ${LOG_LEVEL_HIBERNATE_SQL:DEBUG}
+    "[org.hibernate.type.descriptor.sql.BasicBinder]": ${LOG_LEVEL_HIBERNATE_BINDER:OFF}
+    "[org.springframework.security]": ${LOG_LEVEL_SPRING_SECURITY:WARN}

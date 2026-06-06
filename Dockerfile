@@ -1,3 +1,3 @@
 FROM amazoncorretto:17-alpine
-COPY build/libs/*.jar app.jar
+COPY allreva-api/build/libs/app.jar app.jar
 ENTRYPOINT ["java", "-jar", "app.jar"]
