@@ -79,7 +79,9 @@ out/
 .copilot/
 .aider*
 .pi/
-docs/
+docs/*
+!docs/overview.md
+!docs/main-sequences.md
 CLAUDE.md
 AGENTS.md
 GEMINI.md

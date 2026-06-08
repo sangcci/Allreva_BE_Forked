@@ -117,6 +117,13 @@ OAuth provider와 직접 통신해 사용자 정보를 가져오고, JWT 기반 
 
 <br>
 
+## Documents
+
+- [Project Overview](./docs/overview.md)
+- [Main Sequences](./docs/main-sequences.md)
+
+<br>
+
 ## Getting Started
 
 ```bash
