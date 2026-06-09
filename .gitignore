@@ -82,15 +82,21 @@ out/
 docs/*
 !docs/overview.md
 !docs/main-sequences.md
+!docs/troubleshooting/
+!docs/troubleshooting/**
 CLAUDE.md
 AGENTS.md
 GEMINI.md
 
 ### Load Test ###
 load-test/
+!docs/troubleshooting/load-test/
+!docs/troubleshooting/load-test/**
 
 ### Query Optimization Test ###
 query-optimization-test/
+!docs/troubleshooting/query-optimization-test/
+!docs/troubleshooting/query-optimization-test/**
 
 ### Git Worktrees ###
 .worktrees/
