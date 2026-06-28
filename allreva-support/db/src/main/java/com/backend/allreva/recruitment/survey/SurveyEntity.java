@@ -5,6 +5,8 @@ import com.backend.allreva.recruitment.survey.domain.Region;
 import com.backend.allreva.recruitment.survey.domain.Survey;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -39,6 +41,7 @@ public class SurveyEntity extends BaseEntity {
     @Column(name = "boarding_dates", columnDefinition = "jsonb", nullable = false)
     private List<LocalDate> boardingDates = new ArrayList<>();
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Region region;
 
