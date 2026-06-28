@@ -1,0 +1,19 @@
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+fcm:
+  project-id: local-fcm-project-id
+  service-account-key: file:./firebase/firebase-service-account-key.json
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "stag | prod"
+
+fcm:
+  project-id: ${FCM_PROJECT_ID}
+  service-account-key: ${FCM_SERVICE_ACCOUNT_KEY_PATH}

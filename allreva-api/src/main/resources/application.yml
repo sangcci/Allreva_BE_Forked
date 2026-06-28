@@ -3,3 +3,82 @@ spring:
     name: allreva-api
   profiles:
     active: dev
+  config:
+    import:
+      - db.yml
+      - oauth-client.yml
+      - push-notification.yml
+      - kopis-client.yml
+      - global-cache.yml
+      - storage.yml
+      - observability.yml
+      - optional:secret.yml
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+view:
+  count:
+    schedule:
+      rate: 3000
+
+thread-pool:
+  task:
+    core-size: 10
+    max-size: 20
+    queue-capacity: 50
+  notification:
+    core-size: 5
+    max-size: 10
+    queue-capacity: 30
+
+jwt:
+  access:
+    header: Authorization
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+url:
+  back:
+    protocol: http
+    domain: localhost:8080
+  front:
+    protocol: http
+    domain: localhost:5173
+    domain-name: localhost
+
+jwt:
+  secret-key: local-development-jwt-secret-key-32bytes
+  access:
+    expiration: 3600000
+  refresh:
+    expiration: 1209600033
+    cookie-name: refreshToken
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "stag | prod"
+
+url:
+  back:
+    protocol: ${BACKEND_PROTOCOL}
+    domain: ${BACKEND_DOMAIN}
+  front:
+    protocol: ${FRONTEND_PROTOCOL}
+    domain: ${FRONTEND_DOMAIN}
+    domain-name: ${FRONTEND_DOMAIN_NAME}
+
+jwt:
+  secret-key: ${JWT_SECRET_KEY}
+  access:
+    expiration: ${JWT_ACCESS_EXPIRATION}
+  refresh:
+    expiration: ${JWT_REFRESH_EXPIRATION}
+    cookie-name: ${JWT_REFRESH_COOKIE_NAME}

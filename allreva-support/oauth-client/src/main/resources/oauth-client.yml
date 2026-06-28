@@ -1,0 +1,28 @@
+oauth2:
+  kakao:
+    api-url: https://kapi.kakao.com
+    auth-url: https://kauth.kakao.com
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+oauth2:
+  kakao:
+    redirect-uri: http://localhost:5173/auth/callback
+    client-id: local-kakao-client-id
+    client-secret: local-kakao-client-secret
+
+---
+spring:
+  config:
+    activate:
+      on-profile: "stag | prod"
+
+oauth2:
+  kakao:
+    redirect-uri: ${KAKAO_REDIRECT_URI}
+    client-id: ${KAKAO_CLIENT_ID}
+    client-secret: ${KAKAO_CLIENT_SECRET}

@@ -48,24 +48,6 @@ out/
 **/application-*-prod.yml
 **/application-*-stag.yml
 **/application-*-local.yml
-!allreva-api/src/main/resources/application-dev.yml
-!allreva-api/src/main/resources/application-stag.yml
-!allreva-api/src/main/resources/application-prod.yml
-!allreva-batch/src/main/resources/application-dev.yml
-!allreva-batch/src/main/resources/application-stag.yml
-!allreva-batch/src/main/resources/application-prod.yml
-!allreva-support/db/src/main/resources/db-config/application-dev.yml
-!allreva-support/db/src/main/resources/db-config/application-stag.yml
-!allreva-support/db/src/main/resources/db-config/application-prod.yml
-!allreva-support/db/src/main/resources/db-config/application-test.yml
-!allreva-core/events/src/main/resources/events-config/application-dev.yml
-!allreva-core/events/src/main/resources/events-config/application-stag.yml
-!allreva-core/events/src/main/resources/events-config/application-prod.yml
-!allreva-core/events/src/main/resources/events-config/application-test.yml
-!allreva-support/observability/src/main/resources/observability-config/application-dev.yml
-!allreva-support/observability/src/main/resources/observability-config/application-stag.yml
-!allreva-support/observability/src/main/resources/observability-config/application-prod.yml
-!allreva-support/observability/src/main/resources/observability-config/application-test.yml
 **/.env
 
 ### VS Code ###

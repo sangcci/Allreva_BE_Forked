@@ -1,0 +1,4 @@
+public-data:
+  kopis:
+    base-url: https://www.kopis.or.kr/openApi/restful
+    service-key: ${KOPIS_SERVICE_KEY}
