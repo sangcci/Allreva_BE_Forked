@@ -130,6 +130,25 @@ OAuth provider와 직접 통신해 사용자 정보를 가져오고, JWT 기반 
 ./gradlew clean build
 ```
 
+### Local profile
+
+`local`은 개발자 PC에서 빠르게 애플리케이션을 띄우기 위한 프로필입니다. FCM은 실제 외부 SDK를 초기화하지 않고 no-op 구현을 사용하고, S3는 LocalStack을 통해 AWS SDK 흐름을 검증합니다.
+
+기본 profile은 코드에서 강제하지 않으므로 실행할 때 명시합니다.
+
 ```bash
-./gradlew :allreva-api:bootRun
+SPRING_PROFILES_ACTIVE=local ./gradlew :allreva-api:bootRun
+```
+
+필요한 로컬 의존성:
+
+- DB: H2 in-memory를 PostgreSQL mode로 사용합니다. 별도 DB 실행은 필요 없습니다.
+- Redis: `localhost:6379`
+- S3: LocalStack `http://localhost:4566`, bucket `local-allreva-bucket`
+- OAuth/KOPIS stub: 일반 인증 API 테스트는 test login을 사용합니다. Kakao OAuth나 KOPIS 연동 흐름을 직접 확인할 때만 `http://localhost:18080` 기준 WireMock 등으로 필요 API를 stub합니다.
+
+`local`과 `test`는 분리되어 있습니다. 자동화 테스트는 계속 `test` profile과 Testcontainers/WireMock 기반으로 실행합니다.
+
+```bash
+./gradlew test
 ```

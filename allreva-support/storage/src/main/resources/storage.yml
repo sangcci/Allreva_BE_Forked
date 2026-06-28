@@ -8,6 +8,20 @@ spring:
 spring:
   config:
     activate:
+      on-profile: local
+  cloud:
+    aws:
+      s3:
+        bucket: local-allreva-bucket
+        endpoint: http://localhost:4566
+      credentials:
+        access-key: local-aws-access-key
+        secret-key: local-aws-secret-key
+
+---
+spring:
+  config:
+    activate:
       on-profile: dev
   cloud:
     aws:

@@ -2,7 +2,7 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
-    <!-- observability.yml 에서 주입 -->
+    <!-- from observability.yml -->
     <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="allreva"/>
     <springProperty scope="context" name="LOKI_URL" source="loki.url" defaultValue=""/>
 
@@ -14,7 +14,7 @@
         </encoder>
     </appender>
 
-    <!-- ==================== File Appender (dev only) ==================== -->
+    <!-- ==================== File Appender (local, dev) ==================== -->
     <springProfile name="dev">
         <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>logs/application.log</file>
@@ -73,7 +73,7 @@
     </springProfile>
 
     <!-- ==================== Root Logger / Application Logger ==================== -->
-    <springProfile name="test">
+    <springProfile name="test,local">
         <root level="INFO">
             <appender-ref ref="CONSOLE"/>
         </root>

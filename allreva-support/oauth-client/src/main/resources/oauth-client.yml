@@ -7,6 +7,20 @@ oauth2:
 spring:
   config:
     activate:
+      on-profile: local
+
+oauth2:
+  kakao:
+    api-url: http://localhost:18080
+    auth-url: http://localhost:18080
+    redirect-uri: http://localhost:5173/auth/callback
+    client-id: local-kakao-client-id
+    client-secret: local-kakao-client-secret
+
+---
+spring:
+  config:
+    activate:
       on-profile: dev
 
 oauth2:

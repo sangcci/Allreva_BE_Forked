@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.bind.Name;
 @ConfigurationProperties(prefix = "spring.cloud.aws")
 public record StorageProperties(S3 s3, Credentials credentials, Region region) {
 
-    public record S3(String bucket) {}
+    public record S3(String bucket, String endpoint) {}
 
     public record Credentials(String accessKey, String secretKey) {}
 
