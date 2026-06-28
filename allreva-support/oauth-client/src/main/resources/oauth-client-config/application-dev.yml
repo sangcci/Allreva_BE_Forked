@@ -1,7 +1,0 @@
-oauth2:
-  kakao:
-    redirect-uri: ${KAKAO_REDIRECT_URI:http://localhost:5173/auth/callback}
-    client-id: ${KAKAO_CLIENT_ID}
-    client-secret: ${KAKAO_CLIENT_SECRET}
-    api-url: ${KAKAO_API_URL:https://kapi.kakao.com}
-    auth-url: ${KAKAO_AUTH_URL:https://kauth.kakao.com}

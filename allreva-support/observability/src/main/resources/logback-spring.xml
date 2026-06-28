@@ -2,7 +2,7 @@
 <configuration>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
-    <!-- application-{profile}.yml 에서 주입 -->
+    <!-- observability.yml 에서 주입 -->
     <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="allreva"/>
     <springProperty scope="context" name="LOKI_URL" source="loki.url" defaultValue=""/>
 

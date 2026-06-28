@@ -3,5 +3,14 @@ spring:
     name: allreva-batch
   profiles:
     active: dev
+  config:
+    import:
+      - db.yml
+      - kopis-client.yml
+      - global-cache.yml
+      - observability.yml
   main:
     web-application-type: none
+  task:
+    scheduling:
+      thread-name-prefix: batch-scheduler-
