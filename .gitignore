@@ -7,6 +7,8 @@ build/
 
 ### Firebase ###
 /src/main/resources/firebase/
+**/src/main/resources/firebase/
+**/firebase/firebase-service-account-key.json
 
 ### Kopis ###
 /src/main/resources/kopis/
@@ -40,6 +42,7 @@ out/
 /.nb-gradle/
 
 ### Profile-specific configs & secrets ###
+**/secret.yml
 **/application-dev.yml
 **/application-prod.yml
 **/application-stag.yml

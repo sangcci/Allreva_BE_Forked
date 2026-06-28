@@ -53,7 +53,7 @@ url:
     domain-name: localhost
 
 jwt:
-  secret-key: local-development-jwt-secret-key-32bytes
+  secret-key: P2wW7hJW5VhWJXSqmSF4bnqn0g50NspypruwV8jOD5K0cpqmQjOduAdKvNaQ3xhk
   access:
     expiration: 3600000
   refresh:
