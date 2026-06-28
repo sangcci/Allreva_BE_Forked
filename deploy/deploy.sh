@@ -35,11 +35,10 @@ docker rm -f app-${NEW} 2>/dev/null || true
 docker run -d \
   --name app-${NEW} \
   -p ${NEW_PORT}:8080 \
-  -v ~/deploy/application-stag.yml:/app/config/application-stag.yml:ro \
+  -v ~/deploy/secret.yml:/app/config/secret.yml:ro \
   -v ~/deploy/firebase-service-account-key.json:/app/firebase/firebase-service-account-key.json:ro \
   -e SPRING_PROFILES_ACTIVE=stag \
-  -e SPRING_CONFIG_ADDITIONAL_LOCATION=/app/config/ \
-  -e FCM_SERVICE_ACCOUNT_KEY_PATH=file:/app/firebase/firebase-service-account-key.json \
+  -e SPRING_CONFIG_IMPORT=optional:file:/app/config/secret.yml \
   -e TZ=Asia/Seoul \
   ${DOCKERHUB_USERNAME}/${APP_NAME}:latest
 

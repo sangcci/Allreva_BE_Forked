@@ -25,7 +25,7 @@ Prepare API cleanup after support module boundaries and configuration ownership 
 - Command repository adapters and query finder adapters separated.
 - Entity embedded value objects flattened to table-column-like persistence fields.
 - DB module repository/finder adapter tests added with `DataJpaTestSupport`.
-- `db-config/application-{dev,stag,prod}.yml` owns DB/JPA/Flyway settings only.
+- `db.yml` owns DB/JPA/Flyway settings only.
 - Redis and S3 settings moved out of db config.
 - DB support tests use annotation properties and `DynamicPropertySource`; no support test yml.
 
@@ -34,7 +34,7 @@ Prepare API cleanup after support module boundaries and configuration ownership 
 - Kakao OAuth config/properties moved into oauth-client module.
 - `KakaoOAuthIdentityVerifier` kept as OAuth identity port adapter.
 - `KakaoOAuthMemberMapper` added for Kakao response to core `OAuthMember` mapping.
-- `oauth-client-config/application-{dev,stag,prod}.yml` added.
+- `oauth-client.yml` added.
 - `OAuthClientTestSupport` uses narrow context, WireMock extension, `DynamicPropertySource`; no test yml.
 
 ### Support/kopis-client
@@ -42,7 +42,7 @@ Prepare API cleanup after support module boundaries and configuration ownership 
 - KOPIS response-to-domain mapping extracted from XML response DTOs into mapper components.
 - `KopisProperties` added.
 - `KopisFeignConfig` no longer uses direct `@Value` for service key.
-- `kopis-client-config/application-{dev,stag,prod}.yml` added.
+- `kopis-client.yml` added.
 - Mapper and Feign interceptor tests added.
 
 ### Support/push-notification
@@ -50,26 +50,27 @@ Prepare API cleanup after support module boundaries and configuration ownership 
 - FCM package moved under `notification/fcm`.
 - `FcmProperties` and `FcmPushNotificationConfig` added.
 - `FcmSender` no longer uses direct `@Value` for project id.
-- `push-notification-config/application-{dev,stag,prod}.yml` added.
+- `push-notification.yml` added.
 - `FcmSenderTest` and `PushNotificationTestSupport` added.
 
 ### Support/storage
 
-- `storage-config/application-{dev,stag,prod}.yml` added.
+- `storage.yml` added.
 - `StorageProperties` added.
 - `S3Config` and `S3StorageAdapter` no longer use direct `@Value`.
 - `StoragePropertiesTest` added.
 
 ### Support/global-cache
 
-- `global-cache-config/application-{dev,stag,prod}.yml` added.
+- `global-cache.yml` added.
 - Redis config moved out of db config.
 - `GlobalCacheTestSupport` added with Redis Testcontainers and `DynamicPropertySource`.
 - `RefreshTokenStorageAdapter`, `FcmTargetStorage`, `PopularKeywordRepositoryImpl`, and `SearchFinderAdapter` tests added.
 
 ### Config ownership rule
 
-- Support modules own their runtime config under `{module}-config/application-{dev,stag,prod}.yml`.
+- Support modules own their runtime config as one `{module}.yml` file in each resources root and split profile differences with `spring.config.activate.on-profile`.
+- dev profile keeps local constants where safe; public-repo unsafe keys and stag/prod values use environment placeholders and are overridden by one external `secret.yml` imported through `SPRING_CONFIG_IMPORT` in deployment.
 - Support modules do not keep test `application.yml` or `application-test.yml`.
 - Support unit/slice tests inject properties through support classes or test annotations.
 - `allreva-api` and `allreva-batch` import only the support configs they need.
