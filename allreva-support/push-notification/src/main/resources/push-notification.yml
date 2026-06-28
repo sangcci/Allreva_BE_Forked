@@ -6,7 +6,7 @@ spring:
 
 fcm:
   project-id: local-fcm-project-id
-  service-account-key: file:./firebase/firebase-service-account-key.json
+  service-account-key: classpath:firebase/firebase-service-account-key.json
 
 ---
 spring:
