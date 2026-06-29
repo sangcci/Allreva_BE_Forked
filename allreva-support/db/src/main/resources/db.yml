@@ -22,6 +22,28 @@ spring:
 spring:
   config:
     activate:
+      on-profile: local
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:allreva;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+  h2:
+    console:
+      enabled: true
+  flyway:
+    enabled: false
+---
+spring:
+  config:
+    activate:
       on-profile: dev
   datasource:
     url: jdbc:postgresql://localhost:5432/allreva

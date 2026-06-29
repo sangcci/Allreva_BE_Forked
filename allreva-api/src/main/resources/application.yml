@@ -1,8 +1,6 @@
 spring:
   application:
     name: allreva-api
-  profiles:
-    active: dev
   config:
     import:
       - db.yml
@@ -12,7 +10,6 @@ spring:
       - global-cache.yml
       - storage.yml
       - observability.yml
-      - optional:secret.yml
   servlet:
     multipart:
       max-file-size: 100MB
@@ -36,6 +33,29 @@ thread-pool:
 jwt:
   access:
     header: Authorization
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+
+url:
+  back:
+    protocol: http
+    domain: localhost:8080
+  front:
+    protocol: http
+    domain: localhost:5173
+    domain-name: localhost
+
+jwt:
+  secret-key: local-jwt-secret-key-must-be-long-enough-for-hmac-signing
+  access:
+    expiration: 3600000
+  refresh:
+    expiration: 1209600033
+    cookie-name: refreshToken
 
 ---
 spring:
