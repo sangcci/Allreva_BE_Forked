@@ -11,5 +11,6 @@ public class MemberInfoUpdater {
     public void update(
             final Member member, final String nickname, final String introduce, final String profileImageUrl) {
         member.updateInfo(nickname, introduce, profileImageUrl);
+        member.completeOnboarding();
     }
 }

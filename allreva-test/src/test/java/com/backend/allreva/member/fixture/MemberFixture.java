@@ -6,6 +6,7 @@ import com.backend.allreva.common.model.Email;
 import com.backend.allreva.member.domain.LoginProvider;
 import com.backend.allreva.member.domain.Member;
 import com.backend.allreva.member.domain.MemberRole;
+import com.backend.allreva.member.domain.MemberStatus;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.instancio.Instancio;
@@ -22,6 +23,7 @@ public final class MemberFixture {
         return Instancio.of(Member.class)
                 .ignore(field(Member.class, "id"))
                 .set(field(Member.class, "memberRole"), MemberRole.USER)
+                .set(field(Member.class, "memberStatus"), MemberStatus.ACTIVE)
                 .set(field(Member.class, "loginProvider"), LoginProvider.GOOGLE)
                 .toModel();
     }

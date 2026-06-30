@@ -25,6 +25,7 @@ public class AuthTokenIssuer {
                 .email(member.getEmail().getEmail())
                 .nickname(member.getMemberInfo().getNickname())
                 .profileImageUrl(member.getMemberInfo().getProfileImageUrl())
+                .memberStatus(member.getMemberStatus())
                 .build();
     }
 }

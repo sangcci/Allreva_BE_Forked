@@ -11,6 +11,7 @@ import com.backend.allreva.member.domain.LoginProvider;
 import com.backend.allreva.member.domain.Member;
 import com.backend.allreva.member.domain.MemberErrorCode;
 import com.backend.allreva.member.domain.MemberRepository;
+import com.backend.allreva.member.domain.MemberStatus;
 import com.backend.allreva.member.domain.NicknameDuplication;
 import com.backend.allreva.member.fixture.MemberFixture;
 import com.backend.allreva.member.fixture.MemberRequestFixture;
@@ -56,6 +57,14 @@ class MemberIntegrationTest extends IntegrationTestSupport {
 
                 assertThat(saved.getMemberInfo().getNickname()).startsWith("user-");
                 assertThat(memberRepository.findById(saved.getId())).isPresent();
+            }
+
+            @Test
+            void 온보딩_미완료_상태로_저장된다() {
+                Member saved = memberCommandService.registerByOAuth(
+                        "newuser@kakao.com", LoginProvider.KAKAO, "https://example.com/profile.jpg");
+
+                assertThat(saved.getMemberStatus()).isEqualTo(MemberStatus.REGISTERED);
             }
         }
 
@@ -125,6 +134,19 @@ class MemberIntegrationTest extends IntegrationTestSupport {
                     softly.assertThat(updatedMember.getMemberInfo().getIntroduce())
                             .isEqualTo(request.introduce());
                 });
+            }
+
+            @Test
+            void 온보딩_미완료_회원이면_일반_회원으로_전환된다() {
+                Member member = memberCommandService.registerByOAuth(
+                        "newuser@kakao.com", LoginProvider.KAKAO, "https://example.com/profile.jpg");
+                MemberInfoUpdateCommand request = Instancio.of(MemberRequestFixture.memberInfoUpdateCommandModel())
+                        .create();
+
+                memberCommandService.updateMemberInfo(request, member.getId());
+                Member updatedMember = memberRepository.findById(member.getId()).orElseThrow();
+
+                assertThat(updatedMember.getMemberStatus()).isEqualTo(MemberStatus.ACTIVE);
             }
         }
     }
