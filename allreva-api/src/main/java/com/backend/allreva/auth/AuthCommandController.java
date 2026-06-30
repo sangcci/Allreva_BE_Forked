@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,6 +24,9 @@ public class AuthCommandController implements AuthCommandControllerSwagger {
     private final AuthService authCommandService;
     private final RefreshTokenCookieWriter refreshTokenCookieWriter;
 
+    @Value("${auth.jwt.access-token.header}")
+    private String accessTokenHeader;
+
     @Override
     @GetMapping("/token/kakao")
     public View<AuthUserResponse> authKakaoLogin(
@@ -30,60 +34,48 @@ public class AuthCommandController implements AuthCommandControllerSwagger {
             final HttpServletRequest request,
             final HttpServletResponse response) {
         AuthResult authResult = authCommandService.kakaoLogin(authorizationCode);
-        applyAuthTokens(request, response, authResult);
+        applyAuthTokens(response, authResult);
         return View.onSuccess(AuthUserResponse.from(authResult));
     }
 
     @Override
     @GetMapping("/token/reissue")
     public View<Void> reissueToken(
-            @NotBlank @CookieValue(name = "refreshToken", required = false) final String refreshToken,
+            @NotBlank @CookieValue(name = "${auth.jwt.refresh-token.name}", required = false)
+                    final String refreshTokenJwt,
             final HttpServletRequest request,
             final HttpServletResponse response) {
-        AuthResult authResult = authCommandService.reissueAccessToken(refreshToken);
-        applyAuthTokens(request, response, authResult);
+        AuthResult authResult = authCommandService.reissueAccessToken(refreshTokenJwt);
+        applyAuthTokens(response, authResult);
         return View.onSuccess();
     }
 
     @Override
     @GetMapping("/login/check")
     public View<AuthUserResponse> loginCheck(
-            @NotBlank @CookieValue(name = "refreshToken", required = false) final String refreshToken,
+            @NotBlank @CookieValue(name = "${auth.jwt.refresh-token.name}", required = false)
+                    final String refreshTokenJwt,
             final HttpServletRequest request,
             final HttpServletResponse response) {
-        AuthResult authResult = authCommandService.reissueAccessToken(refreshToken);
-        applyAuthTokens(request, response, authResult);
+        AuthResult authResult = authCommandService.reissueAccessToken(refreshTokenJwt);
+        applyAuthTokens(response, authResult);
         return View.onSuccess(AuthUserResponse.from(authResult));
     }
 
     @Override
     @GetMapping("/logout")
     public View<Void> logout(
-            @NotBlank @CookieValue(name = "refreshToken", required = false) final String refreshToken,
+            @NotBlank @CookieValue(name = "${auth.jwt.refresh-token.name}", required = false)
+                    final String refreshTokenJwt,
             final HttpServletRequest request,
             final HttpServletResponse response) {
-        String domainName = extractDomainName(request);
-        authCommandService.logout(refreshToken);
-        refreshTokenCookieWriter.delete(response, domainName);
+        authCommandService.logout(refreshTokenJwt);
+        refreshTokenCookieWriter.delete(response);
         return View.onSuccess();
     }
 
-    private void applyAuthTokens(
-            final HttpServletRequest request, final HttpServletResponse response, final AuthResult authResult) {
-        String domainName = extractDomainName(request);
-        refreshTokenCookieWriter.write(response, authResult.refreshToken(), domainName);
-        response.addHeader("Authorization", "Bearer " + authResult.accessToken());
-    }
-
-    private static String extractDomainName(final HttpServletRequest request) {
-        String origin = request.getHeader("Origin");
-        if (origin != null) {
-            return origin;
-        }
-        String referer = request.getHeader("Referer");
-        if (referer != null) {
-            return referer;
-        }
-        return request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+    private void applyAuthTokens(final HttpServletResponse response, final AuthResult authResult) {
+        refreshTokenCookieWriter.write(response, authResult.refreshToken());
+        response.addHeader(accessTokenHeader, "Bearer " + authResult.accessToken());
     }
 }

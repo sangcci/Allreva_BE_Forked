@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +29,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtService;
     private final UserDetailsService userDetailsService;
+
+    @Value("${auth.jwt.access-token.header}")
+    private String accessTokenHeader;
 
     /** JWT 토큰을 검증하고 권한을 부여합니다. */
     @Override
@@ -70,7 +74,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
      * @param request HTTP 요청 객체
      */
     private String extractAccessToken(final HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
+        String bearerToken = request.getHeader(accessTokenHeader);
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
