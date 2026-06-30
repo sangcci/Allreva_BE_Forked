@@ -4,6 +4,7 @@ import com.backend.allreva.common.model.Email;
 import com.backend.allreva.member.domain.LoginProvider;
 import com.backend.allreva.member.domain.Member;
 import com.backend.allreva.member.domain.MemberRole;
+import com.backend.allreva.member.domain.MemberStatus;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,7 @@ public class MemberRegister {
                 .email(Email.builder().email(email).build())
                 .nickname(nickname)
                 .memberRole(MemberRole.USER)
+                .memberStatus(MemberStatus.ACTIVE)
                 .introduce(introduce)
                 .profileImageUrl(profileImageUrl)
                 .loginProvider(loginProvider)
@@ -31,7 +33,17 @@ public class MemberRegister {
     }
 
     public Member registerByOAuth(final String email, final LoginProvider loginProvider, final String profileImageUrl) {
-        return register(email, generateUniqueNickname(), "", loginProvider, profileImageUrl);
+        Member member = Member.builder()
+                .email(Email.builder().email(email).build())
+                .nickname(generateUniqueNickname())
+                .memberRole(MemberRole.USER)
+                .memberStatus(MemberStatus.REGISTERED)
+                .introduce("")
+                .profileImageUrl(profileImageUrl)
+                .loginProvider(loginProvider)
+                .build();
+        member.resetRefundAccount();
+        return member;
     }
 
     private String generateUniqueNickname() {

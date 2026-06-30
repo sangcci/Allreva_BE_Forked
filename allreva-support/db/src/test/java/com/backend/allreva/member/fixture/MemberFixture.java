@@ -7,6 +7,7 @@ import com.backend.allreva.member.domain.LoginProvider;
 import com.backend.allreva.member.domain.Member;
 import com.backend.allreva.member.domain.MemberInfo;
 import com.backend.allreva.member.domain.MemberRole;
+import com.backend.allreva.member.domain.MemberStatus;
 import com.backend.allreva.member.domain.RefundAccount;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -25,6 +26,7 @@ public final class MemberFixture {
                 .ignore(field(Member.class, "id"))
                 .set(field(Member.class, "email"), new Email(EMAIL))
                 .set(field(Member.class, "memberRole"), MemberRole.USER)
+                .set(field(Member.class, "memberStatus"), MemberStatus.ACTIVE)
                 .set(field(Member.class, "loginProvider"), PROVIDER)
                 .set(field(MemberInfo.class, "nickname"), NICKNAME)
                 .set(field(MemberInfo.class, "introduce"), "소개")

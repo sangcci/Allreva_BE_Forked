@@ -7,6 +7,7 @@ import com.backend.allreva.member.domain.Member;
 import com.backend.allreva.member.domain.MemberConstraints;
 import com.backend.allreva.member.domain.MemberInfo;
 import com.backend.allreva.member.domain.MemberRole;
+import com.backend.allreva.member.domain.MemberStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -48,6 +49,10 @@ public class MemberEntity extends BaseEntity {
     private MemberRole memberRole;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private MemberStatus memberStatus;
+
+    @Enumerated(EnumType.STRING)
     @Column(name = "provider", nullable = false)
     private LoginProvider loginProvider;
 
@@ -67,12 +72,14 @@ public class MemberEntity extends BaseEntity {
             final Long id,
             final String email,
             final MemberRole memberRole,
+            final MemberStatus memberStatus,
             final LoginProvider loginProvider,
             final MemberInfo memberInfo,
             final RefundAccountVO refundAccount) {
         this.id = id;
         this.email = email;
         this.memberRole = memberRole;
+        this.memberStatus = memberStatus;
         this.loginProvider = loginProvider;
         if (memberInfo != null) {
             this.nickname = memberInfo.getNickname();
@@ -87,6 +94,7 @@ public class MemberEntity extends BaseEntity {
                 member.getId(),
                 member.getEmail() != null ? member.getEmail().getEmail() : null,
                 member.getMemberRole(),
+                member.getMemberStatus(),
                 member.getLoginProvider(),
                 member.getMemberInfo(),
                 RefundAccountVO.from(member.getRefundAccount()));
@@ -97,6 +105,7 @@ public class MemberEntity extends BaseEntity {
                 .id(id)
                 .email(email != null ? new Email(email) : null)
                 .memberRole(memberRole)
+                .memberStatus(memberStatus)
                 .loginProvider(loginProvider)
                 .memberInfo(MemberInfo.builder()
                         .nickname(nickname)

@@ -18,6 +18,7 @@ import com.backend.allreva.common.model.Email;
 import com.backend.allreva.member.domain.LoginProvider;
 import com.backend.allreva.member.domain.Member;
 import com.backend.allreva.member.domain.MemberRepository;
+import com.backend.allreva.member.domain.MemberStatus;
 import com.backend.allreva.member.fixture.MemberFixture;
 import com.backend.allreva.support.IntegrationTestSupport;
 import org.junit.jupiter.api.AfterEach;
@@ -120,6 +121,13 @@ class AuthenticationIntegrationTest extends IntegrationTestSupport {
                 assertThat(refreshTokenStorage.findByToken(response.refreshToken()))
                         .isPresent();
             }
+
+            @Test
+            void 온보딩_미완료_상태가_반환된다() {
+                AuthResult response = authService.kakaoLogin("auth-code");
+
+                assertThat(response.memberStatus()).isEqualTo(MemberStatus.REGISTERED);
+            }
         }
 
         @Nested
@@ -145,6 +153,13 @@ class AuthenticationIntegrationTest extends IntegrationTestSupport {
                 AuthResult response = authService.kakaoLogin("auth-code");
 
                 assertThat(response.email()).isEqualTo("existing@kakao.com");
+            }
+
+            @Test
+            void 기존_멤버의_회원_상태가_유지된다() {
+                AuthResult response = authService.kakaoLogin("auth-code");
+
+                assertThat(response.memberStatus()).isEqualTo(MemberStatus.ACTIVE);
             }
         }
 
