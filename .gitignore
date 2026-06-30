@@ -42,7 +42,8 @@ out/
 /.nb-gradle/
 
 ### Profile-specific configs & secrets ###
-**/secret.yml
+**/secret*.yml
+**/secret*.yaml
 **/application-dev.yml
 **/application-prod.yml
 **/application-stag.yml

@@ -1,8 +1,6 @@
 package com.backend.allreva.auth;
 
 import jakarta.servlet.http.HttpServletResponse;
-import java.net.MalformedURLException;
-import java.net.URL;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -11,49 +9,42 @@ import org.springframework.stereotype.Service;
 @Service
 public class RefreshTokenCookieWriter {
 
-    @Value("${jwt.refresh.expiration}")
+    @Value("${auth.jwt.refresh-token.expiration}")
     private int refreshTime;
 
-    @Value("${url.front.domain-name}")
-    private String prodDomainName;
+    @Value("${auth.jwt.refresh-token.name}")
+    private String cookieName;
 
-    public void write(final HttpServletResponse response, final String refreshToken, final String domainName) {
-        String cookieDomain = isLocalhost(domainName) ? null : prodDomainName;
+    @Value("${auth.jwt.refresh-token.cookie.domain}")
+    private String cookieDomain;
+
+    @Value("${auth.jwt.refresh-token.cookie.secure}")
+    private boolean secure;
+
+    @Value("${auth.jwt.refresh-token.cookie.same-site}")
+    private String sameSite;
+
+    public void write(final HttpServletResponse response, final String refreshTokenJwt) {
         response.addHeader(
                 HttpHeaders.SET_COOKIE,
-                buildCookie("refreshToken", refreshToken, cookieDomain, refreshTime)
+                buildCookie(cookieName, refreshTokenJwt, cookieDomain, refreshTime)
                         .toString());
     }
 
-    public void delete(final HttpServletResponse response, final String domainName) {
-        String cookieDomain = isLocalhost(domainName) ? null : prodDomainName;
+    public void delete(final HttpServletResponse response) {
         response.addHeader(
                 HttpHeaders.SET_COOKIE,
-                buildCookie("refreshToken", "", cookieDomain, 0).toString());
+                buildCookie(cookieName, "", cookieDomain, 0).toString());
     }
 
-    private static ResponseCookie buildCookie(
-            final String name, final String value, final String domain, final int maxAge) {
+    private ResponseCookie buildCookie(final String name, final String value, final String domain, final int maxAge) {
         return ResponseCookie.from(name, value)
                 .domain(domain)
                 .path("/")
                 .maxAge(maxAge)
                 .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
+                .secure(secure)
+                .sameSite(sameSite)
                 .build();
-    }
-
-    private static boolean isLocalhost(String domain) {
-        if (domain == null) {
-            return false;
-        }
-        try {
-            URL url = new URL(domain);
-            String host = url.getHost();
-            return host.contains("localhost") || host.contains("127.0.0.1");
-        } catch (MalformedURLException e) {
-            return false;
-        }
     }
 }

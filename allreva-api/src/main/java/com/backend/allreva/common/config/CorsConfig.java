@@ -11,18 +11,18 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 public class CorsConfig {
 
-    @Value("${url.front.protocol}")
-    private String frontProtocol;
+    @Value("#{'${cors.allowed-origin-patterns}'.split(',')}")
+    private List<String> allowedOriginPatterns;
 
-    @Value("${url.front.domain}")
-    private String frontDomain;
+    @Value("${auth.jwt.access-token.header}")
+    private String accessTokenHeader;
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // 허용할 출처 패턴 설정
-        configuration.setAllowedOriginPatterns(List.of(frontProtocol + "://" + frontDomain));
+        configuration.setAllowedOriginPatterns(allowedOriginPatterns);
 
         // 자격 증명 허용
         configuration.setAllowCredentials(true);
@@ -34,7 +34,7 @@ public class CorsConfig {
         configuration.setAllowedHeaders(List.of("*"));
 
         // 노출할 헤더 설정
-        configuration.setExposedHeaders(List.of("Authorization"));
+        configuration.setExposedHeaders(List.of(accessTokenHeader));
 
         // 최대 캐시 시간 설정 (초 단위)
         configuration.setMaxAge(3600L);

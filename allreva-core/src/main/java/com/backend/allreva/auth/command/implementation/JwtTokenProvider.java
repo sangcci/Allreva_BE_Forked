@@ -24,9 +24,9 @@ public class JwtTokenProvider {
     private final int refreshTime;
 
     public JwtTokenProvider(
-            @Value("${jwt.secret-key}") final String secretKey,
-            @Value("${jwt.access.expiration}") final int accessTime,
-            @Value("${jwt.refresh.expiration}") final int refreshTime) {
+            @Value("${auth.jwt.secret-key}") final String secretKey,
+            @Value("${auth.jwt.access-token.expiration}") final int accessTime,
+            @Value("${auth.jwt.refresh-token.expiration}") final int refreshTime) {
         this.secretKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(secretKey));
         this.accessTime = accessTime;
         this.refreshTime = refreshTime;

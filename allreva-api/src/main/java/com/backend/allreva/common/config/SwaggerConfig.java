@@ -16,11 +16,14 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class SwaggerConfig {
 
-    @Value("${url.back.protocol}")
+    @Value("${swagger.server.protocol}")
     private String protocol;
 
-    @Value("${url.back.domain}")
+    @Value("${swagger.server.domain}")
     private String domain;
+
+    @Value("${auth.jwt.access-token.header}")
+    private String accessTokenHeader;
 
     @Bean
     public OpenAPI customOpenAPI() {
@@ -38,7 +41,7 @@ public class SwaggerConfig {
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("bearer")
                 .bearerFormat("JWT")
-                .name("Authorization")
+                .name(accessTokenHeader)
                 .description("Token: oauth2 로그인을 통해 얻은 토큰을 입력하세요.")
                 .in(SecurityScheme.In.HEADER);
     }

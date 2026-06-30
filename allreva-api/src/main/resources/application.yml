@@ -30,9 +30,12 @@ thread-pool:
     max-size: 10
     queue-capacity: 30
 
-jwt:
-  access:
-    header: Authorization
+auth:
+  jwt:
+    access-token:
+      header: Authorization
+    refresh-token:
+      name: refreshToken
 
 ---
 spring:
@@ -40,22 +43,25 @@ spring:
     activate:
       on-profile: local
 
-url:
-  back:
+swagger:
+  server:
     protocol: http
     domain: localhost:8080
-  front:
-    protocol: http
-    domain: localhost:5173
-    domain-name: localhost
 
-jwt:
-  secret-key: local-jwt-secret-key-must-be-long-enough-for-hmac-signing
-  access:
-    expiration: 3600000
-  refresh:
-    expiration: 1209600033
-    cookie-name: refreshToken
+cors:
+  allowed-origin-patterns: http://localhost:5173
+
+auth:
+  jwt:
+    secret-key: local-jwt-secret-key-must-be-long-enough-for-hmac-signing
+    access-token:
+      expiration: 3600000
+    refresh-token:
+      expiration: 1209600033
+      cookie:
+        domain: ""
+        secure: false
+        same-site: Lax
 
 ---
 spring:
@@ -63,22 +69,25 @@ spring:
     activate:
       on-profile: dev
 
-url:
-  back:
+swagger:
+  server:
     protocol: http
     domain: localhost:8080
-  front:
-    protocol: http
-    domain: localhost:5173
-    domain-name: localhost
 
-jwt:
-  secret-key: P2wW7hJW5VhWJXSqmSF4bnqn0g50NspypruwV8jOD5K0cpqmQjOduAdKvNaQ3xhk
-  access:
-    expiration: 3600000
-  refresh:
-    expiration: 1209600033
-    cookie-name: refreshToken
+cors:
+  allowed-origin-patterns: http://localhost:5173
+
+auth:
+  jwt:
+    secret-key: P2wW7hJW5VhWJXSqmSF4bnqn0g50NspypruwV8jOD5K0cpqmQjOduAdKvNaQ3xhk
+    access-token:
+      expiration: 3600000
+    refresh-token:
+      expiration: 1209600033
+      cookie:
+        domain: ""
+        secure: true
+        same-site: None
 
 ---
 spring:
@@ -86,19 +95,22 @@ spring:
     activate:
       on-profile: "stag | prod"
 
-url:
-  back:
-    protocol: ${BACKEND_PROTOCOL}
-    domain: ${BACKEND_DOMAIN}
-  front:
-    protocol: ${FRONTEND_PROTOCOL}
-    domain: ${FRONTEND_DOMAIN}
-    domain-name: ${FRONTEND_DOMAIN_NAME}
+swagger:
+  server:
+    protocol: ${SWAGGER_SERVER_PROTOCOL}
+    domain: ${SWAGGER_SERVER_DOMAIN}
 
-jwt:
-  secret-key: ${JWT_SECRET_KEY}
-  access:
-    expiration: ${JWT_ACCESS_EXPIRATION}
-  refresh:
-    expiration: ${JWT_REFRESH_EXPIRATION}
-    cookie-name: ${JWT_REFRESH_COOKIE_NAME}
+cors:
+  allowed-origin-patterns: ${CORS_ALLOWED_ORIGIN_PATTERNS}
+
+auth:
+  jwt:
+    secret-key: ${AUTH_JWT_SECRET_KEY}
+    access-token:
+      expiration: ${AUTH_JWT_ACCESS_TOKEN_EXPIRATION}
+    refresh-token:
+      expiration: ${AUTH_JWT_REFRESH_TOKEN_EXPIRATION}
+      cookie:
+        domain: ${AUTH_JWT_REFRESH_TOKEN_COOKIE_DOMAIN}
+        secure: ${AUTH_JWT_REFRESH_TOKEN_COOKIE_SECURE}
+        same-site: ${AUTH_JWT_REFRESH_TOKEN_COOKIE_SAME_SITE}

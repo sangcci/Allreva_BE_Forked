@@ -1,11 +1,11 @@
-url:
-  back:
+swagger:
+  server:
     protocol: http
     domain: localhost:8080
-  front:
-    protocol: http
-    domain: localhost:3000
-    domain-name: localhost
+
+cors:
+  allowed-origin-patterns: http://localhost:3000
+
 
 spring:
   jpa:
@@ -38,14 +38,19 @@ spring:
       region:
         static: us-east-1
 
-jwt:
-  secret-key: test-jwt-secret-key-must-be-long-enough-for-hmac
-  access:
-    expiration: 3600000
-    header: Authorization
-  refresh:
-    expiration: 1209600033
-    cookie-name: refreshToken
+auth:
+  jwt:
+    secret-key: test-jwt-secret-key-must-be-long-enough-for-hmac
+    access-token:
+      expiration: 3600000
+      header: Authorization
+    refresh-token:
+      name: refreshToken
+      expiration: 1209600033
+      cookie:
+        domain: ""
+        secure: false
+        same-site: Lax
 
 oauth2:
   kakao:
